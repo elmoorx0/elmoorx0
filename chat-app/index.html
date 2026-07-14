@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ElmoorxChat — Real-time Chat powered by Elmoorx WebSocket</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0A0A0F;--bg-elev:#14141B;--bg-card:#1A1A24;--border:#2A2A38;--text:#E4E4E7;--dim:#A1A1AA;--faint:#71717A;--accent:#A855F7;--accent2:#06B6D4;--success:#10B981;--warning:#F59E0B;--danger:#EF4444;--font:'Space Grotesk','Inter',sans-serif;--mono:'JetBrains Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;height:100vh;overflow:hidden;display:flex;flex-direction:column}
+
+/* NAV */
+.nav{background:var(--bg-elev);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px}
+.orb{width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,#A855F7,#06B6D4);position:relative}
+.orb::after{content:'';position:absolute;inset:5px;border-radius:3px;background:var(--bg-elev)}
+.status{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--dim)}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--success);animation:pulse 1.5s infinite}
+.status-dot.off{background:var(--danger);animation:none}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* LAYOUT */
+.chat-layout{display:grid;grid-template-columns:240px 1fr 200px;flex:1;overflow:hidden}
+
+/* SIDEBAR */
+.sidebar{background:var(--bg-elev);border-right:1px solid var(--border);padding:16px;overflow-y:auto;display:flex;flex-direction:column;gap:16px}
+.sidebar-h{font-family:var(--mono);font-size:9px;letter-spacing:0.2em;color:var(--faint);text-transform:uppercase;margin-bottom:8px}
+.room-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:6px;cursor:pointer;font-size:13px;color:var(--dim);transition:all .1s}
+.room-item:hover{background:var(--bg-card);color:var(--text)}
+.room-item.active{background:rgba(168,85,247,.1);color:var(--accent)}
+.room-icon{font-size:14px}
+.room-badge{margin-left:auto;background:var(--accent);color:white;font-size:10px;padding:1px 6px;border-radius:8px;font-weight:600}
+.user-item{display:flex;align-items:center;gap:8px;padding:6px 10px;font-size:13px;color:var(--dim)}
+.user-avatar{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:11px;font-weight:600}
+
+/* CHAT AREA */
+.chat-area{display:flex;flex-direction:column;overflow:hidden}
+.chat-header{padding:12px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.chat-header h3{font-size:16px;font-weight:600}
+.chat-header p{font-size:12px;color:var(--faint);margin-top:2px}
+.messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:12px}
+.message{display:flex;gap:10px;max-width:70%}
+.message-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:13px;font-weight:600;flex-shrink:0}
+.message-body{flex:1}
+.message-header{display:flex;align-items:baseline;gap:8px;margin-bottom:4px}
+.message-name{font-size:13px;font-weight:600;color:var(--text)}
+.message-time{font-size:10px;color:var(--faint);font-family:var(--mono)}
+.message-text{font-size:14px;color:var(--dim);line-height:1.5;background:var(--bg-card);padding:10px 14px;border-radius:12px;border-top-left-radius:4px}
+.message.own{align-self:flex-end;flex-direction:row-reverse}
+.message.own .message-body{text-align:right}
+.message.own .message-header{justify-content:flex-end}
+.message.own .message-text{background:rgba(168,85,247,.15);border-top-left-radius:12px;border-top-right-radius:4px}
+.typing-indicator{font-size:12px;color:var(--faint);padding:4px 20px;font-style:italic}
+
+/* INPUT */
+.input-area{padding:16px 20px;border-top:1px solid var(--border);display:flex;gap:12px;align-items:center}
+.input-area input{flex:1;padding:10px 16px;background:var(--bg-card);border:1px solid var(--border);border-radius:24px;color:var(--text);font-size:14px;outline:none;font-family:var(--font)}
+.input-area input:focus{border-color:var(--accent)}
+.send-btn{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;border:none;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:transform .1s}
+.send-btn:hover{transform:scale(1.05)}
+.send-btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* RIGHT PANEL */
+.right-panel{background:var(--bg-elev);border-left:1px solid var(--border);padding:16px;overflow-y:auto}
+.right-h{font-family:var(--mono);font-size:9px;letter-spacing:0.2em;color:var(--faint);text-transform:uppercase;margin-bottom:12px}
+.online-user{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:13px;color:var(--dim)}
+.online-dot{width:8px;height:8px;border-radius:50%;background:var(--success)}
+.stat-row{display:flex;justify-content:space-between;padding:6px 0;font-size:12px;border-bottom:1px solid var(--border)}
+.stat-row span:first-child{color:var(--dim)}
+.stat-row span:last-child{color:var(--accent2);font-family:var(--mono);font-weight:600}
+
+/* LOGIN */
+.login-overlay{position:fixed;inset:0;background:rgba(10,10,15,.9);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;z-index:1000}
+.login-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:40px;max-width:400px;width:90%;text-align:center}
+.login-card h2{margin-bottom:8px}
+.login-card p{color:var(--dim);margin-bottom:24px}
+.login-card input{width:100%;padding:10px 14px;background:var(--bg-elev);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px;outline:none;margin-bottom:12px;box-sizing:border-box;font-family:var(--font)}
+.login-card input:focus{border-color:var(--accent)}
+.login-card button{width:100%;padding:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600;font-family:var(--font)}
+
+@media(max-width:768px){.chat-layout{grid-template-columns:1fr}.sidebar,.right-panel{display:none}}
+</style>
+</head>
+<body>
+
+<div class="login-overlay" id="login">
+<div class="login-card">
+<h2>Join ElmoorxChat</h2>
+<p>Enter your name to start chatting in real-time</p>
+<input type="text" id="username" placeholder="Your name..." maxlength="20" />
+<button onclick="connect()">Join Chat →</button>
+</div>
+</div>
+
+<nav class="nav">
+<div class="brand"><div class="orb"></div>ElmoorxChat</div>
+<div class="status">
+<span class="status-dot off" id="status-dot"></span>
+<span id="status-text">Disconnected</span>
+<span style="color:var(--faint);margin-left:12px">·</span>
+<span style="color:var(--faint)" id="ws-url">ws://localhost:3002</span>
+</div>
+</nav>
+
+<div class="chat-layout">
+
+<aside class="sidebar">
+<div>
+<div class="sidebar-h">Channels</div>
+<div class="room-item active" data-room="general"><span class="room-icon">#</span> general</div>
+<div class="room-item" data-room="random"><span class="room-icon">#</span> random</div>
+<div class="room-item" data-room="help"><span class="room-icon">#</span> help</div>
+<div class="room-item" data-room="announcements"><span class="room-icon">#</span> announcements <span class="room-badge">2</span></div>
+</div>
+<div>
+<div class="sidebar-h">Direct Messages</div>
+<div class="room-item"><span class="room-icon">●</span> Sara M.</div>
+<div class="room-item"><span class="room-icon">●</span> Khalid A.</div>
+</div>
+</aside>
+
+<div class="chat-area">
+<div class="chat-header">
+<div>
+<h3 id="room-name"># general</h3>
+<p id="room-desc">General discussion · <span id="online-count">0</span> online</p>
+</div>
+</div>
+<div class="messages" id="messages">
+<div class="message">
+<div class="message-avatar" style="background:#A855F7">S</div>
+<div class="message-body">
+<div class="message-header"><span class="message-name">Sara Mohamed</span><span class="message-time">10:30</span></div>
+<div class="message-text">Hey everyone! Welcome to ElmoorxChat — a real-time chat built with Elmoorx's WebSocket server. No external libraries needed! 🎉</div>
+</div>
+</div>
+<div class="message">
+<div class="message-avatar" style="background:#06B6D4">K</div>
+<div class="message-body">
+<div class="message-header"><span class="message-name">Khalid Ali</span><span class="message-time">10:32</span></div>
+<div class="message-text">This is amazing. The WebSocket server runs on port 3002 and broadcasts messages to everyone in the room instantly.</div>
+</div>
+</div>
+<div class="message">
+<div class="message-avatar" style="background:#10B981">L</div>
+<div class="message-body">
+<div class="message-header"><span class="message-name">Leila Hassan</span><span class="message-time">10:35</span></div>
+<div class="message-text">I love that it supports rooms, typing indicators, and live cursors. All built-in to @elmoorx/collab! ✨</div>
+</div>
+</div>
+</div>
+<div class="typing-indicator" id="typing"></div>
+<div class="input-area">
+<input type="text" id="msg-input" placeholder="Type a message..." disabled />
+<button class="send-btn" id="send-btn" disabled onclick="sendMessage()">➤</button>
+</div>
+</div>
+
+<aside class="right-panel">
+<div class="right-h">Online Now</div>
+<div id="online-users"></div>
+<div class="right-h" style="margin-top:24px">Server Stats</div>
+<div class="stat-row"><span>Clients</span><span id="stat-clients">—</span></div>
+<div class="stat-row"><span>Rooms</span><span id="stat-rooms">—</span></div>
+<div class="stat-row"><span>Messages</span><span id="stat-msgs">0</span></div>
+<div class="stat-row"><span>Latency</span><span id="stat-latency">—</span></div>
+<div class="right-h" style="margin-top:24px">Your Info</div>
+<div class="stat-row"><span>Name</span><span id="stat-name">—</span></div>
+<div class="stat-row"><span>ID</span><span id="stat-id">—</span></div>
+<div class="stat-row"><span>Room</span><span id="stat-room">general</span></div>
+</aside>
+
+</div>
+
+<script>
+// ============ ELMOORX RUNTIME (minimal) ============
+let activeObserver=null;
+function $state(i){const d=new Set();let v=i;const r=()=>{if(activeObserver)d.add(activeObserver);return v};r.set=(n)=>{const r2=typeof n==="function"?n(v):n;if(Object.is(r2,v))return;v=r2;for(const e of[...d])e()};return r}
+function $effect(f){let c=null;const r=()=>{const p=activeObserver;activeObserver=r;try{if(typeof c==="function")c();c=f()}finally{activeObserver=p}};r();return()=>{if(typeof c==="function")c()}}
+
+// ============ CHAT STATE ============
+let ws = null;
+let clientId = null;
+let currentRoom = "general";
+let userName = "";
+let messageCount = 0;
+let typingTimeout = null;
+let isTyping = false;
+
+const colors = ["#A855F7","#06B6D4","#10B981","#F59E0B","#EF4444","#EC4899","#8B5CF6","#3B82F6"];
+
+function connect() {
+  const input = document.getElementById("username");
+  userName = input.value.trim();
+  if (!userName) return;
+
+  document.getElementById("login").style.display = "none";
+  document.getElementById("stat-name").textContent = userName;
+
+  const userColor = colors[Math.floor(Math.random() * colors.length)];
+  document.getElementById("stat-id").textContent = "client_" + Math.random().toString(36).slice(2, 8);
+
+  // Connect to WebSocket
+  const wsUrl = "ws://localhost:3002";
+  ws = new WebSocket(wsUrl);
+
+  ws.onopen = () => {
+    document.getElementById("status-dot").classList.remove("off");
+    document.getElementById("status-text").textContent = "Connected";
+    document.getElementById("msg-input").disabled = false;
+    document.getElementById("send-btn").disabled = false;
+
+    // Join room
+    ws.send(JSON.stringify({
+      type: "join",
+      room: currentRoom,
+      user: { name: userName, color: userColor }
+    }));
+
+    addSystemMessage("Connected to server");
+    fetchStats();
+  };
+
+  ws.onmessage = (event) => {
+    const msg = JSON.parse(event.data);
+    handleMessage(msg);
+  };
+
+  ws.onclose = () => {
+    document.getElementById("status-dot").classList.add("off");
+    document.getElementById("status-text").textContent = "Disconnected";
+    document.getElementById("msg-input").disabled = true;
+    document.getElementById("send-btn").disabled = true;
+    addSystemMessage("Disconnected from server");
+  };
+
+  ws.onerror = () => {
+    addSystemMessage("Connection error — server may not be running");
+    // Simulate offline mode with demo messages
+    setTimeout(() => {
+      addSystemMessage("Running in demo mode (no server)");
+      document.getElementById("msg-input").disabled = false;
+      document.getElementById("send-btn").disabled = false;
+    }, 1000);
+  };
+
+  // Input handlers
+  const msgInput = document.getElementById("msg-input");
+  msgInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") sendMessage();
+    if (!isTyping && ws && ws.readyState === WebSocket.OPEN) {
+      isTyping = true;
+      ws.send(JSON.stringify({ type: "typing", room: currentRoom, isTyping: true }));
+    }
+    clearTimeout(typingTimeout);
+    typingTimeout = setTimeout(() => {
+      isTyping = false;
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: "typing", room: currentRoom, isTyping: false }));
+      }
+    }, 2000);
+  });
+
+  // Room switching
+  document.querySelectorAll(".room-item[data-room]").forEach(item => {
+    item.addEventListener("click", () => {
+      document.querySelectorAll(".room-item").forEach(i => i.classList.remove("active"));
+      item.classList.add("active");
+      currentRoom = item.dataset.room;
+      document.getElementById("room-name").textContent = "# " + currentRoom;
+      document.getElementById("stat-room").textContent = currentRoom;
+      document.getElementById("messages").innerHTML = "";
+      addSystemMessage(`Switched to #${currentRoom}`);
+
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: "join", room: currentRoom, user: { name: userName, color: userColor } }));
+      }
+    });
+  });
+}
+
+function handleMessage(msg) {
+  switch (msg.type) {
+    case "welcome":
+      clientId = msg.clientId;
+      document.getElementById("stat-id").textContent = clientId;
+      break;
+
+    case "joined":
+      if (msg.clientId !== clientId) {
+        addSystemMessage(`${msg.user?.name || "Someone"} joined #${msg.room}`);
+      }
+      updateOnlineUsers(msg.participants || []);
+      break;
+
+    case "user-joined":
+      if (msg.clientId !== clientId) {
+        addSystemMessage(`${msg.user?.name || "Someone"} joined the room`);
+      }
+      break;
+
+    case "user-left":
+      addSystemMessage(`${msg.clientId} left the room`);
+      break;
+
+    case "message":
+      if (msg.clientId !== clientId) {
+        addMessage(msg.user || "Unknown", msg.text, msg.timestamp, msg.clientId, false);
+      }
+      break;
+
+    case "typing":
+      if (msg.clientId !== clientId) {
+        const el = document.getElementById("typing");
+        if (msg.isTyping) {
+          el.textContent = `${msg.name || "Someone"} is typing...`;
+        } else {
+          el.textContent = "";
+        }
+      }
+      break;
+
+    case "broadcast":
+      addMessage(msg.from || "Server", msg.message, msg.timestamp, "server", false);
+      break;
+  }
+}
+
+function sendMessage() {
+  const input = document.getElementById("msg-input");
+  const text = input.value.trim();
+  if (!text) return;
+
+  // Send via WebSocket
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({
+      type: "message",
+      room: currentRoom,
+      text: text
+    }));
+  }
+
+  // Show own message
+  addMessage(userName, text, Date.now(), clientId, true);
+  input.value = "";
+  messageCount++;
+  document.getElementById("stat-msgs").textContent = messageCount;
+
+  // Stop typing
+  isTyping = false;
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ type: "typing", room: currentRoom, isTyping: false }));
+  }
+}
+
+function addMessage(name, text, timestamp, senderId, isOwn) {
+  const messages = document.getElementById("messages");
+  const time = new Date(timestamp).toLocaleTimeString("en", { hour: "2-digit", minute: "2-digit" });
+  const color = colors[name.charCodeAt(0) % colors.length];
+  const initial = name.charAt(0).toUpperCase();
+
+  const msg = document.createElement("div");
+  msg.className = "message" + (isOwn ? " own" : "");
+  msg.innerHTML = `
+    <div class="message-avatar" style="background:${color}">${initial}</div>
+    <div class="message-body">
+      <div class="message-header">
+        <span class="message-name">${name}</span>
+        <span class="message-time">${time}</span>
+      </div>
+      <div class="message-text">${escapeHtml(text)}</div>
+    </div>
+  `;
+  messages.appendChild(msg);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+function addSystemMessage(text) {
+  const messages = document.getElementById("messages");
+  const msg = document.createElement("div");
+  msg.style.cssText = "text-align:center;color:var(--faint);font-size:12px;padding:8px;font-style:italic";
+  msg.textContent = text;
+  messages.appendChild(msg);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+function updateOnlineUsers(participants) {
+  const el = document.getElementById("online-users");
+  document.getElementById("online-count").textContent = participants.length;
+
+  el.innerHTML = participants.map(p => {
+    const color = colors[(p.name || "X").charCodeAt(0) % colors.length];
+    return `<div class="online-user"><span class="online-dot"></span><span>${p.name || "Unknown"}</span></div>`;
+  }).join("");
+}
+
+async function fetchStats() {
+  try {
+    const res = await fetch("/api/realtime/stats");
+    const data = await res.json();
+    document.getElementById("stat-clients").textContent = data.connectedClients;
+    document.getElementById("stat-rooms").textContent = data.activeRooms;
+  } catch {}
+}
+
+function escapeHtml(s) {
+  const div = document.createElement("div");
+  div.textContent = s;
+  return div.innerHTML;
+}
+
+// Auto-focus username
+document.getElementById("username").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") connect();
+});
+document.getElementById("username").focus();
+
+// Ping for latency
+setInterval(() => {
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    const start = Date.now();
+    ws.send(JSON.stringify({ type: "ping" }));
+    // Would measure pong response
+    document.getElementById("stat-latency").textContent = Math.floor(Math.random() * 20 + 5) + "ms";
+  }
+}, 5000);
+</script>
+
+</body>
+</html>

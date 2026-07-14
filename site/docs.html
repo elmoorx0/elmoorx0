@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Elmoorx Docs — API Reference</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0A0A0F;
+  --bg-elev: #14141B;
+  --bg-card: #1A1A24;
+  --bg-code: #0F0F17;
+  --border: #2A2A38;
+  --border-strong: #3A3A4A;
+  --text: #E4E4E7;
+  --text-dim: #A1A1AA;
+  --text-faint: #71717A;
+  --accent: #A855F7;
+  --accent-2: #06B6D4;
+  --success: #10B981;
+  --warning: #F59E0B;
+  --font-en: 'Space Grotesk', 'Inter', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+.layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 100vh;
+}
+.sidebar {
+  background: var(--bg-elev);
+  border-right: 1px solid var(--border);
+  padding: 32px 20px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+.sidebar-brand {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--font-en);
+  font-weight: 700; font-size: 18px;
+  margin-bottom: 28px;
+}
+.sidebar-orb {
+  width: 28px; height: 28px; border-radius: 8px;
+  background: linear-gradient(135deg, #A855F7, #06B6D4);
+  position: relative;
+  box-shadow: 0 0 24px rgba(168,85,247,0.35);
+}
+.sidebar-orb::after {
+  content: ''; position: absolute; inset: 6px;
+  border-radius: 4px; background: var(--bg-elev);
+}
+.sidebar-section {
+  margin-bottom: 24px;
+}
+.sidebar-h {
+  font-family: var(--font-mono);
+  font-size: 9px; letter-spacing: 0.2em;
+  color: var(--accent); text-transform: uppercase;
+  margin-bottom: 8px;
+  padding-left: 12px;
+}
+.sidebar-link {
+  display: block;
+  padding: 6px 12px;
+  color: var(--text-dim);
+  font-size: 13px;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: background 0.1s, color 0.1s;
+}
+.sidebar-link:hover {
+  color: var(--text);
+  background: var(--bg-card);
+  text-decoration: none;
+}
+.sidebar-link.active {
+  color: var(--accent);
+  background: rgba(168,85,247,0.1);
+}
+
+.main {
+  padding: 60px 80px;
+  max-width: 900px;
+}
+.main h1 {
+  font-family: var(--font-en);
+  font-size: 40px; font-weight: 700;
+  letter-spacing: -0.03em;
+  margin-bottom: 12px;
+}
+.main h2 {
+  font-family: var(--font-en);
+  font-size: 24px; font-weight: 600;
+  margin-top: 48px; margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.main h3 {
+  font-family: var(--font-en);
+  font-size: 18px; font-weight: 600;
+  margin-top: 32px; margin-bottom: 8px;
+}
+.main p {
+  margin-bottom: 14px;
+  color: var(--text);
+}
+.main p, .main li {
+  font-size: 14.5px;
+  line-height: 1.7;
+}
+.main ul, .main ol {
+  padding-left: 24px;
+  margin-bottom: 14px;
+}
+.main li { margin-bottom: 6px; color: var(--text-dim); }
+.main strong { color: var(--accent-2); font-weight: 600; }
+.main code {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  background: var(--bg-elev);
+  color: var(--accent-2);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+.api-sig {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin: 16px 0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text);
+}
+.api-sig .kw { color: #C792EA; }
+.api-sig .fn { color: #82AAFF; }
+.api-sig .ty { color: #FFCB6B; }
+.api-sig .str { color: #C3E88D; }
+
+.code-block {
+  background: var(--bg-code);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin: 16px 0;
+  overflow: hidden;
+}
+.code-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 16px;
+  background: var(--bg-elev);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 0.2em;
+  color: var(--accent); text-transform: uppercase;
+}
+.code-content {
+  padding: 16px;
+  font-family: var(--font-mono);
+  font-size: 13px; line-height: 1.7;
+  color: #E4E4E7;
+  overflow-x: auto;
+}
+.kw { color: #C792EA; }
+.fn { color: #82AAFF; }
+.str { color: #C3E88D; }
+.num { color: #F78C6C; }
+.com { color: #546E7A; font-style: italic; }
+.ty { color: #FFCB6B; }
+.op { color: #89DDFF; }
+.atr { color: #F07178; }
+
+.callout {
+  background: linear-gradient(135deg, rgba(168,85,247,0.1), rgba(6,182,212,0.05));
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin: 16px 0;
+}
+.callout-title {
+  font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 0.2em;
+  color: var(--accent); text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.callout-text {
+  font-size: 14px;
+  color: var(--text);
+}
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .main { padding: 30px 20px; }
+}
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-orb"></div>
+      <span>Elmoorx</span>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-h">Getting Started</div>
+      <a class="sidebar-link active" href="#intro">Introduction</a>
+      <a class="sidebar-link" href="#install">Installation</a>
+      <a class="sidebar-link" href="#quickstart">Quick Start</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-h">Core APIs</div>
+      <a class="sidebar-link" href="#state">$state</a>
+      <a class="sidebar-link" href="#computed">$computed</a>
+      <a class="sidebar-link" href="#effect">$effect</a>
+      <a class="sidebar-link" href="#store">$store</a>
+      <a class="sidebar-link" href="#island">island()</a>
+      <a class="sidebar-link" href="#html">$html</a>
+      <a class="sidebar-link" href="#h">h()</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-h">Guides</div>
+      <a class="sidebar-link" href="#ssr">SSR & Streaming</a>
+      <a class="sidebar-link" href="#routing">Routing</a>
+      <a class="sidebar-link" href="#security">Security</a>
+      <a class="sidebar-link" href="#deploy">Deployment</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-h">CLI</div>
+      <a class="sidebar-link" href="#cli-create">elmoorx create</a>
+      <a class="sidebar-link" href="#cli-dev">elmoorx dev</a>
+      <a class="sidebar-link" href="#cli-build">elmoorx build</a>
+      <a class="sidebar-link" href="#cli-generate">elmoorx generate</a>
+      <a class="sidebar-link" href="#cli-deploy">elmoorx deploy</a>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <h1 id="intro">Elmoorx API Reference</h1>
+    <p>Complete documentation for the Elmoorx Framework v1.0 runtime, compiler, and CLI.</p>
+
+    <div class="callout">
+      <div class="callout-title">Bundle Size</div>
+      <div class="callout-text">The entire runtime is <strong>~4kb gzipped</strong> — smaller than a single React component. Only APIs you actually use are bundled; the rest are tree-shaken away.</div>
+    </div>
+
+    <h2 id="install">Installation</h2>
+    <p>Install the Elmoorx CLI globally:</p>
+    <div class="code-block">
+      <div class="code-header">terminal</div>
+      <div class="code-content"><span class="fn">npm install -g @elmoorx/cli</span>
+<span class="com"># or</span>
+<span class="fn">pnpm add -g @elmoorx/cli</span>
+<span class="fn">yarn global add @elmoorx/cli</span></div>
+    </div>
+
+    <h2 id="quickstart">Quick Start</h2>
+    <p>Create a new project and start the dev server:</p>
+    <div class="code-block">
+      <div class="code-header">terminal</div>
+      <div class="code-content"><span class="fn">elmoorx create</span> my-app
+<span class="kw">cd</span> my-app
+<span class="fn">npm install</span>
+<span class="fn">elmoorx dev</span>  <span class="com"># → http://localhost:3000</span></div>
+    </div>
+
+    <h2 id="state">$state</h2>
+    <p>Creates a reactive signal. Reads track; writes trigger effects. The fundamental reactive primitive in Elmoorx.</p>
+
+    <div class="api-sig">
+      <span class="kw">function</span> <span class="fn">$state</span>&lt;T&gt;(initial: T): <span class="ty">Signal</span>&lt;T&gt;
+    </div>
+
+    <h3>Example</h3>
+    <div class="code-block">
+      <div class="code-header">example.tsx</div>
+      <div class="code-content"><span class="kw">import</span> { $state } <span class="kw">from</span> <span class="str">"@elmoorx/runtime"</span>;
+
+<span class="kw">const</span> count = <span class="fn">$state</span>(<span class="num">0</span>);
+
+count()           <span class="com">// → 0</span>
+count.<span class="fn">set</span>(<span class="num">5</span>)      <span class="com">// triggers effects</span>
+count.<span class="fn">set</span>(c =&gt; c + <span class="num">1</span>)  <span class="com">// updater function</span></div>
+    </div>
+
+    <h2 id="computed">$computed</h2>
+    <p>Creates a derived value that auto-updates when its dependencies change.</p>
+
+    <div class="api-sig">
+      <span class="kw">function</span> <span class="fn">$computed</span>&lt;T&gt;(fn: () =&gt; T): <span class="ty">Computed</span>&lt;T&gt;
+    </div>
+
+    <h3>Example</h3>
+    <div class="code-block">
+      <div class="code-content"><span class="kw">const</span> price = <span class="fn">$state</span>(<span class="num">100</span>);
+<span class="kw">const</span> qty = <span class="fn">$state</span>(<span class="num">2</span>);
+<span class="kw">const</span> total = <span class="fn">$computed</span>(() =&gt; price() * qty());
+
+total()  <span class="com">// → 200</span>
+price.<span class="fn">set</span>(<span class="num">150</span>)
+total()  <span class="com">// → 300 (auto-updated)</span></div>
+    </div>
+
+    <h2 id="effect">$effect</h2>
+    <p>Runs a side effect whenever its dependencies change. Returns a cleanup function.</p>
+
+    <div class="api-sig">
+      <span class="kw">function</span> <span class="fn">$effect</span>(fn: () =&gt; void | (() =&gt; void)): () =&gt; <span class="ty">void</span>
+    </div>
+
+    <h3>Example</h3>
+    <div class="code-block">
+      <div class="code-content"><span class="fn">$effect</span>(() =&gt; {
+  document.title = <span class="str">`Count: ${count()}`</span>;
+});
+
+<span class="com">// Cleanup</span>
+<span class="kw">const</span> dispose = <span class="fn">$effect</span>(() =&gt; {
+  <span class="kw">const</span> id = <span class="fn">setInterval</span>(() =&gt; <span class="fn">console.log</span>(count()), <span class="num">1000</span>);
+  <span class="kw">return</span> () =&gt; <span class="fn">clearInterval</span>(id);
+});
+<span class="fn">dispose</span>();  <span class="com">// stop interval</span></div>
+    </div>
+
+    <h2 id="store">$store</h2>
+    <p>Creates a deep reactive proxy. Mutations like <code>store.todos.push(item)</code> or <code>store.user.name = "X"</code> auto-trigger surgical DOM updates — no setters, no immutability boilerplate.</p>
+
+    <div class="api-sig">
+      <span class="kw">function</span> <span class="fn">$store</span>&lt;T extends object&gt;(initial: T): <span class="ty">Store</span>&lt;T&gt;
+    </div>
+
+    <h3>Example</h3>
+    <div class="code-block">
+      <div class="code-content"><span class="kw">const</span> store = <span class="fn">$store</span>({
+  user: { name: <span class="str">"Alice"</span>, age: <span class="num">30</span> },
+  cart: [],
+  theme: <span class="str">"dark"</span>
+});
+
+<span class="com">// All mutations are reactive</span>
+store.cart.<span class="fn">push</span>({ id: <span class="num">1</span>, qty: <span class="num">2</span> });
+store.user.name = <span class="str">"Bob"</span>;
+store.theme = <span class="str">"light"</span>;
+
+<span class="com">// Deep mutations work too</span>
+store.user.age = <span class="num">31</span>;  <span class="com">// triggers update</span></div>
+    </div>
+
+    <h2 id="island">island()</h2>
+    <p>Marks a component as a client-side island. The server renders the component's initial HTML; the client only boots JavaScript for islands explicitly wrapped with <code>island()</code>. Everything else is pure HTML.</p>
+
+    <div class="api-sig">
+      <span class="kw">function</span> <span class="fn">island</span>&lt;P&gt;(component: (props: P) =&gt; <span class="ty">ElmoorxNode</span>): <span class="ty">IslandComponent</span>&lt;P&gt;
+    </div>
+
+    <h3>Example</h3>
+    <div class="code-block">
+      <div class="code-content"><span class="kw">import</span> { $state, island, h } <span class="kw">from</span> <span class="str">"@elmoorx/runtime"</span>;
+
+<span class="kw">const</span> <span class="fn">Counter</span> = <span class="fn">island</span>(() =&gt; {
+  <span class="kw">const</span> count = <span class="fn">$state</span>(<span class="num">0</span>);
+  <span class="kw">return</span> <span class="op">&lt;</span><span class="ty">button</span> <span class="atr">onClick</span>={<span class="op">()=&gt;</span>count.<span class="fn">set</span>(c=&gt;c+<span class="num">1</span>)}<span class="op">&gt;</span>
+    Count: {count}
+  <span class="op">&lt;/</span><span class="ty">button</span><span class="op">&gt;</span>;
+});
+
+<span class="com">// SSR: renders <div data-elmoorx-island="...">Count: 0</div></span>
+<span class="com">// Client: boots ONLY this island — zero hydration elsewhere</span></div>
+    </div>
+
+    <h2 id="html">$html</h2>
+    <p>Explicitly-trusted HTML. Auto-sanitizes scripts, iframes, on* handlers, and javascript: URLs. There is no implicit path — XSS protection is on by default.</p>
+
+    <div class="api-sig">
+      <span class="kw">function</span> <span class="fn">$html</span>(input: <span class="ty">string</span>): { __html: <span class="ty">string</span>; __trusted: <span class="ty">true</span> }
+    </div>
+
+    <h3>Example</h3>
+    <div class="code-block">
+      <div class="code-content"><span class="com">// ❌ Auto-escaped — no XSS surface</span>
+<span class="op">&lt;</span><span class="ty">div</span><span class="op">&gt;</span>{userInput}<span class="op">&lt;/</span><span class="ty">div</span><span class="op">&gt;</span>
+
+<span class="com">// ✅ Explicit trusted HTML — auto-sanitized</span>
+<span class="op">&lt;</span><span class="ty">div</span><span class="op">&gt;</span>{$<span class="fn">html</span>(trustedContent)}<span class="op">&lt;/</span><span class="ty">div</span><span class="op">&gt;</span></div>
+    </div>
+
+    <h2 id="h">h() — JSX Factory</h2>
+    <p>The JSX factory. The compiler converts JSX to <code>h()</code> calls.</p>
+
+    <div class="api-sig">
+      <span class="kw">function</span> <span class="fn">h</span>(
+  tag: <span class="ty">string</span> | <span class="ty">Function</span>,
+  props: <span class="ty">Record</span>&lt;<span class="ty">string</span>, <span class="ty">unknown</span>&gt; | <span class="kw">null</span>,
+  ...children: <span class="ty">ElmoorxNode</span>[]
+): <span class="ty">ElmoorxNode</span>
+    </div>
+
+    <h3>Example</h3>
+    <div class="code-block">
+      <div class="code-content"><span class="com">// JSX</span>
+<span class="op">&lt;</span><span class="ty">div</span> <span class="atr">className</span>=<span class="str">"card"</span> <span class="atr">onClick</span>={handleClick}<span class="op">&gt;</span>
+  Hello {name}
+<span class="op">&lt;/</span><span class="ty">div</span><span class="op">&gt;</span>
+
+<span class="com">// Compiles to</span>
+<span class="fn">h</span>(<span class="str">"div"</span>, { className: <span class="str">"card"</span>, onClick: handleClick }, <span class="str">"Hello "</span>, name)</div>
+    </div>
+
+    <h2 id="ssr">SSR & Streaming</h2>
+    <p>Elmoorx streams server-rendered HTML on first request. Islands are hydrated client-side; everything else is pure HTML.</p>
+
+    <div class="code-block">
+      <div class="code-content"><span class="kw">import</span> { renderToString } <span class="kw">from</span> <span class="str">"@elmoorx/runtime"</span>;
+
+<span class="kw">const</span> html = <span class="fn">renderToString</span>(<span class="fn">App</span>());
+<span class="com">// → "<div>Hello <button>Click</button></div>"</span></div>
+    </div>
+
+    <h2 id="routing">Routing</h2>
+    <p>File-based routing. Convention:</p>
+    <ul>
+      <li><code>src/index.elmoorx.tsx</code> → <code>/</code></li>
+      <li><code>src/about.elmoorx.tsx</code> → <code>/about</code></li>
+      <li><code>src/users/[id].elmoorx.tsx</code> → <code>/users/:id</code></li>
+      <li><code>src/[...catch].elmoorx.tsx</code> → <code>/*</code> (catch-all)</li>
+    </ul>
+
+    <h2 id="security">Security</h2>
+    <p>Security headers are auto-applied to every response. No configuration required.</p>
+
+    <div class="callout">
+      <div class="callout-title">Auto-applied headers</div>
+      <div class="callout-text">
+        <ul style="margin:0">
+          <li><strong>Content-Security-Policy</strong>: default-src 'self'</li>
+          <li><strong>X-Frame-Options</strong>: DENY</li>
+          <li><strong>X-Content-Type-Options</strong>: nosniff</li>
+          <li><strong>Strict-Transport-Security</strong>: max-age=31536000</li>
+          <li><strong>Referrer-Policy</strong>: strict-origin-when-cross-origin</li>
+          <li><strong>Permissions-Policy</strong>: geolocation=(), microphone=(), camera=()</li>
+          <li><strong>CSRF Token</strong>: per-request, auto-validated</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2 id="deploy">Deployment</h2>
+    <p>Elmoorx deploys to any edge platform. The runtime is 4kb — well under every platform's bundle limit.</p>
+
+    <div class="code-block">
+      <div class="code-header">terminal</div>
+      <div class="code-content"><span class="fn">elmoorx deploy</span>
+
+<span class="com"># Or platform-specific:</span>
+<span class="fn">elmoorx deploy --target=cloudflare</span>
+<span class="fn">elmoorx deploy --target=vercel</span>
+<span class="fn">elmoorx deploy --target=deno</span>
+<span class="fn">elmoorx deploy --target=node</span></div>
+    </div>
+
+    <h2 id="cli-generate">elmoorx generate</h2>
+    <p>AI Copilot — generates production-ready components from natural language descriptions.</p>
+
+    <div class="code-block">
+      <div class="code-header">terminal</div>
+      <div class="code-content"><span class="fn">elmoorx generate</span> <span class="str">"login form"</span>
+<span class="fn">elmoorx generate</span> <span class="str">"todo list with filters"</span>
+<span class="fn">elmoorx generate</span> <span class="str">"data table with sorting"</span>
+<span class="fn">elmoorx generate</span> <span class="str">"navbar with mobile menu"</span>
+<span class="fn">elmoorx generate</span> <span class="str">"modal dialog"</span>
+<span class="fn">elmoorx generate</span> <span class="str">"contact form with validation"</span>
+<span class="fn">elmoorx generate</span> <span class="str">"search bar with debounce"</span>
+
+<span class="com"># Set OPENAI_API_KEY for AI-powered generation</span>
+<span class="kw">export</span> OPENAI_API_KEY=sk-...
+<span class="fn">elmoorx generate</span> <span class="str">"user profile with avatar upload"</span></div>
+    </div>
+
+    <div class="callout">
+      <div class="callout-title">Template Engine</div>
+      <div class="callout-text">Without an API key, the Copilot uses a built-in template engine that recognizes common patterns (login, todo, counter, form, chart, modal, navbar, table, search, dropdown). Set <code>OPENAI_API_KEY</code> to enable full AI-powered generation.</div>
+    </div>
+
+  </main>
+
+</div>
+
+<script>
+// Smooth scroll for sidebar links
+document.querySelectorAll('.sidebar-link').forEach(link => {
+  link.addEventListener('click', (e) => {
+    const href = link.getAttribute('href');
+    if (href && href.startsWith('#')) {
+      e.preventDefault();
+      const target = document.querySelector(href);
+      if (target) target.scrollIntoView({ behavior: 'smooth' });
+      document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+    }
+  });
+});
+</script>
+
+</body>
+</html>

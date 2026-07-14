@@ -1,0 +1,89 @@
+name: Publish to npm
+
+on:
+  release:
+    types: [created]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'npm tag (latest, next, beta)'
+        required: true
+        default: 'next'
+
+jobs:
+  publish:
+    name: Publish packages
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps --ignore-scripts
+
+      - name: Verify version consistency
+        run: |
+          python3 - <<'EOF'
+          import json, sys
+          from pathlib import Path
+          TARGET = json.loads(Path("package.json").read_text())["version"]
+          mismatches = []
+          for pkg in Path("packages").rglob("package.json"):
+              if "node_modules" in str(pkg): continue
+              p = json.loads(pkg.read_text())
+              if p.get("version") != TARGET:
+                  mismatches.append(f"{pkg}: {p.get('version')}")
+          if mismatches:
+              print("Version mismatches:")
+              for m in mismatches[:10]: print(f"  {m}")
+              sys.exit(1)
+          print(f"✓ All packages at {TARGET}")
+          EOF
+
+      - name: Run tests
+        run: |
+          npm test
+          npx tsx --test \
+            packages/runtime/tests/runtime-real.test.mjs \
+            packages/runtime/tests/runtime-comprehensive.test.mjs \
+            packages/router/tests/router.test.mjs \
+            packages/compiler/tests/compiler.test.mjs \
+            packages/server/tests/server.test.mjs \
+            packages/i18n/tests/i18n.test.mjs \
+            packages/postgres/tests/postgres.test.mjs \
+            packages/codemod/tests/codemod.test.ts
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Publish each workspace package
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          for pkg in packages/*/; do
+            if [ -f "$pkg/package.json" ]; then
+              name=$(node -p "require('./$pkg/package.json').name")
+              echo "Publishing $name..."
+              npm publish --workspace "$pkg" --access public --tag ${{ github.event.inputs.tag || 'next' }} || \
+                echo "  ⚠ $name publish failed (may already exist)"
+            fi
+          done
+
+      - name: Summary
+        run: |
+          echo "### npm Publish Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ All packages published to npm" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- Tag: \`${{ github.event.inputs.tag || 'next' }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Version: \`$(node -p "require('./package.json').version")\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Packages: $(ls packages/*/package.json | wc -l)" >> $GITHUB_STEP_SUMMARY

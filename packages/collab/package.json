@@ -1,0 +1,38 @@
+{
+  "name": "@elmoorx/collab",
+  "version": "3.0.0-alpha.2",
+  "description": "Real-time collaboration: CRDT, presence, cursors, conflict resolution",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@elmoorx/runtime": "*"
+  },
+  "license": "MIT",
+  "author": "Elmoorx Framework",
+  "homepage": "https://elmoorx.dev/packages/collab",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/elmoorx0/elmoorx0",
+    "directory": "packages/collab"
+  },
+  "bugs": {
+    "url": "https://github.com/elmoorx0/elmoorx0/issues"
+  },
+  "keywords": [
+    "elmoorx",
+    "framework",
+    "collab"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}

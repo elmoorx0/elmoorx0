@@ -1,0 +1,42 @@
+{
+  "name": "@elmoorx/edge-functions",
+  "version": "3.0.0-alpha.2",
+  "description": "Edge functions: run serverless at 300+ POPs, sub-50ms cold starts",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@elmoorx/runtime": "*"
+  },
+  "license": "MIT",
+  "author": "Elmoorx Framework",
+  "homepage": "https://elmoorx.dev/packages/edge-functions",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/elmoorx0/elmoorx0",
+    "directory": "packages/edge-functions"
+  },
+  "bugs": {
+    "url": "https://github.com/elmoorx0/elmoorx0/issues"
+  },
+  "keywords": [
+    "elmoorx",
+    "framework",
+    "edge-functions"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>Elmoorx Framework Blog</title>
+    <link>https://elmoorx.dev/blog</link>
+    <atom:link href="https://elmoorx.dev/rss.xml" rel="self" type="application/rss+xml" />
+    <description>Tutorials, announcements, and deep dives into Elmoorx Framework — the 4kb frontend framework with zero-hydration islands.</description>
+    <language>en</language>
+    <lastBuildDate>Fri, 12 Jul 2026 12:00:00 GMT</lastBuildDate>
+    <pubDate>Fri, 12 Jul 2026 12:00:00 GMT</pubDate>
+    <ttl>60</ttl>
+    <image>
+      <url>https://elmoorx.dev/logo.png</url>
+      <title>Elmoorx Framework Blog</title>
+      <link>https://elmoorx.dev/blog</link>
+      <width>144</width>
+      <height>144</height>
+    </image>
+    <copyright>© 2026 Elmoorx Foundation. MIT License.</copyright>
+    <managingEditor>team@elmoorx.dev (Elmoorx Foundation)</managingEditor>
+    <webMaster>web@elmoorx.dev (Elmoorx Foundation)</webMaster>
+
+    <item>
+      <title>Elmoorx Framework 2.0 — The Most Complete Frontend Framework Ever Built</title>
+      <link>https://elmoorx.dev/blog/elmoorx-2-0-released</link>
+      <guid isPermaLink="true">https://elmoorx.dev/blog/elmoorx-2-0-released</guid>
+      <pubDate>Sat, 12 Jul 2026 09:00:00 GMT</pubDate>
+      <dc:creator>Elmoorx Foundation</dc:creator>
+      <category>Announcements</category>
+      <description>Today we're shipping Elmoorx 2.0 — 73 packages, 61 UI components, 24 API endpoints, 862 tests, and 10 revolutionary features no competitor has.</description>
+      <content:encoded><![CDATA[<p>Today, we're excited to announce Elmoorx Framework 2.0 — the result of 18 months of development, 73 packages, 61 UI components, and 862 tests.</p><h2>What's New</h2><ul><li>73 npm packages</li><li>24 API endpoints (auth, payments, email, files, WebSocket)</li><li>10 revolutionary features (time-travel, visual builder, AI tests, voice, gesture, blockchain, AR, collab)</li><li>4.2kb runtime (97.3% smaller than React)</li><li>28ms cold start (29x faster than Next.js)</li><li>Lighthouse 100/100</li></ul>]]></content:encoded>
+      <enclosure url="https://elmoorx.dev/og-image.png" length="0" type="image/png" />
+    </item>
+
+    <item>
+      <title>Why Zero Hydration Is a Solved Problem</title>
+      <link>https://elmoorx.dev/blog/why-zero-hydration-matters</link>
+      <guid isPermaLink="true">https://elmoorx.dev/blog/why-zero-hydration-matters</guid>
+      <pubDate>Wed, 08 Jul 2026 09:00:00 GMT</pubDate>
+      <dc:creator>Elmoorx Foundation</dc:creator>
+      <category>Architecture</category>
+      <description>Hydration is expensive, slow, and unnecessary. Here's how Elmoorx eliminates it entirely with islands architecture.</description>
+      <content:encoded><![CDATA[<p>Every time you load a Next.js page, 187kb of JavaScript downloads, parses, and executes just to make the page interactive. This process is called <strong>hydration</strong> — and it's the #1 performance bottleneck in modern web frameworks.</p><h2>The Solution: Islands Architecture</h2><p>Elmoorx uses an islands architecture — only interactive components ship JavaScript. Everything else is pure HTML.</p>]]></content:encoded>
+    </item>
+
+    <item>
+      <title>Edge Runtime Comparison: Elmoorx vs Next.js vs SvelteKit (2026)</title>
+      <link>https://elmoorx.dev/blog/edge-runtime-comparison-2026</link>
+      <guid isPermaLink="true">https://elmoorx.dev/blog/edge-runtime-comparison-2026</guid>
+      <pubDate>Sun, 05 Jul 2026 09:00:00 GMT</pubDate>
+      <dc:creator>Elmoorx Foundation</dc:creator>
+      <category>Benchmarks</category>
+      <description>We deployed the same Hacker News clone to Cloudflare Workers, Vercel Edge, and Deno Deploy. Here are the real numbers.</description>
+      <content:encoded><![CDATA[<p>We deployed the same Hacker News clone (100 stories, voting, comments, auth) to three edge platforms.</p><h2>Bundle Size</h2><table><tr><th>Framework</th><th>Size</th></tr><tr><td>Elmoorx</td><td>4.2kb</td></tr><tr><td>SvelteKit</td><td>38kb</td></tr><tr><td>Next.js</td><td>187kb</td></tr></table><p>Elmoorx is 10.7x smaller than Next.js.</p>]]></content:encoded>
+    </item>
+
+    <item>
+      <title>Building a Complete SaaS App with Elmoorx in 1 Hour</title>
+      <link>https://elmoorx.dev/blog/building-saas-with-elmoorx</link>
+      <guid isPermaLink="true">https://elmoorx.dev/blog/building-saas-with-elmoorx</guid>
+      <pubDate>Fri, 03 Jul 2026 09:00:00 GMT</pubDate>
+      <dc:creator>Elmoorx Foundation</dc:creator>
+      <category>Tutorials</category>
+      <description>Authentication, payments, subscriptions, file storage, email, and real-time — all built-in. Build a production SaaS app in under an hour.</description>
+      <content:encoded><![CDATA[<p>Most SaaS apps need: authentication, payments, file storage, email, and real-time features. With Elmoorx, it's all built-in.</p><h2>Step 1: Create the Project</h2><pre><code>elmoorx create my-saas</code></pre><h2>Step 2: Add Auth</h2><pre><code>import { useAuth } from "@elmoorx/auth";</code></pre><h2>Step 3: Add Payments</h2><pre><code>import { usePayment } from "@elmoorx/payment";</code></pre>]]></content:encoded>
+    </item>
+
+    <item>
+      <title>How to Migrate from React to Elmoorx (Automatically)</title>
+      <link>https://elmoorx.dev/blog/migration-from-react-to-elmoorx</link>
+      <guid isPermaLink="true">https://elmoorx.dev/blog/migration-from-react-to-elmoorx</guid>
+      <pubDate>Sun, 28 Jun 2026 09:00:00 GMT</pubDate>
+      <dc:creator>Elmoorx Foundation</dc:creator>
+      <category>Guides</category>
+      <description>Elmoorx includes a built-in migration tool that converts React, Next.js, Vue, and Svelte code automatically.</description>
+      <content:encoded><![CDATA[<p>Elmoorx's migration tool (@elmoorx/migration) automatically converts React, Next.js, Vue, Svelte, and Angular code to Elmoorx syntax.</p><h2>Quick Migration</h2><pre><code>elmoorx migrate --from=react ./src</code></pre><h2>Conversions</h2><ul><li>useState → $state</li><li>useEffect → $effect</li><li>className → class</li><li>dangerouslySetInnerHTML → $html</li></ul>]]></content:encoded>
+    </item>
+
+  </channel>
+</rss>

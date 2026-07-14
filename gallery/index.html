@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Elmoorx UI — Component Gallery</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0A0A0F; --bg-elev: #14141B; --bg-card: #1A1A24; --bg-code: #0F0F17;
+  --border: #2A2A38; --border-strong: #3A3A4A; --text: #E4E4E7; --text-dim: #A1A1AA;
+  --text-faint: #71717A; --accent: #A855F7; --accent-2: #06B6D4; --success: #10B981;
+  --warning: #F59E0B; --danger: #EF4444; --font-en: 'Space Grotesk', 'Inter', sans-serif; --font-mono: 'JetBrains Mono', monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; font-size: 14px; -webkit-font-smoothing: antialiased; }
+.layout { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
+.sidebar { background: var(--bg-elev); border-right: 1px solid var(--border); padding: 24px 16px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+.brand { display: flex; align-items: center; gap: 10px; font-family: var(--font-en); font-weight: 700; font-size: 18px; margin-bottom: 24px; padding: 0 8px; }
+.orb { width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, #A855F7, #06B6D4); position: relative; box-shadow: 0 0 20px rgba(168,85,247,0.35); }
+.orb::after { content: ''; position: absolute; inset: 6px; border-radius: 4px; background: var(--bg-elev); }
+.search { width: 100%; padding: 8px 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 13px; outline: none; margin-bottom: 16px; }
+.search:focus { border-color: var(--accent); }
+.section-h { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.2em; color: var(--text-faint); text-transform: uppercase; margin: 16px 0 8px; padding-left: 12px; }
+.nav-item { display: flex; align-items: center; justify-content: space-between; padding: 6px 12px; color: var(--text-dim); font-size: 13px; cursor: pointer; border-radius: 6px; margin-bottom: 2px; transition: all 0.1s; }
+.nav-item:hover { color: var(--text); background: var(--bg-card); }
+.nav-item.active { color: var(--accent); background: rgba(168,85,247,0.1); }
+.nav-badge { font-family: var(--font-mono); font-size: 9px; background: var(--bg-card); padding: 1px 5px; border-radius: 3px; color: var(--text-faint); border: 1px solid var(--border); }
+.main { padding: 40px 48px; max-width: 1100px; }
+.page-h { font-family: var(--font-en); font-size: 32px; font-weight: 700; margin-bottom: 8px; }
+.page-sub { color: var(--text-dim); font-size: 15px; margin-bottom: 32px; }
+.showcase { margin-bottom: 48px; }
+.showcase-h { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.showcase-title { font-family: var(--font-en); font-size: 20px; font-weight: 600; }
+.showcase-tag { font-family: var(--font-mono); font-size: 10px; padding: 2px 8px; border-radius: 12px; background: rgba(168,85,247,0.15); color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; }
+.demo-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 32px; margin-bottom: 16px; }
+.btn { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500; font-family: inherit; margin: 4px; transition: all 0.15s; }
+.btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: white; font-weight: 600; }
+.btn-secondary { background: var(--bg-elev); border: 1px solid var(--border-strong); color: var(--text); }
+.btn-outline { background: transparent; border: 1px solid var(--accent); color: var(--accent); }
+.btn-danger { background: var(--danger); color: white; }
+.btn-success { background: var(--success); color: white; }
+.btn-sm { padding: 4px 10px; font-size: 11px; }
+.btn-lg { padding: 12px 24px; font-size: 15px; }
+.input { padding: 8px 12px; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; color: var(--text); font-size: 14px; outline: none; margin: 4px; width: 100%; }
+.input:focus { border-color: var(--accent); }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin: 2px; }
+.badge-success { background: rgba(16,185,129,0.15); color: var(--success); }
+.badge-warning { background: rgba(245,158,11,0.15); color: var(--warning); }
+.badge-danger { background: rgba(239,68,68,0.15); color: var(--danger); }
+.badge-info { background: rgba(6,182,212,0.15); color: var(--accent-2); }
+.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin: 8px; }
+.alert { padding: 12px 16px; border-radius: 8px; margin: 8px 0; display: flex; gap: 10px; align-items: flex-start; }
+.alert-info { background: rgba(6,182,212,0.1); border: 1px solid var(--accent-2); color: var(--accent-2); }
+.alert-success { background: rgba(16,185,129,0.1); border: 1px solid var(--success); color: var(--success); }
+.alert-warning { background: rgba(245,158,11,0.1); border: 1px solid var(--warning); color: var(--warning); }
+.alert-danger { background: rgba(239,68,68,0.1); border: 1px solid var(--danger); color: var(--danger); }
+.spinner { width: 24px; height: 24px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; display: inline-block; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-2)); display: inline-flex; align-items: center; justify-content: center; color: white; font-weight: 600; margin: 4px; }
+.progress-bar { width: 100%; height: 8px; background: var(--bg-elev); border-radius: 4px; overflow: hidden; margin: 8px 0; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); border-radius: 4px; }
+.stat { display: inline-block; padding: 16px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; margin: 4px; min-width: 160px; }
+.stat-label { font-family: var(--font-mono); font-size: 10px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.1em; }
+.stat-value { font-family: var(--font-en); font-size: 24px; font-weight: 700; color: var(--accent); margin-top: 4px; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+@media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .sidebar { display: none; } .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } .main { padding: 20px; } }
+.section { display: none; }
+.section.active { display: block; }
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand"><div class="orb"></div>Elmoorx UI</div>
+    <input class="search" placeholder="Search components..." id="search" />
+    <div class="section-h">Buttons</div>
+    <div class="nav-item active" data-section="buttons">Button <span class="nav-badge">6</span></div>
+    <div class="section-h">Forms</div>
+    <div class="nav-item" data-section="inputs">Input <span class="nav-badge">3</span></div>
+    <div class="section-h">Display</div>
+    <div class="nav-item" data-section="badges">Badge <span class="nav-badge">4</span></div>
+    <div class="nav-item" data-section="alerts">Alert <span class="nav-badge">4</span></div>
+    <div class="nav-item" data-section="cards">Card <span class="nav-badge">2</span></div>
+    <div class="nav-item" data-section="avatars">Avatar <span class="nav-badge">3</span></div>
+    <div class="nav-item" data-section="progress">Progress <span class="nav-badge">2</span></div>
+    <div class="nav-item" data-section="spinners">Spinner <span class="nav-badge">3</span></div>
+    <div class="nav-item" data-section="stats">Stat <span class="nav-badge">4</span></div>
+    <div class="section-h">Navigation</div>
+    <div class="nav-item" data-section="tabs">Tabs</div>
+    <div class="section-h">Advanced</div>
+    <div class="nav-item" data-section="datatable">DataTable</div>
+    <div class="nav-item" data-section="calendar">Calendar</div>
+    <div class="nav-item" data-section="kanban">Kanban</div>
+    <div class="nav-item" data-section="editor">Code Editor</div>
+    <div class="nav-item" data-section="charts">Charts</div>
+  </aside>
+
+  <main class="main">
+    <div class="page-h">Component Gallery</div>
+    <div class="page-sub">37+ production-ready components — click any to see live examples.</div>
+
+    <div class="section active" id="section-buttons">
+      <div class="showcase">
+        <div class="showcase-h"><div class="showcase-title">Button Variants</div><div class="showcase-tag">6 variants</div></div>
+        <div class="demo-box">
+          <button class="btn btn-primary">Primary</button>
+          <button class="btn btn-secondary">Secondary</button>
+          <button class="btn btn-outline">Outline</button>
+          <button class="btn btn-danger">Danger</button>
+          <button class="btn btn-success">Success</button>
+          <button class="btn btn-secondary" disabled>Disabled</button>
+        </div>
+      </div>
+      <div class="showcase">
+        <div class="showcase-h"><div class="showcase-title">Button Sizes</div><div class="showcase-tag">4 sizes</div></div>
+        <div class="demo-box">
+          <button class="btn btn-primary btn-sm">Small</button>
+          <button class="btn btn-primary">Medium</button>
+          <button class="btn btn-primary btn-lg">Large</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="section-inputs">
+      <div class="showcase">
+        <div class="showcase-h"><div class="showcase-title">Input Types</div><div class="showcase-tag">3 types</div></div>
+        <div class="demo-box">
+          <div style="margin-bottom:12px"><label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">Text Input</label><input class="input" placeholder="Enter text..."></div>
+          <div style="margin-bottom:12px"><label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">Email</label><input class="input" type="email" placeholder="you@example.com"></div>
+          <div><label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">Password</label><input class="input" type="password" placeholder="••••••"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="section-badges">
+      <div class="showcase">
+        <div class="showcase-h"><div class="showcase-title">Badge Variants</div><div class="showcase-tag">4 variants</div></div>
+        <div class="demo-box">
+          <span class="badge badge-success">Success</span>
+          <span class="badge badge-warning">Warning</span>
+          <span class="badge badge-danger">Danger</span>
+          <span class="badge badge-info">Info</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="section-alerts">
+      <div class="showcase">
+        <div class="showcase-h"><div class="showcase-title">Alert Types</div><div class="showcase-tag">4 types</div></div>
+        <div class="demo-box">
+          <div class="alert alert-info">ℹ Information message</div>
+          <div class="alert alert-success">✓ Success message</div>
+          <div class="alert alert-warning">⚠ Warning message</div>
+          <div class="alert alert-danger">✗ Error message</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="section-cards">
+      <div class="showcase">
+        <div class="showcase-h"><div class="showcase-title">Card Variants</div><div class="showcase-tag">2 variants</div></div>
+        <div class="demo-box">
+          <div class="grid-3">
+            <div class="card"><div style="font-size:16px;font-weight:600;margin-bottom:8px">Default Card</div><div style="color:var(--text-dim);font-size:13px">A simple card.</div></div>
+            <div class="card" style="border-color:var(--accent);background:linear-gradient(135deg,rgba(168,85,247,0.05),var(--bg-card))"><div style="font-size:16px;font-weight:600;margin-bottom:8px;color:var(--accent)">Accent Card</div><div style="color:var(--text-dim);font-size:13px">With gradient.</div></div>
+            <div class="card"><div style="font-size:16px;font-weight:600;margin-bottom:8px">Stat Card</div><div style="font-family:var(--font-en);font-size:32px;font-weight:700;color:var(--accent)">1,234</div><div style="color:var(--success);font-size:12px;margin-top:4px">↑ 12%</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="section-avatars">
+      <div class="showcase">
+        <div class="showcase-h"><div class="showcase-title">Avatar Sizes</div><div class="showcase-tag">5 sizes</div></div>
+        <div class="demo-box" style="display:flex;align-items:center;gap:16px">
+          <div class="avatar" style="width:24px;height:24px;font-size:10px">A</div>
+          <div class="avatar" style="width:32px;height:32px;font-size:12px">A</div>
+          <div class="avatar" style="width:40px;height:40px;font-size:14px">A</div>
+          <div class="avatar" style="width:56px;height:56px;font-size:18px">A</div>
+          <div class="avatar" style="width:80px;height:80px;font-size:28px">A</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="section-progress">
+      <div class="showcase">
+        <div class="showcase-h"><div class="showcase-title">Progress Bars</div><div class="showcase-tag">4 levels</div></div>
+        <div class="demo-box">
+          <div style="margin-bottom:12px"><div style="font-size:12px;color:var(--text-dim);margin-bottom:4px">25%</div><div class="progress-bar"><div class="progress-fill" style="width:25%"></div></div></div>
+          <div style="margin-bottom:12px"><div style="font-size:12px;color:var(--text-dim);margin-bottom:4px">50%</div><div class="progress-bar"><div class="progress-fill" style="width:50%"></div></div></div>
+          <div style="margin-bottom:12px"><div style="font-size:12px;color:var(--text-dim);margin-bottom:4px">75%</div><div class="progress-bar"><div class="progress-fill" style="width:75%"></div></div></div>
+          <div><div style="font-size:12px;color:var(--text-dim);margin-bottom:4px">100%</div><div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="section-spinners">
+      <div class="showcase">
+        <div class="showcase-h"><div class="showcase-title">Spinners</div><div class="showcase-tag">3 sizes</div></div>
+        <div class="demo-box" style="display:flex;align-items:center;gap:24px">
+          <div class="spinner" style="width:16px;height:16px"></div>
+          <div class="spinner" style="width:24px;height:24px"></div>
+          <div class="spinner" style="width:40px;height:40px;border-width:3px"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="section-stats">
+      <div class="showcase">
+        <div class="showcase-h"><div class="showcase-title">Stat Cards</div><div class="showcase-tag">4 stats</div></div>
+        <div class="demo-box">
+          <div class="grid-4">
+            <div class="stat"><div class="stat-label">Revenue</div><div class="stat-value">$12K</div><div style="font-size:11px;color:var(--success);margin-top:4px">↑ 12%</div></div>
+            <div class="stat"><div class="stat-label">Users</div><div class="stat-value">1,234</div><div style="font-size:11px;color:var(--success);margin-top:4px">↑ 8%</div></div>
+            <div class="stat"><div class="stat-label">Orders</div><div class="stat-value">89</div><div style="font-size:11px;color:var(--danger);margin-top:4px">↓ 3%</div></div>
+            <div class="stat"><div class="stat-label">Churn</div><div class="stat-value">2.1%</div><div style="font-size:11px;color:var(--danger);margin-top:4px">↓ 0.5%</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="section-tabs">
+      <div class="showcase">
+        <div class="showcase-h"><div class="showcase-title">Tabs</div></div>
+        <div class="demo-box">
+          <div style="display:flex;border-bottom:1px solid var(--border);margin-bottom:16px">
+            <button class="tab-btn active" data-tab="1" style="padding:10px 16px;background:none;border:none;color:var(--accent);border-bottom:2px solid var(--accent);cursor:pointer;font-size:14px;font-weight:500">Overview</button>
+            <button class="tab-btn" data-tab="2" style="padding:10px 16px;background:none;border:none;color:var(--text-dim);border-bottom:2px solid transparent;cursor:pointer;font-size:14px;font-weight:500">Analytics</button>
+            <button class="tab-btn" data-tab="3" style="padding:10px 16px;background:none;border:none;color:var(--text-dim);border-bottom:2px solid transparent;cursor:pointer;font-size:14px;font-weight:500">Settings</button>
+          </div>
+          <div class="tab-content" id="tab-1">Overview content — general information.</div>
+          <div class="tab-content" id="tab-2" style="display:none">Analytics content — charts and metrics.</div>
+          <div class="tab-content" id="tab-3" style="display:none">Settings content — configuration.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="section-datatable">
+      <div class="showcase">
+        <div class="showcase-h"><div class="showcase-title">Data Table</div><div class="showcase-tag">sortable</div></div>
+        <div class="demo-box">
+          <table style="width:100%;border-collapse:collapse">
+            <thead><tr><th style="text-align:left;padding:10px;border-bottom:1px solid var(--border);font-family:var(--font-mono);font-size:10px;color:var(--text-faint);text-transform:uppercase">Name</th><th style="text-align:left;padding:10px;border-bottom:1px solid var(--border);font-family:var(--font-mono);font-size:10px;color:var(--text-faint);text-transform:uppercase">Email</th><th style="text-align:left;padding:10px;border-bottom:1px solid var(--border);font-family:var(--font-mono);font-size:10px;color:var(--text-faint);text-transform:uppercase">Status</th></tr></thead>
+            <tbody>
+              <tr><td style="padding:10px;border-bottom:1px solid var(--border)">Amir Helal</td><td style="padding:10px;border-bottom:1px solid var(--border);color:var(--text-dim)">amir@elmoorx.dev</td><td style="padding:10px;border-bottom:1px solid var(--border)"><span class="badge badge-success">Active</span></td></tr>
+              <tr><td style="padding:10px;border-bottom:1px solid var(--border)">Sara Mohamed</td><td style="padding:10px;border-bottom:1px solid var(--border);color:var(--text-dim)">sara@elmoorx.dev</td><td style="padding:10px;border-bottom:1px solid var(--border)"><span class="badge badge-warning">Pending</span></td></tr>
+              <tr><td style="padding:10px;border-bottom:1px solid var(--border)">Khalid Ali</td><td style="padding:10px;border-bottom:1px solid var(--border);color:var(--text-dim)">khalid@elmoorx.dev</td><td style="padding:10px;border-bottom:1px solid var(--border)"><span class="badge badge-success">Active</span></td></tr>
+              <tr><td style="padding:10px">Leila Hassan</td><td style="padding:10px;color:var(--text-dim)">leila@elmoorx.dev</td><td style="padding:10px"><span class="badge badge-danger">Inactive</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="section-calendar">
+      <div class="showcase">
+        <div class="showcase-h"><div class="showcase-title">Calendar</div></div>
+        <div class="demo-box" id="calendar-demo"></div>
+      </div>
+    </div>
+
+    <div class="section" id="section-kanban">
+      <div class="showcase">
+        <div class="showcase-h"><div class="showcase-title">Kanban Board</div></div>
+        <div class="demo-box" style="padding:16px">
+          <div style="display:flex;gap:12px;overflow-x:auto">
+            <div style="flex:1;min-width:240px;background:var(--bg-elev);border-radius:8px;padding:12px">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><div style="width:8px;height:8px;border-radius:50%;background:var(--text-faint)"></div><span style="font-weight:600;font-size:14px">Todo</span><span style="font-family:var(--font-mono);font-size:11px;color:var(--text-faint);background:var(--bg);padding:1px 8px;border-radius:10px">3</span></div>
+              <div style="background:var(--bg-card);border:1px solid var(--border);border-left:3px solid var(--text-faint);border-radius:6px;padding:10px;margin-bottom:8px"><div style="font-size:13px;font-weight:600;margin-bottom:4px">Setup CI/CD</div><div style="font-size:11px;color:var(--text-faint)">Aug 5</div></div>
+              <div style="background:var(--bg-card);border:1px solid var(--border);border-left:3px solid var(--warning);border-radius:6px;padding:10px"><div style="font-size:13px;font-weight:600;margin-bottom:4px">Write docs</div><div style="font-size:11px;color:var(--text-faint)">Aug 7</div></div>
+            </div>
+            <div style="flex:1;min-width:240px;background:var(--bg-elev);border-radius:8px;padding:12px">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><div style="width:8px;height:8px;border-radius:50%;background:var(--warning)"></div><span style="font-weight:600;font-size:14px">In Progress</span><span style="font-family:var(--font-mono);font-size:11px;color:var(--text-faint);background:var(--bg);padding:1px 8px;border-radius:10px">2</span></div>
+              <div style="background:var(--bg-card);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:6px;padding:10px;margin-bottom:8px"><div style="font-size:13px;font-weight:600;margin-bottom:4px">Build dashboard</div><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:11px;color:var(--text-faint)">Aug 10</span><div style="width:20px;height:20px;border-radius:50%;background:var(--accent);color:white;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600">A</div></div></div>
+              <div style="background:var(--bg-card);border:1px solid var(--border);border-left:3px solid var(--danger);border-radius:6px;padding:10px"><div style="font-size:13px;font-weight:600;margin-bottom:4px">Fix auth bug</div><span style="font-size:11px;color:var(--danger)">Urgent</span></div>
+            </div>
+            <div style="flex:1;min-width:240px;background:var(--bg-elev);border-radius:8px;padding:12px">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><div style="width:8px;height:8px;border-radius:50%;background:var(--success)"></div><span style="font-weight:600;font-size:14px">Done</span><span style="font-family:var(--font-mono);font-size:11px;color:var(--text-faint);background:var(--bg);padding:1px 8px;border-radius:10px">2</span></div>
+              <div style="background:var(--bg-card);border:1px solid var(--border);border-left:3px solid var(--success);border-radius:6px;padding:10px;margin-bottom:8px"><div style="font-size:13px;font-weight:600;margin-bottom:4px">Setup project</div><span style="font-size:11px;color:var(--success)">✓ Completed</span></div>
+              <div style="background:var(--bg-card);border:1px solid var(--border);border-left:3px solid var(--success);border-radius:6px;padding:10px"><div style="font-size:13px;font-weight:600;margin-bottom:4px">Design mockups</div><span style="font-size:11px;color:var(--success)">✓ Completed</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="section-editor">
+      <div class="showcase">
+        <div class="showcase-h"><div class="showcase-title">Code Editor</div></div>
+        <div class="demo-box" style="padding:0;overflow:hidden">
+          <div style="background:var(--bg-elev);border-bottom:1px solid var(--border);padding:8px 16px;font-size:12px;font-family:var(--font-mono);color:var(--accent)">example.ts</div>
+          <div style="display:flex;font-family:var(--font-mono);font-size:13px">
+            <div style="padding:12px;text-align:right;color:var(--text-faint);background:var(--bg-elev);min-width:40px;line-height:1.6;user-select:none">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8</div>
+            <pre style="flex:1;padding:12px;color:var(--text);line-height:1.6;overflow-x:auto;margin:0"><span style="color:#C792EA">import</span> { $state, h } <span style="color:#C792EA">from</span> <span style="color:#C3E88D">"@elmoorx/runtime"</span>;
+
+<span style="color:#C792EA">const</span> <span style="color:#82AAFF">Counter</span> = <span style="color:#82AAFF">island</span>(() =&gt; {
+  <span style="color:#C792EA">const</span> count = <span style="color:#82AAFF">$state</span>(<span style="color:#F78C6C">0</span>);
+  <span style="color:#C792EA">return</span> <span style="color:#89DDFF">&lt;</span><span style="color:#FFCB6B">button</span> <span style="color:#F07178">onClick</span>={<span style="color:#89DDFF">()=&gt;</span>count.<span style="color:#82AAFF">set</span>(c=&gt;c+<span style="color:#F78C6C">1</span>)}<span style="color:#89DDFF">&gt;</span>
+    Count: {count}
+  <span style="color:#89DDFF">&lt;/</span><span style="color:#FFCB6B">button</span><span style="color:#89DDFF">&gt;</span>;
+});</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="section-charts">
+      <div class="showcase">
+        <div class="showcase-h"><div class="showcase-title">Bar Chart</div></div>
+        <div class="demo-box">
+          <div style="display:flex;align-items:flex-end;gap:8px;height:240px;padding:16px 0">
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px"><span style="font-family:var(--font-mono);font-size:11px;color:var(--text)">42</span><div style="width:80%;background:linear-gradient(180deg,var(--accent),var(--accent-2));border-radius:4px 4px 0 0;height:84px"></div><span style="font-size:11px;color:var(--text-faint)">Jan</span></div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px"><span style="font-family:var(--font-mono);font-size:11px;color:var(--text)">68</span><div style="width:80%;background:linear-gradient(180deg,var(--accent),var(--accent-2));border-radius:4px 4px 0 0;height:136px"></div><span style="font-size:11px;color:var(--text-faint)">Feb</span></div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px"><span style="font-family:var(--font-mono);font-size:11px;color:var(--text)">51</span><div style="width:80%;background:linear-gradient(180deg,var(--accent),var(--accent-2));border-radius:4px 4px 0 0;height:102px"></div><span style="font-size:11px;color:var(--text-faint)">Mar</span></div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px"><span style="font-family:var(--font-mono);font-size:11px;color:var(--text)">89</span><div style="width:80%;background:linear-gradient(180deg,var(--accent),var(--accent-2));border-radius:4px 4px 0 0;height:178px"></div><span style="font-size:11px;color:var(--text-faint)">Apr</span></div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px"><span style="font-family:var(--font-mono);font-size:11px;color:var(--text)">73</span><div style="width:80%;background:linear-gradient(180deg,var(--accent),var(--accent-2));border-radius:4px 4px 0 0;height:146px"></div><span style="font-size:11px;color:var(--text-faint)">May</span></div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px"><span style="font-family:var(--font-mono);font-size:11px;color:var(--text)">95</span><div style="width:80%;background:linear-gradient(180deg,var(--accent),var(--accent-2));border-radius:4px 4px 0 0;height:190px"></div><span style="font-size:11px;color:var(--text-faint)">Jun</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    item.classList.add('active');
+    document.getElementById('section-' + item.dataset.section).classList.add('active');
+  });
+});
+
+document.getElementById('search').addEventListener('input', (e) => {
+  const q = e.target.value.toLowerCase();
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.style.display = item.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+});
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active'); b.style.color = 'var(--text-dim)'; b.style.borderBottomColor = 'transparent'; });
+    btn.classList.add('active'); btn.style.color = 'var(--accent)'; btn.style.borderBottomColor = 'var(--accent)';
+    document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+    document.getElementById('tab-' + btn.dataset.tab).style.display = '';
+  });
+});
+
+const calDemo = document.getElementById('calendar-demo');
+if (calDemo) {
+  const now = new Date();
+  const month = now.toLocaleDateString('en', { month: 'long', year: 'numeric' });
+  const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).getDay();
+  const days = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+  const today = now.getDate();
+  let html = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><button style="background:var(--bg-elev);border:1px solid var(--border);color:var(--text);padding:4px 10px;border-radius:4px;cursor:pointer">←</button><h3 style="color:var(--text);font-size:16px">' + month + '</h3><button style="background:var(--bg-elev);border:1px solid var(--border);color:var(--text);padding:4px 10px;border-radius:4px;cursor:pointer">→</button></div>';
+  html += '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px">';
+  ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(d => { html += '<div style="text-align:center;font-size:11px;font-weight:600;color:var(--text-faint);padding:4px">' + d + '</div>'; });
+  html += '</div><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">';
+  for (let i = 0; i < firstDay; i++) html += '<div></div>';
+  for (let d = 1; d <= days; d++) {
+    const isToday = d === today;
+    html += '<div style="min-height:60px;padding:4px;background:var(--bg-elev);border-radius:4px;cursor:pointer;border:1px solid ' + (isToday ? 'var(--accent)' : 'transparent') + '"><div style="font-size:12px;font-weight:' + (isToday ? '700' : '400') + ';color:' + (isToday ? 'var(--accent)' : 'var(--text)') + '">' + d + '</div>' + (d === 15 ? '<div style="font-size:9px;padding:1px 4px;background:rgba(168,85,247,0.2);color:var(--accent);border-radius:2px;margin-top:2px">Meeting</div>' : '') + '</div>';
+  }
+  html += '</div>';
+  calDemo.innerHTML = html;
+}
+
+console.log('%c Elmoorx UI Gallery ', 'background:linear-gradient(135deg,#A855F7,#06B6D4);color:white;font-weight:bold;padding:4px 8px;border-radius:4px');
+</script>
+
+</body>
+</html>

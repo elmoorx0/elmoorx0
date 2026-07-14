@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Elmoorx Playground — Interactive REPL</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0A0A0F;
+  --bg-elev: #14141B;
+  --bg-card: #1A1A24;
+  --bg-code: #0F0F17;
+  --border: #2A2A38;
+  --text: #E4E4E7;
+  --text-dim: #A1A1AA;
+  --text-faint: #71717A;
+  --accent: #A855F7;
+  --accent-2: #06B6D4;
+  --success: #10B981;
+  --danger: #EF4444;
+  --warning: #F59E0B;
+  --font-en: 'Space Grotesk', 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  background: var(--bg); color: var(--text);
+  font-family: 'Inter', sans-serif; font-size: 14px;
+  height: 100vh; overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 60px 1fr;
+  height: 100vh;
+}
+.header {
+  grid-column: 1 / -1;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0 24px; background: var(--bg-elev);
+  border-bottom: 1px solid var(--border);
+}
+.brand { display: flex; align-items: center; gap: 10px; font-family: var(--font-en); font-weight: 700; font-size: 18px; }
+.orb { width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, #A855F7, #06B6D4); position: relative; box-shadow: 0 0 20px rgba(168,85,247,0.35); }
+.orb::after { content: ''; position: absolute; inset: 6px; border-radius: 4px; background: var(--bg-elev); }
+.actions { display: flex; gap: 8px; position: relative; }
+.btn { background: var(--bg-card); border: 1px solid var(--border); color: var(--text); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 12px; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em; }
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+.btn.primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); border: none; color: white; font-weight: 600; }
+.editor-panel { background: var(--bg-code); display: flex; flex-direction: column; border-right: 1px solid var(--border); }
+.editor-tabs { display: flex; background: var(--bg-elev); border-bottom: 1px solid var(--border); }
+.editor-tab { padding: 10px 16px; background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 12px; font-family: var(--font-mono); border-bottom: 2px solid transparent; }
+.editor-tab.active { color: var(--accent); border-bottom-color: var(--accent); background: var(--bg-code); }
+.editor-area { flex: 1; position: relative; overflow: hidden; }
+.editor-textarea { width: 100%; height: 100%; background: var(--bg-code); color: var(--text); border: none; outline: none; resize: none; padding: 16px; font-family: var(--font-mono); font-size: 13px; line-height: 1.6; tab-size: 2; }
+.preview-panel { display: flex; flex-direction: column; background: var(--bg); }
+.preview-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; background: var(--bg-elev); border-bottom: 1px solid var(--border); }
+.preview-title { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.15em; color: var(--accent); text-transform: uppercase; }
+.preview-device { display: flex; gap: 4px; }
+.device-btn { background: var(--bg-card); border: 1px solid var(--border); color: var(--text-dim); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; }
+.device-btn.active { color: var(--accent); border-color: var(--accent); }
+.preview-frame-wrap { flex: 1; overflow: auto; padding: 20px; display: flex; justify-content: center; align-items: flex-start; }
+.preview-frame { width: 100%; height: 100%; background: white; color: #333; border-radius: 8px; overflow: auto; border: 1px solid var(--border); font-family: -apple-system, sans-serif; padding: 20px; }
+.preview-frame.mobile { max-width: 375px; }
+.preview-frame.tablet { max-width: 768px; }
+.console { height: 200px; background: var(--bg-code); border-top: 1px solid var(--border); display: flex; flex-direction: column; }
+.console-header { padding: 8px 16px; background: var(--bg-elev); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.console-title { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.15em; color: var(--accent-2); text-transform: uppercase; }
+.console-clear { background: none; border: none; color: var(--text-faint); cursor: pointer; font-size: 11px; font-family: var(--font-mono); }
+.console-output { flex: 1; overflow-y: auto; padding: 8px 16px; font-family: var(--font-mono); font-size: 12px; }
+.log-entry { padding: 2px 0; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; gap: 8px; }
+.log-time { color: var(--text-faint); }
+.log-type { font-weight: 600; min-width: 50px; }
+.log-type.log { color: var(--text-dim); }
+.log-type.error { color: var(--danger); }
+.log-type.warn { color: var(--warning); }
+.log-type.info { color: var(--accent-2); }
+.log-msg { color: var(--text); word-break: break-all; flex: 1; }
+.examples-list { display: none; position: absolute; top: 100%; right: 0; margin-top: 4px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 4px; min-width: 200px; z-index: 100; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+.examples-list.visible { display: block; }
+.example-item { padding: 8px 12px; cursor: pointer; border-radius: 4px; font-size: 12px; color: var(--text); }
+.example-item:hover { background: var(--bg-elev); color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <header class="header">
+    <div class="brand"><div class="orb"></div>Elmoorx Playground</div>
+    <div class="actions">
+      <div class="examples">
+        <button class="btn" id="examples-btn">Examples ▾</button>
+        <div class="examples-list" id="examples-list">
+          <div class="example-item" data-example="counter">Counter</div>
+          <div class="example-item" data-example="todo">Todo List</div>
+          <div class="example-item" data-example="form">Contact Form</div>
+          <div class="example-item" data-example="chart">Bar Chart</div>
+          <div class="example-item" data-example="clock">Live Clock</div>
+          <div class="example-item" data-example="api">API Fetch</div>
+        </div>
+      </div>
+      <button class="btn" id="reset-btn">Reset</button>
+      <button class="btn primary" id="run-btn">▶ Run</button>
+    </div>
+  </header>
+
+  <div class="editor-panel">
+    <div class="editor-tabs">
+      <button class="editor-tab active">Code</button>
+    </div>
+    <div class="editor-area">
+      <textarea class="editor-textarea" id="editor" spellcheck="false"></textarea>
+    </div>
+  </div>
+
+  <div class="preview-panel">
+    <div class="preview-header">
+      <div class="preview-title">Preview</div>
+      <div class="preview-device">
+        <button class="device-btn active" data-device="desktop">Desktop</button>
+        <button class="device-btn" data-device="tablet">Tablet</button>
+        <button class="device-btn" data-device="mobile">Mobile</button>
+      </div>
+    </div>
+    <div class="preview-frame-wrap">
+      <div class="preview-frame" id="preview"></div>
+    </div>
+    <div class="console">
+      <div class="console-header">
+        <div class="console-title">Console</div>
+        <button class="console-clear" id="clear-console">Clear</button>
+      </div>
+      <div class="console-output" id="console-output"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ EXAMPLES ============
+const examples = {
+  counter: `// Elmoorx Counter — edit and press Run
+const { $state, h } = Elmoorx;
+
+function Counter() {
+  const count = $state(0);
+  return h('div', { style: 'text-align:center;padding:40px;' },
+    h('h1', { style: 'font-size:64px;color:#A855F7;margin:0;' }, () => count()),
+    h('p', { style: 'color:#666;' }, 'Click to increment'),
+    h('div', { style: 'display:flex;gap:8px;justify-content:center;margin-top:20px;' },
+      h('button', { onClick: () => count.set(c => c - 1), style: 'padding:10px 20px;background:#f4f4f4;border:none;border-radius:6px;cursor:pointer;font-size:16px;' }, '−'),
+      h('button', { onClick: () => count.set(0), style: 'padding:10px 20px;background:#f4f4f4;border:none;border-radius:6px;cursor:pointer;font-size:16px;' }, 'Reset'),
+      h('button', { onClick: () => count.set(c => c + 1), style: 'padding:10px 20px;background:linear-gradient(135deg,#A855F7,#06B6D4);color:white;border:none;border-radius:6px;cursor:pointer;font-size:16px;' }, '+'),
+    ),
+  );
+}
+
+Elmoorx.mount(Counter(), document.getElementById('preview'));`,
+
+  todo: `// Todo List with reactive store
+const { $store, h } = Elmoorx;
+
+function TodoApp() {
+  const store = $store({
+    todos: [
+      { text: 'Learn Elmoorx', done: true },
+      { text: 'Build an app', done: false },
+    ],
+    text: '',
+  });
+
+  const addTodo = () => {
+    if (!store.text.trim()) return;
+    store.todos.push({ text: store.text, done: false });
+    store.text = '';
+  };
+
+  return h('div', { style: 'max-width:400px;margin:40px auto;font-family:sans-serif;' },
+    h('h1', null, 'Todo List'),
+    h('div', { style: 'display:flex;gap:8px;margin-bottom:16px;' },
+      h('input', { type: 'text', placeholder: 'Add todo...', value: () => store.text,
+        onInput: (e) => store.text = e.target.value,
+        onKeyDown: (e) => { if (e.key === 'Enter') addTodo(); },
+        style: 'flex:1;padding:8px 12px;border:1px solid #ddd;border-radius:4px;font-size:14px;' }),
+      h('button', { onClick: addTodo, style: 'padding:8px 16px;background:#A855F7;color:white;border:none;border-radius:4px;cursor:pointer;' }, 'Add'),
+    ),
+    h('ul', { style: 'list-style:none;padding:0;' },
+      () => store.todos.map((todo, i) =>
+        h('li', { key: String(i), style: 'display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #eee;' },
+          h('input', { type: 'checkbox', checked: todo.done, onChange: () => store.todos[i].done = !store.todos[i].done }),
+          h('span', { style: todo.done ? 'text-decoration:line-through;color:#999;flex:1;' : 'flex:1;' }, todo.text),
+          h('button', { onClick: () => store.todos.splice(i, 1), style: 'background:none;border:none;color:#ef4444;cursor:pointer;font-size:16px;' }, '×'),
+        )
+      )
+    ),
+    h('p', { style: 'color:#999;font-size:12px;margin-top:16px;' },
+      () => store.todos.filter(t => !t.done).length + ' of ' + store.todos.length + ' remaining'),
+  );
+}
+
+Elmoorx.mount(TodoApp(), document.getElementById('preview'));`,
+
+  form: `// Contact Form with validation
+const { $state, h } = Elmoorx;
+
+function ContactForm() {
+  const name = $state('');
+  const email = $state('');
+  const message = $state('');
+  const submitted = $state(false);
+  const errors = $state({});
+
+  const validate = () => {
+    const errs = {};
+    if (!name().trim()) errs.name = 'Name is required';
+    if (!/^[^@]+@[^@]+\\.[^@]+$/.test(email())) errs.email = 'Invalid email';
+    if (message().length < 10) errs.message = 'Message too short';
+    errors.set(errs);
+    return Object.keys(errs).length === 0;
+  };
+
+  const submit = (e) => {
+    e.preventDefault();
+    if (validate()) {
+      submitted.set(true);
+      console.log('Submitted:', { name: name(), email: email(), message: message() });
+    }
+  };
+
+  if (submitted()) {
+    return h('div', { style: 'text-align:center;padding:40px;font-family:sans-serif;' },
+      h('div', { style: 'font-size:48px;' }, '✓'),
+      h('h2', null, 'Thank you!'),
+      h('p', { style: 'color:#666;' }, 'We received your message.'),
+    );
+  }
+
+  return h('form', { onSubmit: submit, style: 'max-width:400px;margin:40px auto;font-family:sans-serif;' },
+    h('h2', null, 'Contact Us'),
+    h('div', { style: 'margin-bottom:12px;' },
+      h('label', { style: 'display:block;margin-bottom:4px;font-weight:600;' }, 'Name'),
+      h('input', { value: () => name(), onInput: (e) => name.set(e.target.value), style: 'width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;box-sizing:border-box;' }),
+      () => errors().name ? h('span', { style: 'color:#ef4444;font-size:12px;' }, errors().name) : null,
+    ),
+    h('div', { style: 'margin-bottom:12px;' },
+      h('label', { style: 'display:block;margin-bottom:4px;font-weight:600;' }, 'Email'),
+      h('input', { value: () => email(), onInput: (e) => email.set(e.target.value), style: 'width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;box-sizing:border-box;' }),
+      () => errors().email ? h('span', { style: 'color:#ef4444;font-size:12px;' }, errors().email) : null,
+    ),
+    h('div', { style: 'margin-bottom:12px;' },
+      h('label', { style: 'display:block;margin-bottom:4px;font-weight:600;' }, 'Message'),
+      h('textarea', { value: () => message(), onInput: (e) => message.set(e.target.value), rows: 4, style: 'width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;box-sizing:border-box;font-family:inherit;' }),
+      () => errors().message ? h('span', { style: 'color:#ef4444;font-size:12px;' }, errors().message) : null,
+    ),
+    h('button', { type: 'submit', style: 'padding:10px 20px;background:linear-gradient(135deg,#A855F7,#06B6D4);color:white;border:none;border-radius:4px;cursor:pointer;font-weight:600;' }, 'Send Message'),
+  );
+}
+
+Elmoorx.mount(ContactForm(), document.getElementById('preview'));`,
+
+  chart: `// Bar Chart
+const { $state, h } = Elmoorx;
+
+function BarChart() {
+  const data = $state([
+    { label: 'Jan', value: 42 },
+    { label: 'Feb', value: 68 },
+    { label: 'Mar', value: 51 },
+    { label: 'Apr', value: 89 },
+    { label: 'May', value: 73 },
+    { label: 'Jun', value: 95 },
+  ]);
+  const max = () => Math.max(...data().map(d => d.value));
+
+  return h('div', { style: 'padding:40px;font-family:sans-serif;' },
+    h('h2', null, 'Monthly Revenue'),
+    h('div', { style: 'display:flex;align-items:flex-end;gap:8px;height:300px;margin-top:20px;' },
+      () => data().map((d, i) =>
+        h('div', { key: String(i), style: 'flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;' },
+          h('span', { style: 'font-family:monospace;font-size:13px;color:#333;' }, () => d.value),
+          h('div', { style: 'width:80%;background:linear-gradient(180deg,#A855F7,#06B6D4);border-radius:4px 4px 0 0;height:' + (d.value / max() * 240) + 'px;' }),
+          h('span', { style: 'font-size:12px;color:#666;' }, d.label),
+        )
+      )
+    ),
+    h('button', { onClick: () => data.set(data().map(d => ({ ...d, value: Math.floor(Math.random() * 100) }))), style: 'margin-top:20px;padding:8px 16px;background:#A855F7;color:white;border:none;border-radius:4px;cursor:pointer;' }, 'Randomize'),
+  );
+}
+
+Elmoorx.mount(BarChart(), document.getElementById('preview'));`,
+
+  clock: `// Live Clock
+const { $state, $effect, h } = Elmoorx;
+
+function Clock() {
+  const time = $state(new Date());
+  $effect(() => {
+    const id = setInterval(() => time.set(new Date()), 1000);
+    return () => clearInterval(id);
+  });
+
+  return h('div', { style: 'display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:linear-gradient(135deg,#0A0A0F,#1A1A24);color:white;font-family:sans-serif;' },
+    h('div', { style: 'font-size:72px;font-weight:700;font-family:monospace;background:linear-gradient(135deg,#A855F7,#06B6D4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;' },
+      () => time().toLocaleTimeString()),
+    h('div', { style: 'font-size:16px;color:#A1A1AA;margin-top:8px;' },
+      () => time().toLocaleDateString('en', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })),
+  );
+}
+
+Elmoorx.mount(Clock(), document.getElementById('preview'));`,
+
+  api: `// API Fetch
+const { $state, $effect, h } = Elmoorx;
+
+function UserList() {
+  const users = $state(null);
+  const loading = $state(true);
+  const error = $state(null);
+
+  const fetchUsers = async () => {
+    loading.set(true); error.set(null);
+    try {
+      const res = await fetch('https://jsonplaceholder.typicode.com/users?_limit=5');
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      users.set(await res.json());
+    } catch (err) { error.set(err.message); }
+    finally { loading.set(false); }
+  };
+
+  $effect(() => { fetchUsers(); });
+
+  return h('div', { style: 'padding:40px;font-family:sans-serif;' },
+    h('h2', null, 'Users'),
+    h('button', { onClick: fetchUsers, style: 'padding:8px 16px;background:#A855F7;color:white;border:none;border-radius:4px;cursor:pointer;margin-bottom:16px;' }, 'Refresh'),
+    () => loading() ? h('p', { style: 'color:#666;' }, 'Loading...') : null,
+    () => error() ? h('p', { style: 'color:#ef4444;' }, 'Error: ' + error()) : null,
+    () => users() ? h('ul', { style: 'list-style:none;padding:0;' },
+      ...users().map((u, i) =>
+        h('li', { key: String(i), style: 'padding:12px;border:1px solid #eee;border-radius:4px;margin-bottom:8px;' },
+          h('div', { style: 'font-weight:600;' }, u.name),
+          h('div', { style: 'color:#666;font-size:13px;' }, u.email),
+          h('div', { style: 'color:#999;font-size:12px;' }, u.company.name),
+        )
+      )
+    ) : null,
+  );
+}
+
+Elmoorx.mount(UserList(), document.getElementById('preview'));`,
+};
+
+// ============ ELMOORX RUNTIME ============
+const Elmoorx = (() => {
+  let activeObserver = null;
+  function $state(initial) {
+    const deps = new Set();
+    let value = initial;
+    const read = () => { if (activeObserver) deps.add(activeObserver); return value; };
+    read.set = (next) => {
+      const r = typeof next === "function" ? next(value) : next;
+      if (Object.is(r, value)) return;
+      value = r;
+      for (const d of [...deps]) d();
+    };
+    return read;
+  }
+  function $effect(fn) {
+    let cleanup = null;
+    const run = () => {
+      const prev = activeObserver;
+      activeObserver = run;
+      try { if (typeof cleanup === "function") cleanup(); cleanup = fn(); }
+      finally { activeObserver = prev; }
+    };
+    run();
+    return () => { if (typeof cleanup === "function") cleanup(); };
+  }
+  function $store(initial) {
+    const signals = new Map();
+    const getSignal = (path, current) => {
+      let s = signals.get(path);
+      if (!s) { s = $state(current); signals.set(path, s); }
+      return s;
+    };
+    return new Proxy(initial, {
+      get(target, prop, receiver) {
+        if (typeof prop === "symbol") return Reflect.get(target, prop, receiver);
+        const value = Reflect.get(target, prop, receiver);
+        const sig = getSignal(prop, value);
+        sig();
+        if (Array.isArray(value)) {
+          return new Proxy(value, {
+            get(arr, p) {
+              if (["push","pop","shift","unshift","splice"].includes(p)) {
+                const orig = arr[p].bind(arr);
+                return (...args) => { const r = orig(...args); getSignal(prop, arr).set([...arr]); return r; };
+              }
+              return arr[p];
+            },
+            set(arr, p, v, r) {
+              const ok = Reflect.set(arr, p, v, r);
+              if (p !== "length") getSignal(prop, arr).set([...arr]);
+              return ok;
+            },
+          });
+        }
+        return value;
+      },
+      set(target, prop, value, receiver) {
+        const prev = Reflect.get(target, prop, receiver);
+        const ok = Reflect.set(target, prop, value, receiver);
+        if (!Object.is(prev, value)) getSignal(prop, value).set(value);
+        return ok;
+      },
+    });
+  }
+  function h(tag, props, ...children) {
+    if (typeof tag === "function") return tag({ ...(props || {}), children: children.flat() });
+    return { tag, props: props || {}, children: children.flat(Infinity).filter(c => c !== null && c !== undefined && c !== false && c !== true) };
+  }
+  function renderToDom(node, parent) {
+    if (node === null || node === undefined || node === false || node === true) return null;
+    if (typeof node === "string" || typeof node === "number") return document.createTextNode(String(node));
+    if (typeof node === "function") {
+      const textNode = document.createTextNode("");
+      $effect(() => { textNode.nodeValue = String(node() ?? ""); });
+      return textNode;
+    }
+    if (Array.isArray(node)) {
+      const frag = document.createDocumentFragment();
+      for (const c of node) { const el = renderToDom(c, frag); if (el) frag.appendChild(el); }
+      return frag;
+    }
+    const el = node;
+    const dom = document.createElement(el.tag);
+    for (const [key, value] of Object.entries(el.props || {})) {
+      if (key === "children" || value == null || value === false) continue;
+      if (key === "class" || key === "className") dom.setAttribute("class", String(value));
+      else if (key === "style" && typeof value === "string") dom.setAttribute("style", value);
+      else if (key.startsWith("on") && typeof value === "function") dom.addEventListener(key.slice(2).toLowerCase(), value);
+      else if (typeof value === "function") {
+        $effect(() => {
+          const v = value();
+          if (key === "style" && typeof v === "object") Object.assign(dom.style, v);
+          else dom.setAttribute(key, String(v ?? ""));
+        });
+      } else dom.setAttribute(key, String(value));
+    }
+    for (const child of el.children || []) {
+      const childDom = renderToDom(child, dom);
+      if (childDom) dom.appendChild(childDom);
+    }
+    return dom;
+  }
+  function mount(node, parent) {
+    const el = renderToDom(node, parent);
+    if (el) parent.appendChild(el);
+  }
+  return { $state, $effect, $store, h, mount, renderToDom };
+})();
+
+// ============ CONSOLE ============
+const consoleOutput = document.getElementById('console-output');
+const originalLog = console.log;
+const originalError = console.error;
+const originalWarn = console.warn;
+
+function logToConsole(type, args) {
+  const entry = document.createElement('div');
+  entry.className = 'log-entry';
+  const time = new Date().toLocaleTimeString();
+  const msg = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
+  entry.innerHTML = '<span class="log-time">' + time + '</span><span class="log-type ' + type + '">' + type.toUpperCase() + '</span><span class="log-msg">' + msg + '</span>';
+  consoleOutput.appendChild(entry);
+  consoleOutput.scrollTop = consoleOutput.scrollHeight;
+}
+console.log = (...args) => { logToConsole('log', args); originalLog(...args); };
+console.error = (...args) => { logToConsole('error', args); originalError(...args); };
+console.warn = (...args) => { logToConsole('warn', args); originalWarn(...args); };
+
+// ============ EDITOR ============
+const editor = document.getElementById('editor');
+const preview = document.getElementById('preview');
+editor.value = examples.counter;
+
+function runCode() {
+  preview.innerHTML = '';
+  try {
+    const fn = new Function('Elmoorx', 'document', editor.value);
+    fn(Elmoorx, document);
+    logToConsole('info', ['Code executed successfully']);
+  } catch (err) {
+    logToConsole('error', [err.message]);
+    preview.innerHTML = '<div style="color:#ef4444;padding:20px;font-family:monospace;">Error: ' + err.message + '</div>';
+  }
+}
+
+let runTimer = null;
+editor.addEventListener('input', () => {
+  clearTimeout(runTimer);
+  runTimer = setTimeout(runCode, 800);
+});
+
+document.getElementById('run-btn').addEventListener('click', runCode);
+document.getElementById('reset-btn').addEventListener('click', () => { editor.value = examples.counter; runCode(); });
+document.getElementById('clear-console').addEventListener('click', () => { consoleOutput.innerHTML = ''; });
+
+const examplesBtn = document.getElementById('examples-btn');
+const examplesList = document.getElementById('examples-list');
+examplesBtn.addEventListener('click', (e) => { e.stopPropagation(); examplesList.classList.toggle('visible'); });
+document.addEventListener('click', () => examplesList.classList.remove('visible'));
+document.querySelectorAll('.example-item').forEach(item => {
+  item.addEventListener('click', () => {
+    editor.value = examples[item.dataset.example];
+    examplesList.classList.remove('visible');
+    runCode();
+  });
+});
+
+document.querySelectorAll('.device-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    preview.className = 'preview-frame ' + btn.dataset.device;
+  });
+});
+
+document.addEventListener('keydown', (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') { e.preventDefault(); runCode(); }
+});
+
+runCode();
+console.log('Elmoorx Playground ready. Press Cmd/Ctrl+Enter to run.');
+</script>
+</body>
+</html>

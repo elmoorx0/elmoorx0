@@ -1,0 +1,42 @@
+{
+  "name": "@elmoorx/ar-vr",
+  "version": "3.0.0-alpha.2",
+  "description": "Elmoorx ar-vr package",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "dependencies": {
+    "@elmoorx/runtime": "*"
+  },
+  "keywords": [
+    "elmoorx",
+    "framework",
+    "ar-vr"
+  ],
+  "license": "MIT",
+  "author": "Elmoorx Framework",
+  "homepage": "https://elmoorx.dev/packages/ar-vr",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/elmoorx0/elmoorx0",
+    "directory": "packages/ar-vr"
+  },
+  "bugs": {
+    "url": "https://github.com/elmoorx0/elmoorx0/issues"
+  },
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  }
+}

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Elmoorx Framework — Build fast. Run anywhere. Stay secure. Zero-hydration islands, reactive store, auto-security, edge-ready runtime.">
+  <title>Elmoorx Framework — Build fast. Run anywhere. Stay secure.</title>
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-container">
+      <a href="/" class="nav-logo">
+        <span class="nav-logo-icon">⚡</span>
+        <span>Elmoorx</span>
+      </a>
+      <div class="nav-links">
+        <a href="#docs">Docs</a>
+        <a href="#api">API</a>
+        <a href="#examples">Examples</a>
+        <a href="#playground">Playground</a>
+        <a href="https://github.com/elmoorx0/elmoorx0" target="_blank">GitHub</a>
+        <a href="https://www.npmjs.com/org/elmoorx" target="_blank">npm</a>
+      </div>
+      <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-badge">v3.0.0-alpha.2 — Now with 78 packages</div>
+      <h1 class="hero-title">
+        Build fast. Run anywhere.<br>
+        <span class="hero-title-accent">Stay secure.</span>
+      </h1>
+      <p class="hero-subtitle">
+        Elmoorx is a next-generation full-stack framework engineered for performance, security, and developer experience. Zero-hydration islands, a built-in reactive store, automatic security, and an edge-ready runtime in ~4.2kb of gzipped JavaScript.
+      </p>
+      <div class="hero-cta">
+        <a href="#quickstart" class="btn btn-primary">Get Started →</a>
+        <a href="#playground" class="btn btn-secondary">Try in Playground</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat">
+          <div class="stat-value">4.2kb</div>
+          <div class="stat-label">gzipped runtime</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">28ms</div>
+          <div class="stat-label">cold start</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">78</div>
+          <div class="stat-label">npm packages</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">327</div>
+          <div class="stat-label">tests passing</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="features" id="features">
+    <div class="container">
+      <h2 class="section-title">Why Elmoorx?</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h3>Zero-Hydration Islands</h3>
+          <p>Only interactive components ship JavaScript. Everything else is static HTML — zero hydration cost.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔒</div>
+          <h3>Auto-Security</h3>
+          <p>Sanitization, CSRF, CSP, HSTS built-in. No <code>dangerouslySetInnerHTML</code> to forget.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📡</div>
+          <h3>Reactive Store</h3>
+          <p>Proxy-based deep reactive container. Mutations are automatically tracked — no setters, no immutability boilerplate.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🌍</div>
+          <h3>Edge-Ready</h3>
+          <p>~4.2kb gzipped, runs anywhere — Cloudflare, Vercel, Deno, Node. 28ms cold start.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🎯</div>
+          <h3>Signals-Based</h3>
+          <p>Surgical DOM updates at property granularity. No vdom diffing, no re-render storms.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📦</div>
+          <h3>78 Packages</h3>
+          <p>Runtime, router, server, compiler, CLI, UI (648 components), auth, postgres, i18n, web3, AR/VR, and more.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick Start -->
+  <section class="quickstart" id="quickstart">
+    <div class="container">
+      <h2 class="section-title">Quick Start</h2>
+      <div class="code-tabs">
+        <div class="tab-buttons">
+          <button class="tab-btn active" data-tab="create">Create Project</button>
+          <button class="tab-btn" data-tab="component">Your First Component</button>
+          <button class="tab-btn" data-tab="island">Add an Island</button>
+        </div>
+        <div class="tab-content">
+          <div class="tab-panel active" id="tab-create">
+            <pre><code class="language-bash">npm install @elmoorx/runtime @elmoorx/router @elmoorx/server
+
+# Or use the CLI
+npx @elmoorx/cli create my-app
+cd my-app
+npm install
+npm run dev
+# → http://localhost:3000</code></pre>
+          </div>
+          <div class="tab-panel" id="tab-component">
+            <pre><code class="language-tsx">import { $state, $computed, $effect, h } from "@elmoorx/runtime";
+
+const count = $state(0);
+const doubled = $computed(() => count() * 2);
+
+$effect(() => {
+  document.title = `Count: ${count()}`;
+});
+
+count.set(1);       // triggers effect
+count.set(c => c + 1); // updater function</code></pre>
+          </div>
+          <div class="tab-panel" id="tab-island">
+            <pre><code class="language-tsx">import { island, h, $state } from "@elmoorx/runtime";
+
+const LikeButton = island(() => {
+  const likes = $state(0);
+  return h("button",
+    { onClick: () => likes.set(l => l + 1) },
+    "♥ ", () => likes()
+  );
+});
+
+// Server renders static HTML; client boots only this island
+// Zero JS shipped for the rest of the page</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Comparison -->
+  <section class="comparison">
+    <div class="container">
+      <h2 class="section-title">How does Elmoorx compare?</h2>
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Elmoorx</th>
+            <th>Next.js</th>
+            <th>Remix</th>
+            <th>SvelteKit</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>JS shipped (baseline)</td>
+            <td class="highlight">~1.2kb</td>
+            <td>~187kb</td>
+            <td>~142kb</td>
+            <td>~38kb</td>
+          </tr>
+          <tr>
+            <td>Cold start</td>
+            <td class="highlight">28ms</td>
+            <td>820ms</td>
+            <td>680ms</td>
+            <td>320ms</td>
+          </tr>
+          <tr>
+            <td>Hydration</td>
+            <td class="highlight">Zero (islands)</td>
+            <td>Full</td>
+            <td>Full</td>
+            <td>Full</td>
+          </tr>
+          <tr>
+            <td>Security grade</td>
+            <td class="highlight">A+</td>
+            <td>C</td>
+            <td>B</td>
+            <td>B</td>
+          </tr>
+          <tr>
+            <td>Reactive primitive</td>
+            <td class="highlight">Signals (built-in)</td>
+            <td>Hooks</td>
+            <td>Hooks</td>
+            <td>Stores</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Playground -->
+  <section class="playground" id="playground">
+    <div class="container">
+      <h2 class="section-title">Live Playground</h2>
+      <p class="section-subtitle">Edit the code below and see the result instantly.</p>
+      <div class="playground-container">
+        <div class="playground-editor">
+          <div class="editor-header">
+            <span class="editor-title">Counter.elmoorx.tsx</span>
+            <button class="btn btn-small" id="run-btn">▶ Run</button>
+          </div>
+          <textarea id="code-input" spellcheck="false">// Try editing this code!
+import { $state, h, mount } from "@elmoorx/runtime";
+
+const Counter = () => {
+  const count = $state(0);
+  return h("div", { style: "text-align:center; padding:20px;" },
+    h("h2", null, () => "Count: " + count()),
+    h("button", {
+      onClick: () => count.set(c => c + 1),
+      style: "padding:8px 16px; font-size:16px; cursor:pointer;"
+    }, "Increment"),
+    h("button", {
+      onClick: () => count.set(0),
+      style: "padding:8px 16px; font-size:16px; cursor:pointer; margin-left:8px;"
+    }, "Reset")
+  );
+};
+
+mount(Counter(), document.getElementById("output"));</textarea>
+        </div>
+        <div class="playground-output">
+          <div class="editor-header">
+            <span class="editor-title">Output</span>
+          </div>
+          <div id="output" class="output-area"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- API Reference -->
+  <section class="api" id="api">
+    <div class="container">
+      <h2 class="section-title">API Reference</h2>
+      <div class="api-grid">
+        <div class="api-card" data-api="signals">
+          <h3>📡 Signals</h3>
+          <ul>
+            <li><code>$state&lt;T&gt;(initial)</code></li>
+            <li><code>$computed&lt;T&gt;(fn)</code></li>
+            <li><code>$effect(fn)</code></li>
+            <li><code>$batch(fn)</code></li>
+          </ul>
+        </div>
+        <div class="api-card" data-api="store">
+          <h3>🗄️ Store</h3>
+          <ul>
+            <li><code>$store&lt;T&gt;(initial)</code></li>
+            <li><code>store.$subscribe(fn)</code></li>
+            <li><code>store.$serialize()</code></li>
+          </ul>
+        </div>
+        <div class="api-card" data-api="rendering">
+          <h3>🎨 Rendering</h3>
+          <ul>
+            <li><code>h(tag, props, ...children)</code></li>
+            <li><code>renderToString(node)</code></li>
+            <li><code>mount(node, parent)</code></li>
+            <li><code>hydrateIslands(registry)</code></li>
+          </ul>
+        </div>
+        <div class="api-card" data-api="security">
+          <h3>🔒 Security</h3>
+          <ul>
+            <li><code>sanitize(input)</code></li>
+            <li><code>$html(input)</code></li>
+            <li><code>generateCsrfToken()</code></li>
+            <li><code>SECURITY_HEADERS</code></li>
+          </ul>
+        </div>
+        <div class="api-card" data-api="lifecycle">
+          <h3>🔄 Lifecycle</h3>
+          <ul>
+            <li><code>onMount(fn)</code></li>
+            <li><code>onCleanup(fn)</code></li>
+            <li><code>onError(fn)</code></li>
+          </ul>
+        </div>
+        <div class="api-card" data-api="async">
+          <h3>⚡ Async Hooks</h3>
+          <ul>
+            <li><code>useFetch(url)</code></li>
+            <li><code>useSWR(key, fetcher)</code></li>
+            <li><code>useMutation(url)</code></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Examples -->
+  <section class="examples" id="examples">
+    <div class="container">
+      <h2 class="section-title">Examples</h2>
+      <div class="examples-grid">
+        <a href="#" class="example-card">
+          <div class="example-icon">🛒</div>
+          <h3>E-Commerce</h3>
+          <p>Full shopping cart with product catalog, checkout, and Stripe integration.</p>
+        </a>
+        <a href="#" class="example-card">
+          <div class="example-icon">📝</div>
+          <h3>Blog</h3>
+          <p>Markdown-powered blog with SSR, syntax highlighting, and RSS feed.</p>
+        </a>
+        <a href="#" class="example-card">
+          <div class="example-icon">📊</div>
+          <h3>Dashboard</h3>
+          <p>Admin dashboard with charts, data tables, and real-time updates.</p>
+        </a>
+        <a href="#" class="example-card">
+          <div class="example-icon">✅</div>
+          <h3>Todo App</h3>
+          <p>Classic todo with filters, persistence, and optimistic updates.</p>
+        </a>
+        <a href="#" class="example-card">
+          <div class="example-icon">🔐</div>
+          <h3>Auth Flow</h3>
+          <p>Login, signup, OAuth, MFA, and protected routes.</p>
+        </a>
+        <a href="#" class="example-card">
+          <div class="example-icon">💬</div>
+          <h3>Chat App</h3>
+          <p>Real-time chat with WebSocket, rooms, and typing indicators.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h4>Elmoorx</h4>
+          <ul>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#quickstart">Quick Start</a></li>
+            <li><a href="#playground">Playground</a></li>
+            <li><a href="#api">API Reference</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Community</h4>
+          <ul>
+            <li><a href="https://github.com/elmoorx0/elmoorx0">GitHub</a></li>
+            <li><a href="https://www.npmjs.com/org/elmoorx">npm</a></li>
+            <li><a href="https://discord.gg/elmoorx">Discord</a></li>
+            <li><a href="#">GitHub Discussions</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="#">Documentation</a></li>
+            <li><a href="#">Migration Guide</a></li>
+            <li><a href="#">Changelog</a></li>
+            <li><a href="#">Contributing</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>MIT License © 2026 Elmoorx Foundation</p>
+        <p>Built with ⚡ Elmoorx Framework</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

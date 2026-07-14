@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Elmoorx SaaS — Full Stack App</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0A0A0F;--bg-elev:#14141B;--bg-card:#1A1A24;--bg-code:#0F0F17;--border:#2A2A38;--border-strong:#3A3A4A;--text:#E4E4E7;--dim:#A1A1AA;--faint:#71717A;--accent:#A855F7;--accent2:#06B6D4;--success:#10B981;--warning:#F59E0B;--danger:#EF4444;--font-en:'Space Grotesk','Inter',sans-serif;--font-mono:'JetBrains Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font-en);font-size:14px;-webkit-font-smoothing:antialiased;min-height:100vh}
+a{color:var(--accent2);text-decoration:none}
+.hidden{display:none!important}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:100;background:rgba(10,10,15,0.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:14px 24px}
+.nav-inner{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px}
+.orb{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#A855F7,#06B6D4);position:relative;box-shadow:0 0 20px rgba(168,85,247,0.35)}
+.orb::after{content:'';position:absolute;inset:6px;border-radius:4px;background:var(--bg)}
+.nav-links{display:flex;gap:24px;align-items:center}
+.nav-links a{color:var(--dim);font-size:14px;font-weight:500}
+.nav-links a:hover{color:var(--text)}
+.btn{padding:8px 18px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;border:none;font-family:var(--font-en);transition:all .15s}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:white}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(168,85,247,0.3)}
+.btn-secondary{background:var(--bg-card);border:1px solid var(--border-strong);color:var(--text)}
+.btn-secondary:hover{border-color:var(--accent)}
+.btn-danger{background:var(--danger);color:white}
+.btn-sm{padding:4px 12px;font-size:11px}
+
+/* HERO */
+.hero{text-align:center;padding:80px 24px 60px;background:radial-gradient(ellipse 800px 500px at 50% 0%,rgba(168,85,247,0.15),transparent 60%),var(--bg)}
+.hero h1{font-size:56px;font-weight:700;letter-spacing:-0.03em;background:linear-gradient(180deg,#FFF,#A1A1AA);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:16px}
+.hero p{font-size:18px;color:var(--dim);max-width:580px;margin:0 auto 32px}
+.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;max-width:720px;margin:0 auto;padding:24px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.hs-num{font-size:28px;font-weight:700;color:var(--accent)}
+.hs-lbl{font-size:10px;letter-spacing:0.15em;color:var(--faint);text-transform:uppercase;margin-top:6px}
+
+/* AUTH */
+.auth-page{display:flex;justify-content:center;align-items:center;min-height:calc(100vh - 60px);padding:40px}
+.auth-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:40px;max-width:420px;width:100%}
+.auth-card h2{text-align:center;margin-bottom:8px;font-size:24px}
+.auth-card p{text-align:center;color:var(--dim);margin-bottom:32px;font-size:14px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px}
+.field input{width:100%;padding:10px 14px;background:var(--bg-elev);border:1px solid var(--border-strong);border-radius:8px;color:var(--text);font-size:14px;outline:none;box-sizing:border-box;font-family:var(--font-en)}
+.field input:focus{border-color:var(--accent)}
+.error-msg{color:var(--danger);font-size:13px;margin-bottom:16px;padding:8px 12px;background:rgba(239,68,68,0.1);border-radius:6px}
+.success-msg{color:var(--success);font-size:13px;margin-bottom:16px;padding:8px 12px;background:rgba(16,185,129,0.1);border-radius:6px}
+.auth-switch{text-align:center;margin-top:24px;font-size:13px;color:var(--dim)}
+.auth-switch a{cursor:pointer;color:var(--accent);font-weight:600}
+
+/* DASHBOARD */
+.dash{max-width:1200px;margin:0 auto;padding:32px 24px}
+.dash-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:32px}
+.dash-title{font-size:28px;font-weight:700}
+.dash-sub{color:var(--dim);font-size:14px;margin-top:4px}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:24px}
+.tab{padding:10px 20px;background:none;border:none;color:var(--dim);cursor:pointer;font-size:14px;font-weight:500;border-bottom:2px solid transparent;font-family:var(--font-en)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab:hover{color:var(--text)}
+
+/* STATS GRID */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
+.stat-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:20px}
+.stat-label{font-size:11px;letter-spacing:0.1em;color:var(--faint);text-transform:uppercase;margin-bottom:8px}
+.stat-value{font-size:28px;font-weight:700;color:var(--accent)}
+.stat-trend{font-size:12px;margin-top:4px}
+.stat-trend.up{color:var(--success)}
+.stat-trend.down{color:var(--danger)}
+
+/* TABLE */
+.table-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:24px}
+.table-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.table-header h3{font-size:16px;font-weight:600}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;padding:10px 16px;font-family:var(--font-mono);font-size:10px;letter-spacing:0.1em;color:var(--faint);text-transform:uppercase;border-bottom:1px solid var(--border)}
+td{padding:12px 16px;border-bottom:1px solid var(--border);font-size:13px;color:var(--text)}
+tr:hover td{background:var(--bg-elev)}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:10px;font-weight:600;text-transform:uppercase}
+.badge-success{background:rgba(16,185,129,0.15);color:var(--success)}
+.badge-warning{background:rgba(245,158,11,0.15);color:var(--warning)}
+.badge-danger{background:rgba(239,68,68,0.15);color:var(--danger)}
+.badge-info{background:rgba(6,182,212,0.15);color:var(--accent2)}
+
+/* FILE UPLOAD */
+.upload-zone{border:2px dashed var(--border-strong);border-radius:12px;padding:40px;text-align:center;cursor:pointer;transition:border-color .15s}
+.upload-zone:hover{border-color:var(--accent)}
+.upload-zone.dragging{border-color:var(--accent);background:rgba(168,85,247,0.05)}
+.upload-icon{font-size:48px;margin-bottom:16px}
+.upload-text{font-size:16px;color:var(--text);margin-bottom:4px}
+.upload-hint{font-size:12px;color:var(--faint)}
+
+/* EMAIL COMPOSER */
+.composer{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:24px}
+.composer input,.composer textarea{width:100%;padding:10px 14px;background:var(--bg-elev);border:1px solid var(--border-strong);border-radius:8px;color:var(--text);font-size:14px;outline:none;box-sizing:border-box;margin-bottom:12px;font-family:var(--font-en)}
+.composer textarea{min-height:120px;resize:vertical}
+
+/* PRICING */
+.pricing{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;max-width:1000px;margin:0 auto;padding:40px 24px}
+.price-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:32px;position:relative}
+.price-card.popular{border-color:var(--accent);background:linear-gradient(135deg,rgba(168,85,247,0.05),var(--bg-card))}
+.popular-tag{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;padding:4px 16px;border-radius:20px;font-size:11px;font-weight:600}
+.price-name{font-size:20px;font-weight:600;margin-bottom:8px}
+.price-desc{color:var(--dim);font-size:13px;margin-bottom:24px}
+.price-amount{font-size:48px;font-weight:700;margin-bottom:24px}
+.price-amount span{font-size:14px;color:var(--faint)}
+.price-features{list-style:none;padding:0;margin:0 0 24px}
+.price-features li{padding:6px 0;font-size:13px;color:var(--dim);display:flex;align-items:center;gap:8px}
+.price-features li::before{content:'✓';color:var(--success);font-weight:bold}
+.price-btn{width:100%;padding:12px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600;border:none;font-family:var(--font-en)}
+.price-btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:white}
+.price-btn.secondary{background:var(--bg-elev);border:1px solid var(--border-strong);color:var(--text)}
+
+/* AVATAR */
+.avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:inline-flex;align-items:center;justify-content:center;color:white;font-size:13px;font-weight:600;margin-right:8px;vertical-align:middle}
+
+/* LOADING */
+.loading{text-align:center;padding:40px;color:var(--faint)}
+.spinner{display:inline-block;width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* EMPTY */
+.empty{text-align:center;padding:40px;color:var(--faint)}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--bg-card);border:1px solid var(--accent);border-left:4px solid var(--accent);border-radius:8px;padding:14px 20px;box-shadow:0 8px 24px rgba(0,0,0,0.4);z-index:9999;max-width:360px;animation:slideIn .2s ease}
+.toast.success{border-color:var(--success);border-left-color:var(--success)}
+.toast.error{border-color:var(--danger);border-left-color:var(--danger)}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* RESPONSIVE */
+@media(max-width:768px){.stats-grid{grid-template-columns:repeat(2,1fr)}.pricing{grid-template-columns:1fr}.hero h1{font-size:36px}}
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+// ============ ELMOORX RUNTIME ============
+let activeObserver=null;
+function $state(initial){const deps=new Set();let value=initial;const read=()=>{if(activeObserver)deps.add(activeObserver);return value};read.set=(next)=>{const r=typeof next==="function"?next(value):next;if(Object.is(r,value))return;value=r;for(const d of[...deps])d()};return read}
+function $effect(fn){let cleanup=null;const run=()=>{const prev=activeObserver;activeObserver=run;try{if(typeof cleanup==="function")cleanup();cleanup=fn()}finally{activeObserver=prev}};run();return()=>{if(typeof cleanup==="function")cleanup()}}
+function $store(initial){const signals=new Map();const getSignal=(path,current)=>{let s=signals.get(path);if(!s){s=$state(current);signals.set(path,s)}return s};return new Proxy(initial,{get(target,prop,receiver){if(typeof prop==="symbol")return Reflect.get(target,prop,receiver);const value=Reflect.get(target,prop,receiver);const sig=getSignal(prop,value);sig();if(Array.isArray(value)){return new Proxy(value,{get(arr,p){if(["push","pop","shift","unshift","splice"].includes(p)){const orig=arr[p].bind(arr);return(...args)=>{const r=orig(...args);getSignal(prop,arr).set([...arr]);return r}}return arr[p]},set(arr,p,v,r){const ok=Reflect.set(arr,p,v,r);if(p!=="length")getSignal(prop,arr).set([...arr]);return ok}})}return value},set(target,prop,value,receiver){const prev=Reflect.get(target,prop,receiver);const ok=Reflect.set(target,prop,value,receiver);if(!Object.is(prev,value))getSignal(prop,value).set(value);return ok}})}
+function h(tag,props,...children){if(typeof tag==="function")return tag({...(props||{}),children:children.flat()});return{tag,props:props||{},children:children.flat(Infinity).filter(c=>c!==null&&c!==undefined&&c!==false&&c!==true)}}
+function renderToDom(node,parent){if(node===null||node===undefined||node===false||node===true)return null;if(typeof node==="string"||typeof node==="number")return document.createTextNode(String(node));if(typeof node==="function"){const t=document.createTextNode("");$effect(()=>{t.nodeValue=String(node()??"")});return t}if(Array.isArray(node)){const f=document.createDocumentFragment();for(const c of node){const e=renderToDom(c,f);if(e)f.appendChild(e)}return f}const el=node;const dom=document.createElement(el.tag);for(const[key,value]of Object.entries(el.props||{})){if(key==="children"||value==null||value===false)continue;if(key==="class"||key==="className")dom.setAttribute("class",String(value));else if(key==="style"&&typeof value==="string")dom.setAttribute("style",value);else if(key.startsWith("on")&&typeof value==="function")dom.addEventListener(key.slice(2).toLowerCase(),value);else if(typeof value==="function"){$effect(()=>{const v=value();if(v==null||v===false){dom.removeAttribute(key);return}dom.setAttribute(key,String(v))})}else dom.setAttribute(key,String(value))}for(const child of el.children||[]){const c=renderToDom(child,dom);if(c)dom.appendChild(c)}return dom}
+function mount(node,parent){const el=renderToDom(node,parent);if(el)parent.appendChild(el)}
+
+// ============ API CLIENT ============
+const API_BASE = window.location.origin;
+let sessionToken = null;
+
+const api = {
+  async request(path, opts = {}) {
+    const headers = { "Content-Type": "application/json", ...opts.headers };
+    if (sessionToken) headers["Cookie"] = `session=${sessionToken}`;
+    const res = await fetch(`${API_BASE}${path}`, {
+      ...opts,
+      headers,
+      credentials: "include",
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    return data;
+  },
+  async get(path) { return this.request(path); },
+  async post(path, body) { return this.request(path, { method: "POST", body: JSON.stringify(body) }); },
+  async patch(path, body) { return this.request(path, { method: "PATCH", body: JSON.stringify(body) }); },
+  async delete(path) { return this.request(path, { method: "DELETE" }); },
+};
+
+// ============ TOAST ============
+function showToast(message, type = "info") {
+  const toast = document.createElement("div");
+  toast.className = `toast ${type}`;
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 4000);
+}
+
+// ============ APP STATE ============
+const appState = $store({
+  view: "home", // home, signin, signup, dashboard, pricing
+  user: null,
+  loading: false,
+  stats: null,
+  emails: [],
+  payments: [],
+  files: [],
+  subscriptions: [],
+  activeTab: "overview",
+});
+
+// ============ AUTH ============
+async function checkAuth() {
+  try {
+    const data = await api.get("/api/auth/me");
+    appState.user = data.user;
+    if (appState.view === "signin" || appState.view === "signup") {
+      appState.view = "dashboard";
+    }
+    return true;
+  } catch {
+    appState.user = null;
+    return false;
+  }
+}
+
+async function signIn(email, password) {
+  appState.loading = true;
+  try {
+    const data = await api.post("/api/auth/signin", { email, password });
+    appState.user = data.user;
+    appState.view = "dashboard";
+    showToast(`Welcome back, ${data.user.name}!`, "success");
+    loadDashboard();
+  } catch (err) {
+    showToast(err.message, "error");
+  } finally {
+    appState.loading = false;
+  }
+}
+
+async function signUp(email, password, name) {
+  appState.loading = true;
+  try {
+    const data = await api.post("/api/auth/signup", { email, password, name });
+    appState.user = data.user;
+    appState.view = "dashboard";
+    showToast(`Welcome to Elmoorx, ${data.user.name}!`, "success");
+    loadDashboard();
+  } catch (err) {
+    showToast(err.message, "error");
+  } finally {
+    appState.loading = false;
+  }
+}
+
+async function signOut() {
+  await api.post("/api/auth/signout");
+  appState.user = null;
+  appState.view = "home";
+  showToast("Signed out", "success");
+}
+
+// ============ DASHBOARD DATA ============
+async function loadDashboard() {
+  try {
+    const [health, emails, payments, files] = await Promise.all([
+      api.get("/api/health"),
+      api.get("/api/emails"),
+      api.get("/api/payments"),
+      api.get("/api/files"),
+    ]);
+    appState.stats = health;
+    appState.emails = emails.emails || [];
+    appState.payments = payments.payments || [];
+    appState.files = files.files || [];
+  } catch (err) {
+    console.error("Dashboard load error:", err);
+  }
+}
+
+async function sendEmail(to, subject, body) {
+  try {
+    const data = await api.post("/api/emails/send", { to, subject, body });
+    appState.emails = [data.email, ...appState.emails];
+    showToast("Email sent!", "success");
+  } catch (err) {
+    showToast(err.message, "error");
+  }
+}
+
+async function processPayment(amount, description) {
+  try {
+    const data = await api.post("/api/payments/checkout", { amount, currency: "USD", description });
+    if (data.payment) {
+      appState.payments = [data.payment, ...appState.payments];
+      showToast(`Payment $${amount} succeeded!`, "success");
+    }
+  } catch (err) {
+    showToast(err.message, "error");
+  }
+}
+
+async function uploadFile(filename, content, contentType) {
+  try {
+    const data = await api.post("/api/files/upload", { filename, content, contentType });
+    appState.files = [data.file, ...appState.files];
+    showToast("File uploaded!", "success");
+  } catch (err) {
+    showToast(err.message, "error");
+  }
+}
+
+async function subscribe(planId) {
+  try {
+    await api.post("/api/subscriptions", { planId });
+    appState.user = { ...appState.user, plan: planId };
+    showToast(`${planId} plan activated!`, "success");
+    loadDashboard();
+  } catch (err) {
+    showToast(err.message, "error");
+  }
+}
+
+// ============ COMPONENTS ============
+
+function Nav() {
+  return h("nav", { class: "nav" },
+    h("div", { class: "nav-inner" },
+      h("div", { class: "brand", onClick: () => appState.view = "home", style: "cursor:pointer" },
+        h("div", { class: "orb" }),
+        h("span", null, "Elmoorx"),
+      ),
+      h("div", { class: "nav-links" },
+        () => appState.user
+          ? h("div", { style: "display:flex;gap:16px;align-items:center" },
+              h("span", { style: "color:var(--dim);font-size:13px" },
+                h("span", { class: "avatar" }, () => appState.user.name.charAt(0)),
+                () => appState.user.name,
+              ),
+              h("button", { class: "btn btn-secondary btn-sm", onClick: signOut }, "Sign Out"),
+            )
+          : h("div", { style: "display:flex;gap:12px" },
+              h("button", { class: "btn btn-secondary btn-sm", onClick: () => appState.view = "signin" }, "Sign In"),
+              h("button", { class: "btn btn-primary btn-sm", onClick: () => appState.view = "signup" }, "Get Started"),
+            ),
+      ),
+    ),
+  );
+}
+
+function Hero() {
+  return h("section", { class: "hero" },
+    h("h1", null, "Elmoorx SaaS"),
+    h("p", null, "Full-stack application built with Elmoorx Framework. Authentication, payments, file storage, email, and real-time — all in one server."),
+    h("div", { style: "display:flex;gap:12px;justify-content:center;margin-bottom:32px" },
+      h("button", { class: "btn btn-primary", onClick: () => appState.view = appState.user ? "dashboard" : "signup" },
+        () => appState.user ? "Go to Dashboard" : "Start Free",
+      ),
+      h("button", { class: "btn btn-secondary", onClick: () => appState.view = "pricing" }, "View Pricing"),
+    ),
+    h("div", { class: "hero-stats" },
+      h("div", null, h("div", { class: "hs-num" }, "20"), h("div", { class: "hs-lbl" }, "API Endpoints")),
+      h("div", null, h("div", { class: "hs-num" }, "A+"), h("div", { class: "hs-lbl" }, "Security")),
+      h("div", null, h("div", { class: "hs-num" }, "Real"), h("div", { class: "hs-lbl" }, "Backend")),
+      h("div", null, h("div", { class: "hs-num" }, "WS"), h("div", { class: "hs-lbl" }, "Realtime")),
+    ),
+  );
+}
+
+function SignInPage() {
+  const email = $state("");
+  const password = $state("");
+  const error = $state(null);
+
+  return h("div", { class: "auth-page" },
+    h("div", { class: "auth-card" },
+      h("h2", null, "Welcome Back"),
+      h("p", null, "Sign in to your Elmoorx account"),
+      () => error() ? h("div", { class: "error-msg" }, error()) : null,
+      h("div", { class: "field" },
+        h("label", null, "Email"),
+        h("input", { type: "email", placeholder: "you@example.com", value: () => email(),
+          onInput: (e) => email.set(e.target.value) }),
+      ),
+      h("div", { class: "field" },
+        h("label", null, "Password"),
+        h("input", { type: "password", placeholder: "••••••••", value: () => password(),
+          onInput: (e) => password.set(e.target.value),
+          onKeyDown: (e) => { if (e.key === "Enter") signIn(email(), password()); } }),
+      ),
+      h("button", { class: "btn btn-primary", style: "width:100%", onClick: () => signIn(email(), password()),
+        disabled: () => appState.loading },
+        () => appState.loading ? "Signing in..." : "Sign In"),
+      h("div", { class: "auth-switch" }, "Don't have an account? ",
+        h("a", { onClick: () => appState.view = "signup" }, "Sign up")),
+    ),
+  );
+}
+
+function SignUpPage() {
+  const name = $state("");
+  const email = $state("");
+  const password = $state("");
+  const error = $state(null);
+
+  return h("div", { class: "auth-page" },
+    h("div", { class: "auth-card" },
+      h("h2", null, "Create Account"),
+      h("p", null, "Start building with Elmoorx today"),
+      () => error() ? h("div", { class: "error-msg" }, error()) : null,
+      h("div", { class: "field" },
+        h("label", null, "Name"),
+        h("input", { type: "text", placeholder: "Your name", value: () => name(),
+          onInput: (e) => name.set(e.target.value) }),
+      ),
+      h("div", { class: "field" },
+        h("label", null, "Email"),
+        h("input", { type: "email", placeholder: "you@example.com", value: () => email(),
+          onInput: (e) => email.set(e.target.value) }),
+      ),
+      h("div", { class: "field" },
+        h("label", null, "Password"),
+        h("input", { type: "password", placeholder: "Min 8 characters", value: () => password(),
+          onInput: (e) => password.set(e.target.value),
+          onKeyDown: (e) => { if (e.key === "Enter") signUp(email(), password(), name()) } }),
+      ),
+      h("button", { class: "btn btn-primary", style: "width:100%", onClick: () => signUp(email(), password(), name()),
+        disabled: () => appState.loading },
+        () => appState.loading ? "Creating account..." : "Create Account"),
+      h("div", { class: "auth-switch" }, "Already have an account? ",
+        h("a", { onClick: () => appState.view = "signin" }, "Sign in")),
+    ),
+  );
+}
+
+function Dashboard() {
+  return h("div", { class: "dash" },
+    h("div", { class: "dash-header" },
+      h("div", null,
+        h("div", { class: "dash-title" }, () => `Welcome, ${appState.user?.name || "User"}`),
+        h("div", { class: "dash-sub" }, () => `Plan: ${appState.user?.plan || "free"} · ${appState.user?.email}`),
+      ),
+      h("button", { class: "btn btn-primary btn-sm", onClick: loadDashboard }, "↻ Refresh"),
+    ),
+    // Tabs
+    h("div", { class: "tabs" },
+      ...["overview", "emails", "payments", "files"].map(t =>
+        h("button", {
+          class: () => appState.activeTab === t ? "tab active" : "tab",
+          onClick: () => appState.activeTab = t,
+        }, t.charAt(0).toUpperCase() + t.slice(1)),
+      ),
+    ),
+    // Tab content
+    () => {
+      const tab = appState.activeTab;
+      if (tab === "overview") return Overview();
+      if (tab === "emails") return EmailsTab();
+      if (tab === "payments") return PaymentsTab();
+      if (tab === "files") return FilesTab();
+      return null;
+    },
+  );
+}
+
+function Overview() {
+  return h("div", null,
+    h("div", { class: "stats-grid" },
+      h("div", { class: "stat-card" },
+        h("div", { class: "stat-label" }, "Emails Sent"),
+        h("div", { class: "stat-value" }, () => String(appState.emails.length)),
+      ),
+      h("div", { class: "stat-card" },
+        h("div", { class: "stat-label" }, "Payments"),
+        h("div", { class: "stat-value" }, () => String(appState.payments.length)),
+      ),
+      h("div", { class: "stat-card" },
+        h("div", { class: "stat-label" }, "Files"),
+        h("div", { class: "stat-value" }, () => String(appState.files.length)),
+      ),
+      h("div", { class: "stat-card" },
+        h("div", { class: "stat-label" }, "Plan"),
+        h("div", { class: "stat-value" }, () => (appState.user?.plan || "free").toUpperCase()),
+      ),
+    ),
+    // Quick actions
+    h("div", { class: "table-card" },
+      h("div", { class: "table-header" },
+        h("h3", null, "Quick Actions"),
+      ),
+      h("div", { style: "padding:20px;display:flex;gap:12px;flex-wrap:wrap" },
+        h("button", { class: "btn btn-primary btn-sm", onClick: () => appState.activeTab = "emails" }, "📧 Send Email"),
+        h("button", { class: "btn btn-secondary btn-sm", onClick: () => processPayment(29, "Pro upgrade") }, "💳 Test Payment"),
+        h("button", { class: "btn btn-secondary btn-sm", onClick: () => appState.activeTab = "files" }, "📁 Upload File"),
+        h("button", { class: "btn btn-secondary btn-sm", onClick: () => appState.view = "pricing" }, "⬆ Upgrade Plan"),
+      ),
+    ),
+    // Server health
+    () => appState.stats ? h("div", { class: "table-card" },
+      h("div", { class: "table-header" }, h("h3", null, "Server Health")),
+      h("div", { style: "padding:20px" },
+        h("div", { style: "display:grid;grid-template-columns:repeat(3,1fr);gap:12px" },
+          h("div", { style: "text-align:center" },
+            h("div", { style: "font-size:24px;font-weight:700;color:var(--success)" }, appState.stats.status),
+            h("div", { style: "font-size:11px;color:var(--faint);text-transform:uppercase" }, "Status"),
+          ),
+          h("div", { style: "text-align:center" },
+            h("div", { style: "font-size:24px;font-weight:700;color:var(--accent)" }, Math.round(appState.stats.uptime) + "s"),
+            h("div", { style: "font-size:11px;color:var(--faint);text-transform:uppercase" }, "Uptime"),
+          ),
+          h("div", { style: "text-align:center" },
+            h("div", { style: "font-size:24px;font-weight:700;color:var(--accent2)" }, appState.stats.memory),
+            h("div", { style: "font-size:11px;color:var(--faint);text-transform:uppercase" }, "Memory"),
+          ),
+        ),
+      ),
+    ) : null,
+  );
+}
+
+function EmailsTab() {
+  const to = $state("");
+  const subject = $state("");
+  const body = $state("");
+
+  return h("div", null,
+    h("div", { class: "composer" },
+      h("input", { type: "email", placeholder: "To:", value: () => to(), onInput: (e) => to.set(e.target.value) }),
+      h("input", { type: "text", placeholder: "Subject:", value: () => subject(), onInput: (e) => subject.set(e.target.value) }),
+      h("textarea", { placeholder: "Message...", value: () => body(), onInput: (e) => body.set(e.target.value) }),
+      h("button", { class: "btn btn-primary", onClick: () => {
+        if (to() && subject() && body()) sendEmail(to(), subject(), body());
+        else showToast("Fill all fields", "error");
+      }}, "Send Email"),
+    ),
+    h("div", { class: "table-card" },
+      h("div", { class: "table-header" }, h("h3", null, "Sent Emails")),
+      () => appState.emails.length === 0
+        ? h("div", { class: "empty" }, "No emails sent yet")
+        : h("table", null,
+            h("thead", null, h("tr", null, h("th", null, "To"), h("th", null, "Subject"), h("th", null, "Status"), h("th", null, "Date"))),
+            h("tbody", null,
+              ...appState.emails.map(e => h("tr", { key: e.id },
+                h("td", null, e.to),
+                h("td", null, e.subject),
+                h("td", null, h("span", { class: `badge badge-${e.status === "sent" ? "success" : "danger"}` }, e.status)),
+                h("td", null, new Date(e.sentAt).toLocaleString()),
+              )),
+            ),
+          ),
+    ),
+  );
+}
+
+function PaymentsTab() {
+  const amount = $state("");
+  const desc = $state("");
+
+  return h("div", null,
+    h("div", { class: "composer" },
+      h("div", { style: "display:flex;gap:12px" },
+        h("input", { type: "number", placeholder: "Amount ($)", value: () => amount(), onInput: (e) => amount.set(e.target.value), style: "flex:1" }),
+        h("input", { type: "text", placeholder: "Description", value: () => desc(), onInput: (e) => desc.set(e.target.value), style: "flex:2" }),
+      ),
+      h("button", { class: "btn btn-primary", onClick: () => {
+        if (amount() && desc()) processPayment(parseFloat(amount()), desc());
+        else showToast("Fill amount and description", "error");
+      }}, "Process Payment"),
+    ),
+    h("div", { class: "table-card" },
+      h("div", { class: "table-header" }, h("h3", null, "Payment History")),
+      () => appState.payments.length === 0
+        ? h("div", { class: "empty" }, "No payments yet")
+        : h("table", null,
+            h("thead", null, h("tr", null, h("th", null, "ID"), h("th", null, "Amount"), h("th", null, "Description"), h("th", null, "Status"), h("th", null, "Date"))),
+            h("tbody", null,
+              ...appState.payments.map(p => h("tr", { key: p.id },
+                h("td", { style: "font-family:var(--font-mono);font-size:11px" }, p.id.slice(0, 16) + "..."),
+                h("td", { style: "font-weight:600" }, `$${p.amount} ${p.currency}`),
+                h("td", null, p.description),
+                h("td", null, h("span", { class: `badge badge-${p.status === "succeeded" ? "success" : "danger"}` }, p.status)),
+                h("td", null, new Date(p.createdAt).toLocaleString()),
+              )),
+            ),
+          ),
+    ),
+  );
+}
+
+function FilesTab() {
+  const filename = $state("");
+  const fileContent = $state("");
+
+  return h("div", null,
+    h("div", { class: "composer" },
+      h("input", { type: "text", placeholder: "Filename (e.g. notes.txt)", value: () => filename(), onInput: (e) => filename.set(e.target.value) }),
+      h("textarea", { placeholder: "File content...", value: () => fileContent(), onInput: (e) => fileContent.set(e.target.value) }),
+      h("button", { class: "btn btn-primary", onClick: () => {
+        if (filename() && fileContent()) {
+          uploadFile(filename(), btoa(fileContent()), "text/plain");
+          filename.set(""); fileContent.set("");
+        } else showToast("Fill filename and content", "error");
+      }}, "Upload File"),
+    ),
+    h("div", { class: "table-card" },
+      h("div", { class: "table-header" }, h("h3", null, "Your Files")),
+      () => appState.files.length === 0
+        ? h("div", { class: "empty" }, "No files uploaded yet")
+        : h("table", null,
+            h("thead", null, h("tr", null, h("th", null, "Filename"), h("th", null, "Size"), h("th", null, "Date"), h("th", null, "Actions"))),
+            h("tbody", null,
+              ...appState.files.map(f => h("tr", { key: f.id },
+                h("td", null, "📄 ", f.filename),
+                h("td", null, f.size + " bytes"),
+                h("td", null, new Date(f.createdAt).toLocaleString()),
+                h("td", null,
+                  h("a", { href: `${API_BASE}/api/files/${f.id}`, class: "btn btn-secondary btn-sm" }, "Download"),
+                ),
+              )),
+            ),
+          ),
+    ),
+  );
+}
+
+function Pricing() {
+  return h("div", { class: "pricing" },
+    h("div", { class: "price-card" },
+      h("div", { class: "price-name" }, "Free"),
+      h("div", { class: "price-desc" }, "Perfect for trying out Elmoorx"),
+      h("div", { class: "price-amount" }, "$0<span>/month</span>"),
+      h("ul", { class: "price-features" },
+        h("li", null, "1 project"),
+        h("li", null, "100 API calls/day"),
+        h("li", null, "Community support"),
+        h("li", null, "Basic analytics"),
+      ),
+      h("button", { class: "price-btn secondary", onClick: () => subscribe("free") }, "Current Plan"),
+    ),
+    h("div", { class: "price-card popular" },
+      h("div", { class: "popular-tag" }, "MOST POPULAR"),
+      h("div", { class: "price-name" }, "Pro"),
+      h("div", { class: "price-desc" }, "For growing teams"),
+      h("div", { class: "price-amount" }, "$29<span>/month</span>"),
+      h("ul", { class: "price-features" },
+        h("li", null, "10 projects"),
+        h("li", null, "10K API calls/day"),
+        h("li", null, "Priority support"),
+        h("li", null, "Advanced analytics"),
+        h("li", null, "Custom domains"),
+      ),
+      h("button", { class: "price-btn primary", onClick: () => subscribe("pro") }, "Upgrade to Pro"),
+    ),
+    h("div", { class: "price-card" },
+      h("div", { class: "price-name" }, "Enterprise"),
+      h("div", { class: "price-desc" }, "For large-scale apps"),
+      h("div", { class: "price-amount" }, "$299<span>/month</span>"),
+      h("ul", { class: "price-features" },
+        h("li", null, "Unlimited projects"),
+        h("li", null, "Unlimited API calls"),
+        h("li", null, "24/7 phone support"),
+        h("li", null, "Dedicated server"),
+        h("li", null, "SLA 99.99%"),
+      ),
+      h("button", { class: "price-btn secondary", onClick: () => subscribe("enterprise") }, "Contact Sales"),
+    ),
+  );
+}
+
+// ============ MAIN APP ============
+
+function App() {
+  return h("div", null,
+    Nav(),
+    () => {
+      const view = appState.view;
+      if (!appState.user && (view === "dashboard")) {
+        appState.view = "signin";
+        return h("div", { class: "loading" }, h("div", { class: "spinner" }));
+      }
+      if (view === "home") return h("div", null, Hero());
+      if (view === "signin") return SignInPage();
+      if (view === "signup") return SignUpPage();
+      if (view === "pricing") return Pricing();
+      if (view === "dashboard") return Dashboard();
+      return h("div", { class: "loading" }, "Loading...");
+    },
+  );
+}
+
+// ============ INIT ============
+mount(App(), document.getElementById("app"));
+
+// Check auth on load
+checkAuth().then(() => {
+  if (appState.user) {
+    appState.view = "dashboard";
+    loadDashboard();
+  }
+});
+
+console.log("%c Elmoorx SaaS ", "background:linear-gradient(135deg,#A855F7,#06B6D4);color:white;font-weight:bold;padding:4px 8px;border-radius:4px");
+console.log("Full-stack app running on Elmoorx Framework v2.0");
+</script>
+
+</body>
+</html>

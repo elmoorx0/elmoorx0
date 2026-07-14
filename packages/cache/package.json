@@ -1,0 +1,42 @@
+{
+  "name": "@elmoorx/cache",
+  "version": "3.0.0-alpha.2",
+  "description": "Multi-tier cache: memory, Redis, with TTL, LRU, tags, invalidation",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@elmoorx/runtime": "*"
+  },
+  "license": "MIT",
+  "author": "Elmoorx Framework",
+  "homepage": "https://elmoorx.dev/packages/cache",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/elmoorx0/elmoorx0",
+    "directory": "packages/cache"
+  },
+  "bugs": {
+    "url": "https://github.com/elmoorx0/elmoorx0/issues"
+  },
+  "keywords": [
+    "elmoorx",
+    "framework",
+    "cache"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}

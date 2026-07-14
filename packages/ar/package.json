@@ -1,0 +1,42 @@
+{
+  "name": "@elmoorx/ar",
+  "version": "3.0.0-alpha.2",
+  "description": "Augmented reality: WebXR, marker tracking, 3D models, AR sessions",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@elmoorx/runtime": "*"
+  },
+  "license": "MIT",
+  "author": "Elmoorx Framework",
+  "homepage": "https://elmoorx.dev/packages/ar",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/elmoorx0/elmoorx0",
+    "directory": "packages/ar"
+  },
+  "bugs": {
+    "url": "https://github.com/elmoorx0/elmoorx0/issues"
+  },
+  "keywords": [
+    "elmoorx",
+    "framework",
+    "ar"
+  ],
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  }
+}

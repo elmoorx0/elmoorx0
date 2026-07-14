@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Elmoorx DevTools — Real-time Debug Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0A0A0F;
+  --bg-elev: #14141B;
+  --bg-card: #1A1A24;
+  --bg-code: #0F0F17;
+  --border: #2A2A38;
+  --text: #E4E4E7;
+  --text-dim: #A1A1AA;
+  --text-faint: #71717A;
+  --accent: #A855F7;
+  --accent-2: #06B6D4;
+  --success: #10B981;
+  --warning: #F59E0B;
+  --danger: #EF4444;
+  --font-en: 'Space Grotesk', 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: 'Inter', sans-serif; font-size: 13px;
+  -webkit-font-smoothing: antialiased; padding: 20px;
+}
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.brand { display: flex; align-items: center; gap: 10px; font-family: var(--font-en); font-weight: 700; font-size: 20px; }
+.orb { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, #A855F7, #06B6D4); position: relative; box-shadow: 0 0 24px rgba(168,85,247,0.35); }
+.orb::after { content: ''; position: absolute; inset: 7px; border-radius: 4px; background: var(--bg); }
+.status { display: flex; gap: 16px; align-items: center; font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); }
+.live-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--success); margin-right: 6px; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+.card-h { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.card-title { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.2em; color: var(--accent); text-transform: uppercase; }
+.card-value { font-family: var(--font-en); font-size: 28px; font-weight: 700; color: var(--text); }
+.card-trend { font-size: 11px; color: var(--success); font-family: var(--font-mono); }
+.signal-list { max-height: 300px; overflow-y: auto; font-family: var(--font-mono); font-size: 11px; }
+.signal-row { display: grid; grid-template-columns: 100px 1fr 60px; padding: 6px 8px; border-radius: 4px; gap: 8px; align-items: center; border-bottom: 1px solid var(--border); }
+.signal-row:hover { background: var(--bg-elev); }
+.signal-id { color: var(--accent); }
+.signal-value { color: var(--text); word-break: break-all; }
+.signal-deps { color: var(--text-faint); text-align: right; }
+.chart { height: 120px; position: relative; background: var(--bg-elev); border-radius: 6px; padding: 8px; }
+.chart-svg { width: 100%; height: 100%; }
+.island-list { font-family: var(--font-mono); font-size: 11px; }
+.island-row { display: grid; grid-template-columns: 1fr 80px 80px; padding: 6px 8px; border-bottom: 1px solid var(--border); gap: 8px; }
+.gauge { height: 8px; background: var(--bg-elev); border-radius: 4px; overflow: hidden; margin-top: 8px; }
+.gauge-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); border-radius: 4px; }
+.tabs { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid var(--border); }
+.tab { padding: 8px 16px; background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 12px; font-family: var(--font-mono); border-bottom: 2px solid transparent; text-transform: uppercase; letter-spacing: 0.1em; }
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+.event-log { max-height: 400px; overflow-y: auto; font-family: var(--font-mono); font-size: 11px; background: var(--bg-code); border-radius: 6px; padding: 12px; }
+.event-row { display: grid; grid-template-columns: 80px 80px 1fr 60px; padding: 4px 0; border-bottom: 1px solid var(--border); gap: 12px; }
+.event-time { color: var(--text-faint); }
+.event-type { padding: 1px 6px; border-radius: 3px; font-size: 9px; text-transform: uppercase; font-weight: 600; text-align: center; }
+.event-type.signal { background: rgba(168,85,247,0.2); color: var(--accent); }
+.event-type.effect { background: rgba(6,182,212,0.2); color: var(--accent-2); }
+.event-type.island { background: rgba(16,185,129,0.2); color: var(--success); }
+.event-type.error { background: rgba(239,68,68,0.2); color: var(--danger); }
+.event-msg { color: var(--text); word-break: break-all; }
+.event-dur { color: var(--text-faint); text-align: right; }
+.toolbar { display: flex; gap: 8px; margin-bottom: 16px; align-items: center; }
+.btn { background: var(--bg-card); border: 1px solid var(--border); color: var(--text); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; font-family: var(--font-mono); }
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+.btn input { margin-right: 4px; }
+.empty-state { text-align: center; padding: 40px 20px; color: var(--text-faint); font-size: 12px; }
+input.btn { text-align: left; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="brand"><div class="orb"></div>Elmoorx DevTools</div>
+  <div class="status">
+    <span><span class="live-dot"></span>Live</span>
+    <span id="uptime">00:00:00</span>
+    <span id="fps">60 FPS</span>
+  </div>
+</div>
+
+<div class="grid">
+  <div class="card"><div class="card-h"><div class="card-title">Active Signals</div><div class="card-trend" id="signals-trend">+0/s</div></div><div class="card-value" id="signals-count">0</div><div class="gauge"><div class="gauge-fill" id="signals-gauge" style="width:0%"></div></div></div>
+  <div class="card"><div class="card-h"><div class="card-title">Active Effects</div><div class="card-trend" id="effects-trend">+0/s</div></div><div class="card-value" id="effects-count">0</div><div class="gauge"><div class="gauge-fill" id="effects-gauge" style="width:0%"></div></div></div>
+  <div class="card"><div class="card-h"><div class="card-title">Hydrated Islands</div><div class="card-trend">JS: <span id="islands-bytes">0b</span></div></div><div class="card-value" id="islands-count">0</div><div class="gauge"><div class="gauge-fill" id="islands-gauge" style="width:0%"></div></div></div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" data-tab="signals">Signals</button>
+  <button class="tab" data-tab="islands">Islands</button>
+  <button class="tab" data-tab="performance">Performance</button>
+  <button class="tab" data-tab="events">Event Log</button>
+  <button class="tab" data-tab="memory">Memory</button>
+</div>
+
+<div class="tab-content active" id="tab-signals">
+  <div class="toolbar">
+    <button class="btn" id="refresh-signals">Refresh</button>
+    <input type="text" class="btn" placeholder="Filter..." id="signal-filter" style="flex:1">
+  </div>
+  <div class="signal-list" id="signal-list"><div class="empty-state">No signals yet.</div></div>
+</div>
+
+<div class="tab-content" id="tab-islands"><div class="island-list" id="island-list"><div class="empty-state">No islands hydrated.</div></div></div>
+
+<div class="tab-content" id="tab-performance">
+  <div class="card"><div class="card-h"><div class="card-title">Render Time (ms) — last 60s</div><div class="card-trend" id="render-avg">avg: 0ms</div></div><div class="chart"><svg class="chart-svg" id="perf-chart"></svg></div></div>
+  <div class="card" style="margin-top:16px"><div class="card-h"><div class="card-title">Memory Usage (MB) — last 60s</div><div class="card-trend" id="mem-avg">avg: 0 MB</div></div><div class="chart"><svg class="chart-svg" id="mem-chart"></svg></div></div>
+</div>
+
+<div class="tab-content" id="tab-events">
+  <div class="toolbar">
+    <button class="btn" id="clear-events">Clear Log</button>
+    <label class="btn"><input type="checkbox" id="show-signals" checked> Signals</label>
+    <label class="btn"><input type="checkbox" id="show-effects" checked> Effects</label>
+    <label class="btn"><input type="checkbox" id="show-islands" checked> Islands</label>
+  </div>
+  <div class="event-log" id="event-log"><div class="empty-state">Event log is empty.</div></div>
+</div>
+
+<div class="tab-content" id="tab-memory">
+  <div class="grid">
+    <div class="card"><div class="card-title">Used JS Heap</div><div class="card-value" id="mem-used">0 MB</div></div>
+    <div class="card"><div class="card-title">Total JS Heap</div><div class="card-value" id="mem-total">0 MB</div></div>
+    <div class="card"><div class="card-title">Heap Limit</div><div class="card-value" id="mem-limit">0 MB</div></div>
+  </div>
+  <div class="card"><div class="card-title">Heap Composition</div><div id="heap-breakdown" style="margin-top:12px;font-family:var(--font-mono);font-size:11px;"></div></div>
+</div>
+
+<script>
+const state = { signals: [], effects: [], islands: [], events: [], perfHistory: [], memHistory: [], startTime: Date.now(), prevSignalCount: 0, prevEffectCount: 0 };
+
+function generateMockSignals() {
+  state.signals = [
+    { id: 'sig_001', value: JSON.stringify({name:'Amir',role:'admin'}), deps: 3 },
+    { id: 'sig_002', value: '"dark"', deps: 5 },
+    { id: 'sig_003', value: '[{"id":1,"text":"Learn Elmoorx","done":true}]', deps: 2 },
+    { id: 'sig_004', value: '0', deps: 1 },
+    { id: 'sig_005', value: '42', deps: 8 },
+    { id: 'sig_006', value: 'true', deps: 4 },
+  ];
+  state.effects = Array.from({length: 12}, (_, i) => ({ id: `eff_${String(i+1).padStart(3,'0')}`, runs: Math.floor(Math.random()*50)+1, lastMs: Math.random()*2 }));
+  state.islands = [
+    { id: 'island_counter', bytes: 620, location: 'src/Counter.elmoorx.tsx' },
+    { id: 'island_todo', bytes: 480, location: 'src/Todo.elmoorx.tsx' },
+    { id: 'island_navbar', bytes: 320, location: 'src/Navbar.elmoorx.tsx' },
+  ];
+  for (let i = 0; i < 20; i++) {
+    state.events.unshift({ time: new Date(Date.now()-i*1000).toLocaleTimeString(), type: ['signal','effect','island'][Math.floor(Math.random()*3)], msg: ['count.set(5)','cart.push({id:1})','effect re-ran','island hydrated'][Math.floor(Math.random()*4)], dur: Math.random()*5 });
+  }
+}
+
+function renderSignals() {
+  const list = document.getElementById('signal-list');
+  const filter = document.getElementById('signal-filter').value.toLowerCase();
+  const filtered = state.signals.filter(s => s.id.toLowerCase().includes(filter) || s.value.toLowerCase().includes(filter));
+  list.innerHTML = filtered.length === 0 ? '<div class="empty-state">No signals match.</div>' : filtered.map(s => `<div class="signal-row"><span class="signal-id">${s.id}</span><span class="signal-value">${s.value.length>60?s.value.slice(0,60)+'...':s.value}</span><span class="signal-deps">${s.deps} deps</span></div>`).join('');
+}
+
+function renderIslands() {
+  const list = document.getElementById('island-list');
+  list.innerHTML = state.islands.length === 0 ? '<div class="empty-state">No islands hydrated.</div>' : state.islands.map(i => `<div class="island-row"><span style="color:var(--success)">${i.id}</span><span style="color:var(--text-dim);font-size:10px">${i.location}</span><span style="color:var(--accent-2);text-align:right">${i.bytes}b</span></div>`).join('');
+}
+
+function renderEventLog() {
+  const log = document.getElementById('event-log');
+  const filtered = state.events.filter(e => {
+    if (e.type === 'signal' && !document.getElementById('show-signals').checked) return false;
+    if (e.type === 'effect' && !document.getElementById('show-effects').checked) return false;
+    if (e.type === 'island' && !document.getElementById('show-islands').checked) return false;
+    return true;
+  });
+  log.innerHTML = filtered.length === 0 ? '<div class="empty-state">No events.</div>' : filtered.map(e => `<div class="event-row"><span class="event-time">${e.time}</span><span class="event-type ${e.type}">${e.type}</span><span class="event-msg">${e.msg}</span><span class="event-dur">${e.dur.toFixed(2)}ms</span></div>`).join('');
+  log.scrollTop = log.scrollHeight;
+}
+
+function renderMemory() {
+  if (performance.memory) {
+    document.getElementById('mem-used').textContent = (performance.memory.usedJSHeapSize/1048576).toFixed(1) + ' MB';
+    document.getElementById('mem-total').textContent = (performance.memory.totalJSHeapSize/1048576).toFixed(1) + ' MB';
+    document.getElementById('mem-limit').textContent = (performance.memory.jsHeapSizeLimit/1048576).toFixed(1) + ' MB';
+  } else {
+    document.getElementById('mem-used').textContent = 'N/A';
+    document.getElementById('mem-total').textContent = 'N/A';
+    document.getElementById('mem-limit').textContent = 'N/A';
+  }
+  const sb = state.signals.length * 120, eb = state.effects.length * 80, ib = state.islands.reduce((s,i)=>s+i.bytes,0);
+  const dom = document.querySelectorAll('*').length;
+  const total = sb+eb+ib || 1;
+  document.getElementById('heap-breakdown').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 100px 60px;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)"><span>Signals</span><span>${(sb/1024).toFixed(1)} KB</span><span>${Math.round(sb/total*100)}%</span></div>
+    <div style="display:grid;grid-template-columns:1fr 100px 60px;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)"><span>Effects</span><span>${(eb/1024).toFixed(1)} KB</span><span>${Math.round(eb/total*100)}%</span></div>
+    <div style="display:grid;grid-template-columns:1fr 100px 60px;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)"><span>Islands</span><span>${(ib/1024).toFixed(1)} KB</span><span>${Math.round(ib/total*100)}%</span></div>
+    <div style="display:grid;grid-template-columns:1fr 100px 60px;gap:8px;padding:6px 0"><span>DOM Nodes</span><span>${dom}</span><span>—</span></div>
+  `;
+}
+
+function renderCharts() {
+  const perfChart = document.getElementById('perf-chart');
+  const w = perfChart.clientWidth, h = perfChart.clientHeight;
+  if (state.perfHistory.length === 0) { perfChart.innerHTML = '<text x="50%" y="50%" text-anchor="middle" fill="#71717A" font-size="11">Collecting...</text>'; return; }
+  const max = Math.max(...state.perfHistory, 16);
+  const pts = state.perfHistory.map((v,i) => `${(i/(state.perfHistory.length-1))*w},${h-(v/max)*h}`).join(' ');
+  perfChart.innerHTML = `<polyline points="${pts}" fill="none" stroke="#A855F7" stroke-width="2" /><polyline points="0,${h} ${pts} ${w},${h}" fill="rgba(168,85,247,0.1)" stroke="none" />`;
+  document.getElementById('render-avg').textContent = 'avg: ' + (state.perfHistory.reduce((a,b)=>a+b,0)/state.perfHistory.length).toFixed(2) + 'ms';
+
+  const memChart = document.getElementById('mem-chart');
+  if (state.memHistory.length === 0) { memChart.innerHTML = '<text x="50%" y="50%" text-anchor="middle" fill="#71717A" font-size="11">Collecting...</text>'; return; }
+  const memMax = Math.max(...state.memHistory, 10);
+  const memPts = state.memHistory.map((v,i) => `${(i/(state.memHistory.length-1))*w},${h-(v/memMax)*h}`).join(' ');
+  memChart.innerHTML = `<polyline points="${memPts}" fill="none" stroke="#06B6D4" stroke-width="2" /><polyline points="0,${h} ${memPts} ${w},${h}" fill="rgba(6,182,212,0.1)" stroke="none" />`;
+  document.getElementById('mem-avg').textContent = 'avg: ' + (state.memHistory.reduce((a,b)=>a+b,0)/state.memHistory.length).toFixed(1) + ' MB';
+}
+
+function updateStats() {
+  document.getElementById('signals-count').textContent = state.signals.length;
+  document.getElementById('effects-count').textContent = state.effects.length;
+  document.getElementById('islands-count').textContent = state.islands.length;
+  document.getElementById('islands-bytes').textContent = state.islands.reduce((s,i)=>s+i.bytes,0) + 'b';
+  document.getElementById('signals-gauge').style.width = Math.min(100, state.signals.length*5) + '%';
+  document.getElementById('effects-gauge').style.width = Math.min(100, state.effects.length*5) + '%';
+  document.getElementById('islands-gauge').style.width = Math.min(100, state.islands.length*10) + '%';
+  const sd = state.signals.length - state.prevSignalCount;
+  const ed = state.effects.length - state.prevEffectCount;
+  document.getElementById('signals-trend').textContent = (sd>=0?'+':'') + sd + '/s';
+  document.getElementById('effects-trend').textContent = (ed>=0?'+':'') + ed + '/s';
+  state.prevSignalCount = state.signals.length;
+  state.prevEffectCount = state.effects.length;
+  document.getElementById('fps').textContent = (60-Math.floor(Math.random()*3)) + ' FPS';
+  const elapsed = Date.now() - state.startTime;
+  document.getElementById('uptime').textContent = `${String(Math.floor(elapsed/3600000)).padStart(2,'0')}:${String(Math.floor((elapsed%3600000)/60000)).padStart(2,'0')}:${String(Math.floor((elapsed%60000)/1000)).padStart(2,'0')}`;
+}
+
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+  });
+});
+
+document.getElementById('refresh-signals').addEventListener('click', renderSignals);
+document.getElementById('signal-filter').addEventListener('input', renderSignals);
+document.getElementById('clear-events').addEventListener('click', () => { state.events = []; renderEventLog(); });
+
+function simulateActivity() {
+  const events = [
+    { type: 'signal', msg: 'count.set(' + Math.floor(Math.random()*100) + ')' },
+    { type: 'effect', msg: 'effect re-ran (deps: ' + Math.floor(Math.random()*5) + ')' },
+    { type: 'island', msg: 'island hydrated: ' + ['counter','todo','navbar'][Math.floor(Math.random()*3)] },
+  ];
+  const event = events[Math.floor(Math.random()*events.length)];
+  state.events.unshift({ time: new Date().toLocaleTimeString(), type: event.type, msg: event.msg, dur: Math.random()*5 });
+  if (state.events.length > 100) state.events.pop();
+  state.perfHistory.push(Math.random()*8+1);
+  if (state.perfHistory.length > 60) state.perfHistory.shift();
+  const mem = performance.memory ? performance.memory.usedJSHeapSize/1048576 : Math.random()*20+10;
+  state.memHistory.push(mem);
+  if (state.memHistory.length > 60) state.memHistory.shift();
+  if (Math.random() < 0.1 && state.signals.length < 15) {
+    state.signals.push({ id: 'sig_' + String(state.signals.length+1).padStart(3,'0'), value: JSON.stringify(Math.floor(Math.random()*1000)), deps: Math.floor(Math.random()*5) });
+  }
+}
+
+generateMockSignals();
+renderSignals(); renderIslands(); renderEventLog(); renderMemory(); updateStats();
+for (let i = 0; i < 60; i++) { state.perfHistory.push(Math.random()*5+1); state.memHistory.push(Math.random()*15+8); }
+renderCharts();
+
+setInterval(() => {
+  simulateActivity(); updateStats(); renderCharts();
+  const activeTab = document.querySelector('.tab.active').dataset.tab;
+  if (activeTab === 'signals') renderSignals();
+  else if (activeTab === 'islands') renderIslands();
+  else if (activeTab === 'events') renderEventLog();
+  else if (activeTab === 'memory') renderMemory();
+}, 1000);
+
+console.log('%c Elmoorx DevTools v1.0 ', 'background:linear-gradient(135deg,#A855F7,#06B6D4);color:white;font-weight:bold;padding:4px 8px;border-radius:4px');
+</script>
+</body>
+</html>

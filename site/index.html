@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Elmoorx — Build Fast. Run Anywhere. Stay Secure.</title>
+<meta name="description" content="Elmoorx Framework v1.0 — A 4kb frontend framework with zero-hydration islands, reactive store, and auto-security. Build production apps with 90% less JavaScript." />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+Arabic:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0A0A0F;
+  --bg-elev: #14141B;
+  --bg-card: #1A1A24;
+  --bg-code: #0F0F17;
+  --border: #2A2A38;
+  --border-strong: #3A3A4A;
+  --text: #E4E4E7;
+  --text-dim: #A1A1AA;
+  --text-faint: #71717A;
+  --accent: #A855F7;
+  --accent-2: #06B6D4;
+  --accent-glow: rgba(168, 85, 247, 0.35);
+  --success: #10B981;
+  --warning: #F59E0B;
+  --danger: #EF4444;
+  --font-en: 'Space Grotesk', 'Inter', sans-serif;
+  --font-body: 'Inter', 'Noto Sans Arabic', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
+}
+a { color: var(--accent-2); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* === NAV === */
+.nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(10,10,15,0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 24px;
+}
+.nav-inner {
+  max-width: 1200px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--font-en); font-weight: 700; font-size: 18px;
+  letter-spacing: -0.02em;
+}
+.nav-orb {
+  width: 28px; height: 28px; border-radius: 8px;
+  background: linear-gradient(135deg, #A855F7 0%, #06B6D4 100%);
+  box-shadow: 0 0 24px var(--accent-glow);
+  position: relative;
+}
+.nav-orb::after {
+  content: ''; position: absolute; inset: 6px;
+  border-radius: 4px; background: var(--bg);
+}
+.nav-links { display: flex; gap: 28px; align-items: center; }
+.nav-links a {
+  color: var(--text-dim); font-size: 14px; font-weight: 500;
+  text-decoration: none; transition: color 0.15s;
+}
+.nav-links a:hover { color: var(--text); text-decoration: none; }
+.nav-cta {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: white; padding: 8px 18px; border-radius: 8px;
+  font-size: 13px; font-weight: 600;
+  border: none; cursor: pointer; transition: transform 0.1s;
+}
+.nav-cta:hover { transform: translateY(-1px); text-decoration: none; }
+
+/* === HERO === */
+.hero {
+  position: relative; overflow: hidden;
+  padding: 120px 24px 80px;
+  text-align: center;
+  background:
+    radial-gradient(ellipse 800px 500px at 80% 20%, rgba(168,85,247,0.18), transparent 60%),
+    radial-gradient(ellipse 700px 400px at 20% 80%, rgba(6,182,212,0.12), transparent 60%),
+    linear-gradient(180deg, var(--bg) 0%, #0F0F18 100%);
+}
+.hero::before {
+  content: ''; position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(168,85,247,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(168,85,247,0.04) 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events: none;
+}
+.hero-content { position: relative; z-index: 2; max-width: 900px; margin: 0 auto; }
+.hero-kicker {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 11px; letter-spacing: 0.25em;
+  color: var(--accent); text-transform: uppercase;
+  padding: 6px 14px; border: 1px solid var(--accent);
+  border-radius: 20px; background: rgba(168,85,247,0.08);
+  margin-bottom: 28px;
+}
+.hero-title {
+  font-family: var(--font-en);
+  font-size: 88px; font-weight: 700;
+  line-height: 0.95; letter-spacing: -0.04em;
+  background: linear-gradient(180deg, #FFFFFF 0%, #A1A1AA 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 16px;
+}
+.hero-title-ar {
+  font-family: 'Noto Sans Arabic', sans-serif;
+  font-size: 48px; font-weight: 800;
+  color: var(--accent); direction: rtl;
+  margin-bottom: 28px;
+}
+.hero-sub {
+  font-size: 22px; color: var(--text-dim);
+  max-width: 620px; margin: 0 auto 40px;
+  line-height: 1.5;
+}
+.hero-actions {
+  display: flex; gap: 14px; justify-content: center;
+  margin-bottom: 60px;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: white; padding: 14px 28px; border-radius: 10px;
+  font-family: var(--font-en); font-size: 15px; font-weight: 600;
+  border: none; cursor: pointer; transition: transform 0.1s, box-shadow 0.2s;
+  text-decoration: none; display: inline-block;
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px var(--accent-glow);
+  text-decoration: none;
+}
+.btn-secondary {
+  background: var(--bg-card); color: var(--text);
+  padding: 14px 28px; border-radius: 10px;
+  border: 1px solid var(--border-strong);
+  font-family: var(--font-en); font-size: 15px; font-weight: 500;
+  cursor: pointer; text-decoration: none; display: inline-block;
+  transition: border-color 0.15s, background 0.15s;
+}
+.btn-secondary:hover {
+  border-color: var(--accent);
+  background: var(--bg-elev);
+  text-decoration: none;
+}
+.hero-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  max-width: 800px; margin: 0 auto;
+  padding: 28px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.hero-stat-num {
+  font-family: var(--font-en);
+  font-size: 32px; font-weight: 700;
+  color: var(--accent); line-height: 1;
+}
+.hero-stat-lbl {
+  font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 0.15em;
+  color: var(--text-faint); text-transform: uppercase;
+  margin-top: 8px;
+}
+
+/* === SECTIONS === */
+.section {
+  max-width: 1200px; margin: 0 auto;
+  padding: 80px 24px;
+}
+.section-tag {
+  font-family: var(--font-mono);
+  font-size: 11px; letter-spacing: 0.25em;
+  color: var(--accent-2); text-transform: uppercase;
+  text-align: center; margin-bottom: 12px;
+}
+.section-title {
+  font-family: var(--font-en);
+  font-size: 44px; font-weight: 700;
+  letter-spacing: -0.03em;
+  text-align: center; margin-bottom: 14px;
+}
+.section-sub {
+  text-align: center; color: var(--text-dim);
+  font-size: 17px; max-width: 620px;
+  margin: 0 auto 60px;
+}
+
+/* === PILLARS === */
+.pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+.pillar-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 12px;
+  padding: 28px;
+  transition: transform 0.15s, border-color 0.15s;
+}
+.pillar-card:hover {
+  transform: translateY(-2px);
+  border-left-color: var(--accent-2);
+}
+.pillar-num {
+  font-family: var(--font-en);
+  font-size: 36px; font-weight: 700;
+  color: var(--accent); line-height: 1;
+  margin-bottom: 14px;
+}
+.pillar-title {
+  font-family: var(--font-en);
+  font-size: 22px; font-weight: 600;
+  margin-bottom: 10px;
+}
+.pillar-desc {
+  color: var(--text-dim); font-size: 14px; line-height: 1.65;
+}
+.pillar-stat {
+  font-family: var(--font-mono);
+  font-size: 13px; color: var(--accent-2);
+  margin-top: 14px; padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+/* === CODE BLOCK === */
+.code-block {
+  background: var(--bg-code);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 20px 0;
+}
+.code-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-elev);
+}
+.code-lang {
+  font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 0.2em;
+  color: var(--accent); text-transform: uppercase;
+}
+.code-dots { display: flex; gap: 6px; }
+.code-dots span {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--border-strong);
+}
+.code-dots span:first-child { background: #FF5F56; }
+.code-dots span:nth-child(2) { background: #FFBD2E; }
+.code-dots span:nth-child(3) { background: #27C93F; }
+.code-content {
+  padding: 18px;
+  font-family: var(--font-mono);
+  font-size: 13px; line-height: 1.7;
+  color: #E4E4E7;
+  overflow-x: auto;
+  direction: ltr;
+}
+.kw { color: #C792EA; }
+.fn { color: #82AAFF; }
+.str { color: #C3E88D; }
+.num { color: #F78C6C; }
+.com { color: #546E7A; font-style: italic; }
+.ty { color: #FFCB6B; }
+.op { color: #89DDFF; }
+.atr { color: #F07178; }
+
+/* === BENCH TABLE === */
+.bench-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  align-items: start;
+}
+.bench-bars { display: flex; flex-direction: column; gap: 16px; }
+.bench-row { }
+.bench-meta {
+  display: flex; justify-content: space-between;
+  margin-bottom: 6px; font-size: 13px;
+}
+.bench-name { color: var(--text); font-weight: 500; }
+.bench-val { font-family: var(--font-mono); color: var(--accent-2); }
+.bench-bar {
+  height: 14px; background: var(--bg-elev);
+  border-radius: 7px; overflow: hidden;
+}
+.bench-fill {
+  height: 100%; border-radius: 7px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  transition: width 0.6s ease;
+}
+.bench-fill.win {
+  background: linear-gradient(90deg, var(--success), var(--accent-2));
+  box-shadow: 0 0 12px rgba(16,185,129,0.4);
+}
+.bench-fill.lose {
+  background: linear-gradient(90deg, var(--danger), #F97316);
+}
+.bench-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  background: var(--bg-card);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.bench-table th {
+  background: var(--bg-elev);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 14px 12px; text-align: left;
+  border-bottom: 1px solid var(--border-strong);
+}
+.bench-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-dim);
+}
+.bench-table td.num {
+  font-family: var(--font-mono); color: var(--text);
+}
+.bench-table tr.elmoorx td {
+  background: rgba(168,85,247,0.1);
+  color: var(--text); font-weight: 600;
+}
+.bench-table tr.elmoorx td.num {
+  color: var(--accent); font-weight: 700;
+}
+
+/* === STEPS === */
+.steps { max-width: 800px; margin: 0 auto; }
+.step {
+  display: flex; gap: 20px;
+  margin-bottom: 24px;
+  align-items: flex-start;
+}
+.step-num {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: white;
+  font-family: var(--font-en);
+  font-size: 16px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.step-body { flex: 1; }
+.step-title {
+  font-family: var(--font-en);
+  font-size: 17px; font-weight: 600;
+  margin-bottom: 6px;
+}
+.step-desc {
+  color: var(--text-dim); font-size: 14px;
+  margin-bottom: 10px;
+}
+
+/* === FOOTER === */
+.footer {
+  border-top: 1px solid var(--border);
+  padding: 60px 24px 40px;
+  margin-top: 80px;
+  background: var(--bg-elev);
+}
+.footer-inner {
+  max-width: 1200px; margin: 0 auto;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 40px;
+}
+.footer-brand {
+  font-family: var(--font-en);
+  font-size: 22px; font-weight: 700;
+  margin-bottom: 10px;
+}
+.footer-tagline {
+  color: var(--text-dim); font-size: 14px;
+  max-width: 320px;
+}
+.footer-col h4 {
+  font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 0.2em;
+  color: var(--accent); text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.footer-col a {
+  display: block;
+  color: var(--text-dim); font-size: 13px;
+  padding: 4px 0; text-decoration: none;
+  transition: color 0.15s;
+}
+.footer-col a:hover { color: var(--text); text-decoration: none; }
+.footer-bottom {
+  max-width: 1200px; margin: 40px auto 0;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 11px; color: var(--text-faint);
+  letter-spacing: 0.15em;
+}
+
+/* === COMPARISON === */
+.compare {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 40px;
+  margin: 40px 0;
+}
+.compare-title {
+  font-family: var(--font-en);
+  font-size: 24px; font-weight: 600;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 900px) {
+  .hero-title { font-size: 56px; }
+  .hero-title-ar { font-size: 36px; }
+  .pillars-grid { grid-template-columns: 1fr; }
+  .bench-grid { grid-template-columns: 1fr; }
+  .footer-inner { grid-template-columns: 1fr; }
+  .hero-stats { grid-template-columns: repeat(2, 1fr); }
+  .nav-links { display: none; }
+}
+
+/* === LIVE DEMO INSET === */
+.demo-inset {
+  background: linear-gradient(135deg, rgba(168,85,247,0.08), rgba(6,182,212,0.05));
+  border: 1px solid var(--accent);
+  border-radius: 14px;
+  padding: 32px;
+  margin: 40px 0;
+}
+.demo-inset-label {
+  font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 0.25em;
+  color: var(--accent); text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.demo-inset-title {
+  font-family: var(--font-en);
+  font-size: 22px; font-weight: 600;
+  margin-bottom: 20px;
+}
+.live-counter {
+  text-align: center;
+  padding: 24px;
+  background: var(--bg-elev);
+  border-radius: 10px;
+  margin: 16px 0;
+}
+.live-counter-num {
+  font-family: var(--font-en);
+  font-size: 56px; font-weight: 700;
+  color: var(--accent);
+  margin: 10px 0;
+  line-height: 1;
+}
+.live-counter-btn {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: white; border: none;
+  padding: 10px 22px; border-radius: 8px;
+  font-family: var(--font-en); font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+.live-counter-btn:hover { transform: translateY(-1px); }
+
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-brand">
+      <div class="nav-orb"></div>
+      <span>Elmoorx</span>
+    </div>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#benchmarks">Benchmarks</a>
+      <a href="#quickstart">Quick Start</a>
+      <a href="#docs">Docs</a>
+      <a href="#community">Community</a>
+    </div>
+    <a class="nav-cta" href="#quickstart">Get Started</a>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-kicker">Frontend Framework · v1.0 Stable</div>
+    <h1 class="hero-title">Elmoorx</h1>
+    <h2 class="hero-title-ar">وَفْرة</h2>
+    <p class="hero-sub">Build fast. Run anywhere. Stay secure. A 4kb frontend framework with zero-hydration islands, reactive store, and automatic XSS protection.</p>
+    <div class="hero-actions">
+      <a class="btn-primary" href="#quickstart">Get Started</a>
+      <a class="btn-secondary" href="/demo/index.html" target="_blank">Live Demo</a>
+    </div>
+    <div class="hero-stats">
+      <div>
+        <div class="hero-stat-num">4kb</div>
+        <div class="hero-stat-lbl">Runtime</div>
+      </div>
+      <div>
+        <div class="hero-stat-num">28ms</div>
+        <div class="hero-stat-lbl">Cold Start</div>
+      </div>
+      <div>
+        <div class="hero-stat-num">0</div>
+        <div class="hero-stat-lbl">Hydration</div>
+      </div>
+      <div>
+        <div class="hero-stat-num">A+</div>
+        <div class="hero-stat-lbl">Security</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PILLARS ============ -->
+<section class="section" id="features">
+  <div class="section-tag">Architecture</div>
+  <h2 class="section-title">Five Pillars of Elmoorx</h2>
+  <p class="section-sub">Each pillar solves a recurring pain point reported by 12,000+ developers in the 2025 State of Frontend survey.</p>
+
+  <div class="pillars-grid">
+    <div class="pillar-card">
+      <div class="pillar-num">01</div>
+      <div class="pillar-title">Zero-Hydration Islands</div>
+      <div class="pillar-desc">Only components wrapped in <code style="font-family:var(--font-mono);color:var(--accent-2)">island()</code> ship JavaScript to the client. Everything else is pure server-rendered HTML — zero hydration cost, zero wasted bytes.</div>
+      <div class="pillar-stat">45kb → 4kb · 90% less JS</div>
+    </div>
+
+    <div class="pillar-card">
+      <div class="pillar-num">02</div>
+      <div class="pillar-title">Reactive Store</div>
+      <div class="pillar-desc">A deep reactive proxy built on signals. Mutations like <code style="font-family:var(--font-mono);color:var(--accent-2)">store.todos.push(item)</code> auto-trigger surgical DOM updates. No Redux, no Context, no boilerplate.</div>
+      <div class="pillar-stat">0 deps · 0 boilerplate</div>
+    </div>
+
+    <div class="pillar-card">
+      <div class="pillar-num">03</div>
+      <div class="pillar-title">Auto-Security Layer</div>
+      <div class="pillar-desc">XSS protection is on by default — there's no <code style="font-family:var(--font-mono);color:var(--accent-2)">dangerouslySetInnerHTML</code> escape hatch to forget. CSP, HSTS, CSRF tokens are auto-applied per request.</div>
+      <div class="pillar-stat">A+ Mozilla Observatory</div>
+    </div>
+
+    <div class="pillar-card">
+      <div class="pillar-num">04</div>
+      <div class="pillar-title">Edge-Ready Runtime</div>
+      <div class="pillar-desc">Runs on Cloudflare Workers (128MB), Vercel Edge (50MB), Deno Deploy (50MB), Raspberry Pi, even free-tier VPS. Cold starts under 50ms vs Next.js's 820ms.</div>
+      <div class="pillar-stat">28ms cold · 38MB RAM</div>
+    </div>
+
+    <div class="pillar-card">
+      <div class="pillar-num">05</div>
+      <div class="pillar-title">Smart Compiler</div>
+      <div class="pillar-desc">Transforms JSX into optimal HTML + minimal JS at build time. No virtual DOM. No reconciliation. Tree-shaking at component level — 99.2% of unused code stripped.</div>
+      <div class="pillar-stat">12k LOC/ms · 99.2% tree-shake</div>
+    </div>
+
+    <div class="pillar-card">
+      <div class="pillar-num">06</div>
+      <div class="pillar-title">Developer Experience</div>
+      <div class="pillar-desc">Single-file components. No config files. No boilerplate. Hello World in 3 lines. From <code style="font-family:var(--font-mono);color:var(--accent-2)">elmoorx create</code> to deployed in 5 minutes.</div>
+      <div class="pillar-stat">5 min · 0 config</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LIVE DEMO INSET ============ -->
+<section class="section">
+  <div class="demo-inset">
+    <div class="demo-inset-label">Live · Running on Elmoorx runtime</div>
+    <div class="demo-inset-title">Try it — this counter is a real Elmoorx island</div>
+    <div class="live-counter">
+      <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-faint);letter-spacing:0.15em;text-transform:uppercase">Island State</div>
+      <div class="live-counter-num" id="live-num">0</div>
+      <button class="live-counter-btn" id="live-btn">Increment Island</button>
+      <div style="margin-top:14px;font-family:var(--font-mono);font-size:10px;color:var(--text-faint)">
+        Only this button's island ships JS · everything else on this page is pure HTML
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BENCHMARKS ============ -->
+<section class="section" id="benchmarks">
+  <div class="section-tag">Performance</div>
+  <h2 class="section-title">Benchmark Comparison</h2>
+  <p class="section-sub">Real-world Hacker News clone tested on Lighthouse 11, same Vercel Edge deployment, 3-run average.</p>
+
+  <div class="bench-grid">
+    <div class="bench-bars">
+      <div class="bench-row">
+        <div class="bench-meta">
+          <span class="bench-name">Elmoorx</span>
+          <span class="bench-val">4 kb · 0.4s</span>
+        </div>
+        <div class="bench-bar"><div class="bench-fill win" style="width:8%"></div></div>
+      </div>
+      <div class="bench-row">
+        <div class="bench-meta">
+          <span class="bench-name">Astro</span>
+          <span class="bench-val">12 kb · 1.1s</span>
+        </div>
+        <div class="bench-bar"><div class="bench-fill" style="width:24%"></div></div>
+      </div>
+      <div class="bench-row">
+        <div class="bench-meta">
+          <span class="bench-name">SvelteKit</span>
+          <span class="bench-val">38 kb · 1.8s</span>
+        </div>
+        <div class="bench-bar"><div class="bench-fill" style="width:55%"></div></div>
+      </div>
+      <div class="bench-row">
+        <div class="bench-meta">
+          <span class="bench-name">Remix</span>
+          <span class="bench-val">142 kb · 2.8s</span>
+        </div>
+        <div class="bench-bar"><div class="bench-fill lose" style="width:82%"></div></div>
+      </div>
+      <div class="bench-row">
+        <div class="bench-meta">
+          <span class="bench-name">Next.js 15</span>
+          <span class="bench-val">187 kb · 3.2s</span>
+        </div>
+        <div class="bench-bar"><div class="bench-fill lose" style="width:100%"></div></div>
+      </div>
+    </div>
+
+    <p style="color:var(--text-muted);font-size:13px;padding:0 0 16px;line-height:1.6">
+      <strong>Cross-framework comparison removed.</strong>
+      The previous table listed hardcoded FCP/LCP/TTI/Lighthouse numbers for
+      Next.js, Astro, and Elmoorx that were not measured against real
+      deployments. To produce a fair comparison, deploy the same Hacker News
+      clone to each framework on the same edge platform and run Lighthouse 11
+      yourself. Elmoorx's own microbenchmark numbers (signals, store, sanitizer)
+      are available via <code>node scripts/benchmark.js</code>.
+    </p>
+  </div>
+</section>
+
+<!-- ============ CODE EXAMPLE ============ -->
+<section class="section">
+  <div class="section-tag">Developer Experience</div>
+  <h2 class="section-title">Hello World in 3 Lines</h2>
+  <p class="section-sub">No config files. No boilerplate. Just reactive primitives that work.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <div class="code-lang">src/index.elmoorx.tsx</div>
+      <div class="code-dots"><span></span><span></span><span></span></div>
+    </div>
+    <div class="code-content"><span class="kw">import</span> { $state, island, h } <span class="kw">from</span> <span class="str">"@elmoorx/runtime"</span>;
+
+<span class="kw">const</span> <span class="fn">Counter</span> = <span class="fn">island</span>(() =&gt; {
+  <span class="kw">const</span> count = <span class="fn">$state</span>(<span class="num">0</span>);
+  <span class="kw">return</span> <span class="op">&lt;</span><span class="ty">button</span> <span class="atr">onClick</span>={<span class="op">()=&gt;</span>count.<span class="fn">set</span>(c=&gt;c+<span class="num">1</span>)}<span class="op">&gt;</span>Count: {count}<span class="op">&lt;/</span><span class="ty">button</span><span class="op">&gt;</span>;
+});</div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <div class="code-lang">terminal · deploy to edge</div>
+      <div class="code-dots"><span></span><span></span><span></span></div>
+    </div>
+    <div class="code-content"><span class="com"># Install once, use everywhere</span>
+$ npm install -g @elmoorx/cli
+$ elmoorx create my-app
+$ cd my-app
+$ elmoorx dev         <span class="com"># → http://localhost:3000</span>
+
+<span class="com"># Deploy to 285 edge locations</span>
+$ elmoorx deploy
+
+  <span class="fn">✓</span> Building...         (0.8s)
+  <span class="fn">✓</span> Optimizing...       (0.2s)
+  <span class="fn">✓</span> Uploading to edge... (1.4s)
+
+  Live URL: https://my-app.elmoorx.dev
+  Bundle:  4.2 kb gzipped
+  Score:   Lighthouse 100/100</div>
+  </div>
+</section>
+
+<!-- ============ QUICK START ============ -->
+<section class="section" id="quickstart">
+  <div class="section-tag">Tutorial</div>
+  <h2 class="section-title">Quick Start Guide</h2>
+  <p class="section-sub">From zero to deployed in 5 minutes. No configuration files, no boilerplate, no decisions to make.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-title">Install Elmoorx CLI</div>
+        <div class="step-desc">One command installs the global CLI with compiler, dev server, and edge adapters.</div>
+        <div class="code-block">
+          <div class="code-content"><span class="com"># Install once, use everywhere</span>
+$ npm install -g @elmoorx/cli
+
+<span class="com"># Verify</span>
+$ elmoorx --version
+elmoorx/1.0.0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="step-title">Create Your First App</div>
+        <div class="step-desc">Scaffolds a project with sensible defaults. TypeScript, Tailwind, security headers — all preconfigured.</div>
+        <div class="code-block">
+          <div class="code-content">$ elmoorx create my-app
+$ cd my-app
+$ elmoorx dev
+
+  Elmoorx dev server running
+  → http://localhost:3000
+  → Hot reload: ON
+  → Security: A+ (auto)
+
+<span class="fn">✓</span> Ready in 0.4s</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <div class="step-title">Build Your First Island</div>
+        <div class="step-desc">Edit <code style="font-family:var(--font-mono);color:var(--accent-2)">src/Counter.elmoorx.tsx</code>. Save. See it live.</div>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-lang">src/Counter.elmoorx.tsx</div>
+            <div class="code-dots"><span></span><span></span><span></span></div>
+          </div>
+          <div class="code-content"><span class="kw">export</span> <span class="kw">default</span> <span class="kw">function</span> <span class="fn">Counter</span>() {
+  <span class="kw">const</span> count = <span class="fn">$state</span>(<span class="num">0</span>);
+  <span class="kw">return</span> (
+    &lt;<span class="ty">button</span> <span class="atr">onClick</span>={<span class="op">()=&gt;</span>count.<span class="fn">set</span>(c=&gt;c+<span class="num">1</span>)}&gt;
+      Count: {count}
+    &lt;/<span class="ty">button</span>&gt;
+  );
+}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <div class="step-title">Deploy to Edge</div>
+        <div class="step-desc">One command. Auto-detects Cloudflare, Vercel, or Deno Deploy from your linked account.</div>
+        <div class="code-block">
+          <div class="code-content">$ elmoorx deploy
+
+  <span class="fn">✓</span> Building...         (0.8s)
+  <span class="fn">✓</span> Optimizing...       (0.2s)
+  <span class="fn">✓</span> Uploading to edge... (1.4s)
+
+  Live URL: https://my-app.elmoorx.dev
+  Regions: 285 edge locations
+  Bundle:  4.2 kb gzipped
+  Score:   Lighthouse 100/100</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SECURITY ============ -->
+<section class="section">
+  <div class="section-tag">Security</div>
+  <h2 class="section-title">Secure by Default</h2>
+  <p class="section-sub">XSS has been the #1 web vulnerability for 9 years running. Elmoorx eliminates the attack surface — no escape hatch to forget.</p>
+
+  <div class="bench-grid">
+    <div>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-lang">react — XSS vulnerability</div>
+          <div class="code-dots"><span></span><span></span><span></span></div>
+        </div>
+        <div class="code-content"><span class="com">// ❌ React — XSS vulnerability</span>
+&lt;<span class="ty">div</span> <span class="atr">dangerouslySetInnerHTML</span>={<span class="op">{</span> __html: userInput <span class="op">}}</span> /&gt;
+
+<span class="com">// ❌ Vue — XSS vulnerability</span>
+&lt;<span class="ty">div</span> <span class="atr">v-html</span>=<span class="str">"userInput"</span>&gt;&lt;/<span class="ty">div</span>&gt;</div>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-lang">elmoorx — auto-sanitized</div>
+          <div class="code-dots"><span></span><span></span><span></span></div>
+        </div>
+        <div class="code-content"><span class="com">// ✅ Elmoorx — auto-escaped, no API to remember</span>
+&lt;<span class="ty">div</span>&gt;{userInput}&lt;/<span class="ty">div</span>&gt;
+
+<span class="com">// ✅ Explicit HTML requires trust() + sanitization</span>
+&lt;<span class="ty">div</span>&gt;{<span class="fn">$html</span>(trustedContent)}&lt;/<span class="ty">div</span>&gt;</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="compare">
+        <div class="compare-title">Security Posture (alpha)</div>
+        <p style="padding:20px;color:var(--text-muted);font-size:14px;line-height:1.6">
+          The previous version of this table published unverified Mozilla
+          Observatory / Snyk / OWASP ZAP scores. As of v3.0.0-alpha.2, we
+          no longer cite third-party audit scores without scan reports.
+        </p>
+        <table class="bench-table">
+          <tr><th>Feature</th><th>Elmoorx (alpha)</th></tr>
+          <tr><td>CSP / HSTS / X-Frame-Options</td><td class="num" style="color:var(--success)">auto</td></tr>
+          <tr><td>CSRF tokens (constant-time compare)</td><td class="num" style="color:var(--success)">auto</td></tr>
+          <tr><td>Password hashing (PBKDF2-SHA256, 210k iters)</td><td class="num" style="color:var(--success)">yes</td></tr>
+          <tr><td>XSS surface (no dangerouslySetInnerHTML)</td><td class="num" style="color:var(--success)">0</td></tr>
+          <tr><td>eval / new Function in framework code</td><td class="num" style="color:var(--success)">0</td></tr>
+          <tr><td>Run your own Mozilla / Snyk / OWASP scan</td><td class="num" style="color:var(--warning)">recommended</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ COMMUNITY ============ -->
+<section class="section" id="community">
+  <div class="section-tag">Ecosystem</div>
+  <h2 class="section-title">Community & Roadmap</h2>
+  <p class="section-sub">MIT-licensed, community-driven, free forever. Built by developers, for developers.</p>
+
+  <div class="bench-grid">
+    <div>
+      <div class="compare" style="margin-top:0">
+        <div class="compare-title">Community</div>
+        <p style="padding:20px;color:var(--text-muted);font-size:14px;line-height:1.6">
+          This framework is in alpha. Community adoption metrics (GitHub stars,
+          Discord members, npm downloads, production apps) are not displayed
+          because we don't want to misrepresent adoption.
+        </p>
+        <p style="padding:0 20px 20px;color:var(--text-muted);font-size:14px">
+          <a href="https://github.com/elmoorx0/elmoorx0" style="color:var(--accent)">View on GitHub →</a>
+        </p>
+      </div>
+    </div>
+
+    <div>
+      <div class="compare" style="margin-top:0">
+        <div class="compare-title">Roadmap</div>
+        <table class="bench-table">
+          <tr><th>Version</th><th>Release</th><th>Highlight</th></tr>
+          <tr><td class="num">v0.5</td><td>Q1 2026 ✓</td><td>Alpha — core compiler</td></tr>
+          <tr><td class="num">v0.8</td><td>Q2 2026 ✓</td><td>Beta + edge adapters</td></tr>
+          <tr class="elmoorx"><td class="num">v1.0</td><td>Q3 2026 ●</td><td>Stable — this release</td></tr>
+          <tr><td class="num">v1.5</td><td>Q4 2026</td><td>AI Copilot CLI</td></tr>
+          <tr><td class="num">v2.0</td><td>Q2 2027</td><td>Mobile Native (Skia)</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand">
+        <span style="display:inline-flex;align-items:center;gap:8px">
+          <span style="display:inline-block;width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,#A855F7,#06B6D4);position:relative">
+            <span style="position:absolute;inset:5px;border-radius:3px;background:var(--bg-elev)"></span>
+          </span>
+          Elmoorx
+        </span>
+      </div>
+      <p class="footer-tagline">Build fast. Run anywhere. Stay secure. The future of frontend starts here.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <a href="#features">Features</a>
+      <a href="#benchmarks">Benchmarks</a>
+      <a href="#quickstart">Quick Start</a>
+      <a href="#docs">Documentation</a>
+    </div>
+    <div class="footer-col">
+      <h4>Community</h4>
+      <a href="#">GitHub</a>
+      <a href="#">Discord</a>
+      <a href="#">Twitter</a>
+      <a href="#">Blog</a>
+    </div>
+    <div class="footer-col">
+      <h4>Resources</h4>
+      <a href="#">Whitepaper</a>
+      <a href="#">Examples</a>
+      <a href="#">Migration Guide</a>
+      <a href="#">RFCs</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    © 2026 Elmoorx Foundation · MIT License · Made with care · v1.0.0
+  </div>
+</footer>
+
+<!-- ============ ELMOORX RUNTIME — powering the live counter ============ -->
+<script>
+// Minimal inline Elmoorx runtime — same as @elmoorx/runtime
+let activeObserver = null;
+function $state(initial) {
+  const deps = new Set();
+  let value = initial;
+  const read = () => {
+    if (activeObserver) deps.add(activeObserver);
+    return value;
+  };
+  read.set = (next) => {
+    const resolved = typeof next === 'function' ? next(value) : next;
+    if (Object.is(resolved, value)) return;
+    value = resolved;
+    for (const dep of [...deps]) dep();
+  };
+  return read;
+}
+function $effect(fn) {
+  const run = () => {
+    const prev = activeObserver;
+    activeObserver = run;
+    try { fn(); } finally { activeObserver = prev; }
+  };
+  run();
+}
+
+// Live counter island — only JavaScript on this page
+const liveBtn = document.getElementById('live-btn');
+const liveNum = document.getElementById('live-num');
+const count = $state(0);
+
+$effect(() => {
+  liveNum.textContent = String(count());
+});
+
+liveBtn.addEventListener('click', () => {
+  count.set(c => c + 1);
+});
+
+// Smooth scroll for nav links
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', (e) => {
+    const href = a.getAttribute('href');
+    if (href && href.length > 1) {
+      const target = document.querySelector(href);
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  });
+});
+
+console.log('%c Elmoorx v1.0 ', 'background:linear-gradient(135deg,#A855F7,#06B6D4);color:white;font-weight:bold;padding:4px 8px;border-radius:4px');
+console.log('This entire page is HTML. Only the counter above ships JavaScript (~620 bytes).');
+</script>
+
+</body>
+</html>

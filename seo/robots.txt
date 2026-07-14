@@ -1,0 +1,43 @@
+# Elmoorx Framework — robots.txt
+# https://elmoorx.dev/robots.txt
+
+# Allow all crawlers full access
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /data/
+Disallow: /*.json$
+Disallow: /*.log$
+
+# Allow specific bots
+User-agent: Googlebot
+Allow: /
+Disallow: /api/
+
+User-agent: Bingbot
+Allow: /
+Disallow: /api/
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+# Block AI training bots (optional — uncomment to block)
+# User-agent: GPTBot
+# Disallow: /
+# User-agent: CCBot
+# Disallow: /
+# User-agent: anthropic-ai
+# Disallow: /
+
+# Sitemap location
+Sitemap: https://elmoorx.dev/sitemap.xml
+
+# Crawl delay (seconds)
+Crawl-delay: 1

@@ -1,0 +1,700 @@
+{
+  "generatedAt": "2026-07-12T18:34:02.958Z",
+  "version": "3.0.0-alpha.2",
+  "totalPackages": 77,
+  "packages": [
+    {
+      "name": "@elmoorx/a11y",
+      "version": "3.0.0-alpha.2",
+      "description": "Elmoorx a11y package",
+      "path": "/home/z/my-project/wafra-framework/packages/a11y",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/adapters",
+      "version": "3.0.0-alpha.2",
+      "description": "Platform adapters: Node.js, Cloudflare Workers, Deno, Bun, Vercel Edge",
+      "path": "/home/z/my-project/wafra-framework/packages/adapters",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/ai-chat",
+      "version": "3.0.0-alpha.2",
+      "description": "AI chat: streaming UI, message history, citations, multimodal",
+      "path": "/home/z/my-project/wafra-framework/packages/ai-chat",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/ai-copilot",
+      "version": "3.0.0-alpha.2",
+      "description": "AI copilot: inline code suggestions, refactoring, doc generation",
+      "path": "/home/z/my-project/wafra-framework/packages/ai-copilot",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/ai-dev",
+      "version": "3.0.0-alpha.2",
+      "description": "AI dev tools: test generation, bug detection, code review, performance analysis",
+      "path": "/home/z/my-project/wafra-framework/packages/ai-dev",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/analytics",
+      "version": "3.0.0-alpha.2",
+      "description": "Privacy-first analytics: page views, events, funnels, retention cohorts",
+      "path": "/home/z/my-project/wafra-framework/packages/analytics",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/analyzer",
+      "version": "3.0.0-alpha.2",
+      "description": "Elmoorx analyzer package",
+      "path": "/home/z/my-project/wafra-framework/packages/analyzer",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/ar",
+      "version": "3.0.0-alpha.2",
+      "description": "Augmented reality: WebXR, marker tracking, 3D models, AR sessions",
+      "path": "/home/z/my-project/wafra-framework/packages/ar",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/ar-vr",
+      "version": "3.0.0-alpha.2",
+      "description": "Elmoorx ar-vr package",
+      "path": "/home/z/my-project/wafra-framework/packages/ar-vr",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/auth",
+      "version": "3.0.0-alpha.2",
+      "description": "Authentication: sessions, JWT, OAuth (Google, GitHub), 2FA, RBAC",
+      "path": "/home/z/my-project/wafra-framework/packages/auth",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/auto-test",
+      "version": "3.0.0-alpha.2",
+      "description": "AI-powered test generation: unit, integration, E2E from code analysis",
+      "path": "/home/z/my-project/wafra-framework/packages/auto-test",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/blockchain",
+      "version": "3.0.0-alpha.2",
+      "description": "Blockchain: Web3 wallet connect, smart contracts, NFT mint, verify",
+      "path": "/home/z/my-project/wafra-framework/packages/blockchain",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/cache",
+      "version": "3.0.0-alpha.2",
+      "description": "Multi-tier cache: memory, Redis, with TTL, LRU, tags, invalidation",
+      "path": "/home/z/my-project/wafra-framework/packages/cache",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/cli",
+      "version": "3.0.0-alpha.2",
+      "description": "CLI tool: init, dev, build, deploy, generate, doctor",
+      "path": "/home/z/my-project/wafra-framework/packages/cli",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/cli-pro",
+      "version": "3.0.0-alpha.2",
+      "description": "Advanced CLI with code generation, scaffolding, deployment automation",
+      "path": "/home/z/my-project/wafra-framework/packages/cli-pro",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/code-review",
+      "version": "3.0.0-alpha.2",
+      "description": "AI code review: PR analysis, security scan, performance suggestions",
+      "path": "/home/z/my-project/wafra-framework/packages/code-review",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/collab",
+      "version": "3.0.0-alpha.2",
+      "description": "Real-time collaboration: CRDT, presence, cursors, conflict resolution",
+      "path": "/home/z/my-project/wafra-framework/packages/collab",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/compiler",
+      "version": "3.0.0-alpha.2",
+      "description": "JSX-to-Elmoorx compiler with esbuild integration, SSR, HMR",
+      "path": "/home/z/my-project/wafra-framework/packages/compiler",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/cron",
+      "version": "3.0.0-alpha.2",
+      "description": "Cron scheduler: recurring jobs, queues, retries, observability",
+      "path": "/home/z/my-project/wafra-framework/packages/cron",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/crypto",
+      "version": "3.0.0-alpha.2",
+      "description": "Cryptography: hashing, encryption, signing, JWT, secure random",
+      "path": "/home/z/my-project/wafra-framework/packages/crypto",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/css",
+      "version": "3.0.0-alpha.2",
+      "description": "Zero-runtime CSS system with atomic classes, theming, RTL support",
+      "path": "/home/z/my-project/wafra-framework/packages/css",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/devtools",
+      "version": "3.0.0-alpha.2",
+      "description": "Browser DevTools extension: signal inspector, time-travel, profiler",
+      "path": "/home/z/my-project/wafra-framework/packages/devtools",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/edge-cache",
+      "version": "3.0.0-alpha.2",
+      "description": "Elmoorx edge-cache package",
+      "path": "/home/z/my-project/wafra-framework/packages/edge-cache",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/edge-db",
+      "version": "3.0.0-alpha.2",
+      "description": "Edge database: global replication, eventual consistency, low latency reads",
+      "path": "/home/z/my-project/wafra-framework/packages/edge-db",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/edge-functions",
+      "version": "3.0.0-alpha.2",
+      "description": "Edge functions: run serverless at 300+ POPs, sub-50ms cold starts",
+      "path": "/home/z/my-project/wafra-framework/packages/edge-functions",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/email",
+      "version": "3.0.0-alpha.2",
+      "description": "Email service: SMTP, templates, queue, attachments, tracking",
+      "path": "/home/z/my-project/wafra-framework/packages/email",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/eslint-plugin",
+      "version": "3.0.0-alpha.2",
+      "description": "Elmoorx eslint-plugin package",
+      "path": "/home/z/my-project/wafra-framework/packages/eslint-plugin",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/experiments",
+      "version": "3.0.0-alpha.2",
+      "description": "A/B experiments: variant assignment, metrics, statistical significance",
+      "path": "/home/z/my-project/wafra-framework/packages/experiments",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/feature-flags",
+      "version": "3.0.0-alpha.2",
+      "description": "Feature flags: gradual rollout, A/B testing, user targeting, instant rollback",
+      "path": "/home/z/my-project/wafra-framework/packages/feature-flags",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/forms",
+      "version": "3.0.0-alpha.2",
+      "description": "Form library with validation, schemas, async validation, field arrays",
+      "path": "/home/z/my-project/wafra-framework/packages/forms",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/gesture",
+      "version": "3.0.0-alpha.2",
+      "description": "Gestures: swipe, pinch, rotate, pan, multi-touch, haptics",
+      "path": "/home/z/my-project/wafra-framework/packages/gesture",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/graphql",
+      "version": "3.0.0-alpha.2",
+      "description": "GraphQL: schema-first, resolvers, subscriptions, DataLoader, federation",
+      "path": "/home/z/my-project/wafra-framework/packages/graphql",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/head",
+      "version": "3.0.0-alpha.2",
+      "description": "SEO head manager: meta tags, Open Graph, Twitter Cards, JSON-LD, favicons",
+      "path": "/home/z/my-project/wafra-framework/packages/head",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/health",
+      "version": "3.0.0-alpha.2",
+      "description": "Elmoorx health package",
+      "path": "/home/z/my-project/wafra-framework/packages/health",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/i18n",
+      "version": "3.0.0-alpha.2",
+      "description": "Internationalization: locale switching, RTL support, pluralization, calendars",
+      "path": "/home/z/my-project/wafra-framework/packages/i18n",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/image",
+      "version": "3.0.0-alpha.2",
+      "description": "Image optimizer: AVIF/WebP, blur placeholder, responsive srcset",
+      "path": "/home/z/my-project/wafra-framework/packages/image",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/logger",
+      "version": "3.0.0-alpha.2",
+      "description": "Structured logger: levels, transports, child loggers, redaction, JSON",
+      "path": "/home/z/my-project/wafra-framework/packages/logger",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/marketplace",
+      "version": "3.0.0-alpha.2",
+      "description": "Elmoorx marketplace package",
+      "path": "/home/z/my-project/wafra-framework/packages/marketplace",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/migration",
+      "version": "3.0.0-alpha.2",
+      "description": "Migration tools: React/Vue/Svelte → Elmoorx codemods, audit, transforms",
+      "path": "/home/z/my-project/wafra-framework/packages/migration",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/monitoring",
+      "version": "3.0.0-alpha.2",
+      "description": "Real-time metrics, alerting, distributed tracing, Prometheus export",
+      "path": "/home/z/my-project/wafra-framework/packages/monitoring",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/native",
+      "version": "3.0.0-alpha.2",
+      "description": "Elmoorx native package",
+      "path": "/home/z/my-project/wafra-framework/packages/native",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/notifications",
+      "version": "3.0.0-alpha.2",
+      "description": "Elmoorx notifications package",
+      "path": "/home/z/my-project/wafra-framework/packages/notifications",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/observability",
+      "version": "3.0.0-alpha.2",
+      "description": "Elmoorx observability package",
+      "path": "/home/z/my-project/wafra-framework/packages/observability",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/payment",
+      "version": "3.0.0-alpha.2",
+      "description": "Elmoorx payment package",
+      "path": "/home/z/my-project/wafra-framework/packages/payment",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/perf-ai",
+      "version": "3.0.0-alpha.2",
+      "description": "Elmoorx perf-ai package",
+      "path": "/home/z/my-project/wafra-framework/packages/perf-ai",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/plugin-system",
+      "version": "3.0.0-alpha.2",
+      "description": "Elmoorx plugin-system package",
+      "path": "/home/z/my-project/wafra-framework/packages/plugin-system",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/postgres",
+      "version": "3.0.0-alpha.2",
+      "description": "PostgreSQL adapter: connection pooling, transactions, query builder, migrations",
+      "path": "/home/z/my-project/wafra-framework/packages/postgres",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/pubsub",
+      "version": "3.0.0-alpha.2",
+      "description": "Elmoorx pubsub package",
+      "path": "/home/z/my-project/wafra-framework/packages/pubsub",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/push",
+      "version": "3.0.0-alpha.2",
+      "description": "Elmoorx push package",
+      "path": "/home/z/my-project/wafra-framework/packages/push",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/queue",
+      "version": "3.0.0-alpha.2",
+      "description": "Job queue: Redis-backed, priorities, delays, cron, retries, dead-letter",
+      "path": "/home/z/my-project/wafra-framework/packages/queue",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/realtime",
+      "version": "3.0.0-alpha.2",
+      "description": "Elmoorx realtime package",
+      "path": "/home/z/my-project/wafra-framework/packages/realtime",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/router",
+      "version": "3.0.0-alpha.2",
+      "description": "File-system router with dynamic routes, layouts, loaders, code-splitting",
+      "path": "/home/z/my-project/wafra-framework/packages/router",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/runtime",
+      "version": "3.0.0-alpha.2",
+      "description": "Core runtime: signals, store, islands, security, context, lifecycle, refs, portal, transitions",
+      "path": "/home/z/my-project/wafra-framework/packages/runtime",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/scheduler",
+      "version": "3.0.0-alpha.2",
+      "description": "Task scheduler: cron, intervals, one-time, distributed locks",
+      "path": "/home/z/my-project/wafra-framework/packages/scheduler",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/search",
+      "version": "3.0.0-alpha.2",
+      "description": "Full-text search: indexing, ranking, facets, highlighting, fuzzy",
+      "path": "/home/z/my-project/wafra-framework/packages/search",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/secrets",
+      "version": "3.0.0-alpha.2",
+      "description": "Elmoorx secrets package",
+      "path": "/home/z/my-project/wafra-framework/packages/secrets",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/security-pro",
+      "version": "3.0.0-alpha.2",
+      "description": "Elmoorx security-pro package",
+      "path": "/home/z/my-project/wafra-framework/packages/security-pro",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/server",
+      "version": "3.0.0-alpha.2",
+      "description": "Full-stack HTTP server with middleware, static files, API routes, WebSocket",
+      "path": "/home/z/my-project/wafra-framework/packages/server",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/state-utils",
+      "version": "3.0.0-alpha.2",
+      "description": "Elmoorx state-utils package",
+      "path": "/home/z/my-project/wafra-framework/packages/state-utils",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/storage",
+      "version": "3.0.0-alpha.2",
+      "description": "Storage abstraction: S3, GCS, Azure, local; multipart uploads, presigned URLs",
+      "path": "/home/z/my-project/wafra-framework/packages/storage",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/store-pro",
+      "version": "3.0.0-alpha.2",
+      "description": "Elmoorx store-pro package",
+      "path": "/home/z/my-project/wafra-framework/packages/store-pro",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/telemetry",
+      "version": "3.0.0-alpha.2",
+      "description": "Elmoorx telemetry package",
+      "path": "/home/z/my-project/wafra-framework/packages/telemetry",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/templates",
+      "version": "3.0.0-alpha.2",
+      "description": "Elmoorx templates package",
+      "path": "/home/z/my-project/wafra-framework/packages/templates",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/testing",
+      "version": "3.0.0-alpha.2",
+      "description": "Test utilities: component testing, snapshot, signal assertions, mocking",
+      "path": "/home/z/my-project/wafra-framework/packages/testing",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/testing-pro",
+      "version": "3.0.0-alpha.2",
+      "description": "Elmoorx testing-pro package",
+      "path": "/home/z/my-project/wafra-framework/packages/testing-pro",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/theme-studio",
+      "version": "3.0.0-alpha.2",
+      "description": "Elmoorx theme-studio package",
+      "path": "/home/z/my-project/wafra-framework/packages/theme-studio",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/time-travel",
+      "version": "3.0.0-alpha.2",
+      "description": "Elmoorx time-travel package",
+      "path": "/home/z/my-project/wafra-framework/packages/time-travel",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/ui",
+      "version": "3.0.0-alpha.2",
+      "description": "648-component UI library (forms, layout, nav, data, feedback, media, pro)",
+      "path": "/home/z/my-project/wafra-framework/packages/ui",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/validation",
+      "version": "3.0.0-alpha.2",
+      "description": "Elmoorx validation package",
+      "path": "/home/z/my-project/wafra-framework/packages/validation",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/virtual",
+      "version": "3.0.0-alpha.2",
+      "description": "Elmoorx virtual package",
+      "path": "/home/z/my-project/wafra-framework/packages/virtual",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/visual-builder",
+      "version": "3.0.0-alpha.2",
+      "description": "Elmoorx visual-builder package",
+      "path": "/home/z/my-project/wafra-framework/packages/visual-builder",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/vite-plugin",
+      "version": "3.0.0-alpha.2",
+      "description": "Elmoorx vite-plugin package",
+      "path": "/home/z/my-project/wafra-framework/packages/vite-plugin",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/voice",
+      "version": "3.0.0-alpha.2",
+      "description": "Elmoorx voice package",
+      "path": "/home/z/my-project/wafra-framework/packages/voice",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/wasm",
+      "version": "3.0.0-alpha.2",
+      "description": "Elmoorx wasm package",
+      "path": "/home/z/my-project/wafra-framework/packages/wasm",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/web-vitals",
+      "version": "3.0.0-alpha.2",
+      "description": "Elmoorx web-vitals package",
+      "path": "/home/z/my-project/wafra-framework/packages/web-vitals",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/web3",
+      "version": "3.0.0-alpha.2",
+      "description": "Elmoorx web3 package",
+      "path": "/home/z/my-project/wafra-framework/packages/web3",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    },
+    {
+      "name": "@elmoorx/webhooks",
+      "version": "3.0.0-alpha.2",
+      "description": "Elmoorx webhooks package",
+      "path": "/home/z/my-project/wafra-framework/packages/webhooks",
+      "hasReadme": true,
+      "hasLicense": true,
+      "hasPackageJson": true
+    }
+  ]
+}

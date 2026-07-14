@@ -1,0 +1,36 @@
+{
+  "name": "@elmoorx/codemod",
+  "version": "3.0.0-alpha.2",
+  "description": "Codemods for migrating code to Elmoorx Framework (Wafra → Elmoorx rename, React/Vue/Svelte → Elmoorx)",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "elmoorx-codemod": "./src/cli.ts"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "npx tsx --test tests/*.test.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "license": "MIT",
+  "author": "Elmoorx Foundation",
+  "keywords": [
+    "elmoorx",
+    "framework",
+    "codemod",
+    "migration",
+    "wafra"
+  ],
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}

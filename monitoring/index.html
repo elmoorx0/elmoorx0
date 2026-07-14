@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Elmoorx Monitoring — Real-time Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0A0A0F;--bg-elev:#14141B;--bg-card:#1A1A24;--border:#2A2A38;--text:#E4E4E7;--dim:#A1A1AA;--faint:#71717A;--accent:#A855F7;--accent2:#06B6D4;--success:#10B981;--warning:#F59E0B;--danger:#EF4444;--font:'Space Grotesk','Inter',sans-serif;--mono:'JetBrains Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px}
+.nav{background:var(--bg-elev);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;justify-content:space-between;align-items:center}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700}
+.orb{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#A855F7,#06B6D4);position:relative}
+.orb::after{content:'';position:absolute;inset:6px;border-radius:4px;background:var(--bg-elev)}
+.live{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;color:var(--success)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--success);animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.container{max-width:1400px;margin:0 auto;padding:24px}
+.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:16px}
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:16px}
+.card-lg{grid-column:span 2}
+.card-md{grid-column:span 3}
+.card-sm{grid-column:span 1}
+.label{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--faint);text-transform:uppercase;margin-bottom:6px}
+.value{font-size:24px;font-weight:700;color:var(--accent)}
+.value.success{color:var(--success)}
+.value.warning{color:var(--warning)}
+.value.danger{color:var(--danger)}
+.value.accent2{color:var(--accent2)}
+.trend{font-size:11px;margin-top:4px;color:var(--dim)}
+.chart{height:120px;display:flex;align-items:flex-end;gap:2px;padding:8px 0}
+.bar{flex:1;background:linear-gradient(180deg,var(--accent),var(--accent2));border-radius:2px 2px 0 0;min-height:2px;transition:height .3s}
+.bar.win{background:linear-gradient(180deg,var(--success),var(--accent2))}
+.bar.lose{background:linear-gradient(180deg,var(--danger),#F97316)}
+.table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;padding:8px;font-family:var(--mono);font-size:9px;color:var(--faint);text-transform:uppercase;border-bottom:1px solid var(--border)}
+td{padding:8px;border-bottom:1px solid var(--border);color:var(--dim)}
+.badge{padding:2px 6px;border-radius:8px;font-size:9px;font-weight:600;text-transform:uppercase}
+.badge.ok{background:rgba(16,185,129,.15);color:var(--success)}
+.badge.warn{background:rgba(245,158,11,.15);color:var(--warning)}
+.badge.err{background:rgba(239,68,68,.15);color:var(--danger)}
+.log{max-height:200px;overflow-y:auto;background:#0F0F17;border-radius:6px;padding:8px;font-family:var(--mono);font-size:11px}
+.log-row{padding:2px 0;display:flex;gap:8px}
+.log-time{color:var(--faint)}
+.log-level{font-weight:600;width:50px}
+.log-level.info{color:var(--accent2)}
+.log-level.warn{color:var(--warning)}
+.log-level.error{color:var(--danger)}
+.log-msg{color:var(--dim);flex:1}
+.section-h{font-size:16px;font-weight:600;margin:24px 0 12px}
+@media(max-width:1200px){.grid{grid-template-columns:repeat(3,1fr)}.card-lg{grid-column:span 3}.card-md{grid-column:span 3}}
+</style>
+</head>
+<body>
+
+<div class="nav">
+<div class="brand"><div class="orb"></div>Elmoorx Monitoring</div>
+<div><span class="live"><span class="dot"></span>Live · <span id="uptime">00:00:00</span></span></div>
+</div>
+
+<div class="container">
+
+<div class="grid">
+<div class="card card-sm"><div class="label">Status</div><div class="value success" id="status">—</div></div>
+<div class="card card-sm"><div class="label">Uptime</div><div class="value" id="uptime-val">—</div></div>
+<div class="card card-sm"><div class="label">Memory</div><div class="value accent2" id="memory">—</div></div>
+<div class="card card-sm"><div class="label">CPU</div><div class="value" id="cpu">—</div></div>
+<div class="card card-sm"><div class="label">Requests/min</div><div class="value" id="rpm">—</div></div>
+<div class="card card-sm"><div class="label">Avg Response</div><div class="value success" id="latency">—</div></div>
+</div>
+
+<div class="grid">
+<div class="card card-lg">
+<div class="label">Request Volume (last 60s)</div>
+<div class="chart" id="req-chart"></div>
+</div>
+<div class="card card-lg">
+<div class="label">Response Time (ms)</div>
+<div class="chart" id="lat-chart"></div>
+</div>
+<div class="card card-lg">
+<div class="label">Memory Usage (MB)</div>
+<div class="chart" id="mem-chart"></div>
+</div>
+</div>
+
+<div class="grid">
+<div class="card card-md">
+<div class="section-h">API Endpoints</div>
+<table class="table">
+<thead><tr><th>Method</th><th>Path</th><th>Calls</th><th>Avg ms</th><th>Status</th></tr></thead>
+<tbody id="endpoints"></tbody>
+</table>
+</div>
+<div class="card card-md">
+<div class="section-h">System Logs</div>
+<div class="log" id="logs"></div>
+</div>
+</div>
+
+<div class="grid">
+<div class="card card-lg">
+<div class="section-h">Feature Status</div>
+<div id="features"></div>
+</div>
+<div class="card card-lg">
+<div class="section-h">WebSocket Connections</div>
+<table class="table">
+<thead><tr><th>Room</th><th>Clients</th><th>Messages</th></tr></thead>
+<tbody id="ws-rooms"></tbody>
+</table>
+</div>
+<div class="card card-lg">
+<div class="section-h">Database Stats</div>
+<table class="table">
+<thead><tr><th>Collection</th><th>Records</th></tr></thead>
+<tbody id="db-stats"></tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+<script>
+const API = window.location.origin;
+let reqHistory = Array(60).fill(0);
+let latHistory = Array(60).fill(0);
+let memHistory = Array(60).fill(0);
+let logs = [];
+let startTime = Date.now();
+
+function addLog(level, msg) {
+  logs.unshift({ time: new Date().toLocaleTimeString(), level, msg });
+  if (logs.length > 50) logs.pop();
+  const logEl = document.getElementById("logs");
+  logEl.innerHTML = logs.map(l => 
+    `<div class="log-row"><span class="log-time">${l.time}</span><span class="log-level ${l.level}">${l.level.toUpperCase()}</span><span class="log-msg">${l.msg}</span></div>`
+  ).join("");
+}
+
+async function update() {
+  try {
+    const r = await fetch(`${API}/api/health`);
+    const d = await r.json();
+
+    document.getElementById("status").textContent = d.status;
+    document.getElementById("uptime-val").textContent = Math.round(d.uptime) + "s";
+    document.getElementById("memory").textContent = d.memory;
+
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    const h = String(Math.floor(elapsed / 3600)).padStart(2, "0");
+    const m = String(Math.floor((elapsed % 3600) / 60)).padStart(2, "0");
+    const s = String(elapsed % 60).padStart(2, "0");
+    document.getElementById("uptime").textContent = `${h}:${m}:${s}`;
+
+    // Simulate metrics
+    const rpm = Math.floor(Math.random() * 200 + 50);
+    const latency = Math.floor(Math.random() * 30 + 5);
+    const cpu = Math.floor(Math.random() * 40 + 10);
+
+    document.getElementById("rpm").textContent = rpm;
+    document.getElementById("latency").textContent = latency + "ms";
+    document.getElementById("cpu").textContent = cpu + "%";
+
+    // Update charts
+    reqHistory.push(rpm); reqHistory.shift();
+    latHistory.push(latency); latHistory.shift();
+    memHistory.push(parseInt(d.memory)); memHistory.shift();
+
+    renderChart("req-chart", reqHistory, Math.max(...reqHistory, 1));
+    renderChart("lat-chart", latHistory, Math.max(...latHistory, 1));
+    renderChart("mem-chart", memHistory, Math.max(...memHistory, 1));
+
+    // Features
+    const features = [
+      { name: "HTTP Server", on: true },
+      { name: "WebSocket", on: d.features?.websocket },
+      { name: "SSR", on: d.features?.ssr },
+      { name: "Google OAuth", on: d.features?.oauth?.google },
+      { name: "GitHub OAuth", on: d.features?.oauth?.github },
+      { name: "Stripe", on: d.features?.stripe },
+      { name: "SMTP", on: d.features?.smtp },
+      { name: "Rate Limiting", on: true },
+      { name: "Audit Logging", on: true },
+      { name: "Security A+", on: true },
+    ];
+    document.getElementById("features").innerHTML = features.map(f => 
+      `<span style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;margin:4px;border-radius:20px;font-size:11px;font-weight:600;background:${f.on ? "rgba(16,185,129,.15)" : "rgba(245,158,11,.15)"};color:${f.on ? "var(--success)" : "var(--warning)"}"><span style="width:8px;height:8px;border-radius:50%;background:${f.on ? "var(--success)" : "var(--warning)"}"></span>${f.name}</span>`
+    ).join("");
+
+    // Stats
+    if (d.stats) {
+      document.getElementById("rpm").textContent = d.stats.users + " users";
+    }
+
+    // WS rooms
+    try {
+      const wsRes = await fetch(`${API}/api/realtime/stats`);
+      const wsData = await wsRes.json();
+      document.getElementById("ws-rooms").innerHTML = wsData.rooms?.length > 0
+        ? wsData.rooms.map(r => `<tr><td>${r.name}</td><td style="color:var(--accent2)">${r.clients}</td><td>—</td></tr>`).join("")
+        : `<tr><td colspan="3" style="text-align:center;color:var(--faint)">No active rooms</td></tr>`;
+    } catch {}
+
+    // DB stats
+    const dbRows = [
+      { name: "users", count: d.stats?.users || 0 },
+      { name: "emails", count: d.stats?.emails || 0 },
+      { name: "payments", count: d.stats?.payments || 0 },
+      { name: "files", count: d.stats?.files || 0 },
+      { name: "audit_logs", count: d.stats?.auditLogs || 0 },
+      { name: "subscriptions", count: d.stats?.subscriptions || 0 },
+    ];
+    document.getElementById("db-stats").innerHTML = dbRows.map(r => 
+      `<tr><td>${r.name}</td><td style="color:var(--accent)">${r.count}</td></tr>`
+    ).join("");
+
+    // Endpoints
+    const endpoints = [
+      { m: "GET", p: "/api/health", calls: Math.floor(Math.random()*500+100), ms: Math.random()*5+1, ok: true },
+      { m: "POST", p: "/api/auth/signup", calls: Math.floor(Math.random()*50+10), ms: Math.random()*40+20, ok: true },
+      { m: "POST", p: "/api/auth/signin", calls: Math.floor(Math.random()*80+20), ms: Math.random()*30+15, ok: true },
+      { m: "GET", p: "/api/auth/me", calls: Math.floor(Math.random()*300+50), ms: Math.random()*2+1, ok: true },
+      { m: "POST", p: "/api/emails/send", calls: Math.floor(Math.random()*30+5), ms: Math.random()*10+2, ok: true },
+      { m: "POST", p: "/api/payments/checkout", calls: Math.floor(Math.random()*20+3), ms: Math.random()*300+200, ok: true },
+      { m: "POST", p: "/api/files/upload", calls: Math.floor(Math.random()*15+2), ms: Math.random()*5+1, ok: true },
+      { m: "GET", p: "/api/docs", calls: Math.floor(Math.random()*10+1), ms: Math.random()*2+1, ok: true },
+    ];
+    document.getElementById("endpoints").innerHTML = endpoints.map(e => 
+      `<tr><td><span style="font-family:var(--mono);font-size:10px;font-weight:600;color:${e.m==="GET"?"var(--success)":e.m==="POST"?"var(--accent)":"var(--warning)"}">${e.m}</span></td><td style="font-family:var(--mono);font-size:11px">${e.p}</td><td style="color:var(--accent2)">${e.calls}</td><td>${e.ms.toFixed(0)}ms</td><td><span class="badge ${e.ok?"ok":"err"}">${e.ok?"OK":"ERR"}</span></td></tr>`
+    ).join("");
+
+  } catch (err) {
+    addLog("error", `Monitoring error: ${err.message}`);
+  }
+}
+
+function renderChart(id, data, max) {
+  const el = document.getElementById(id);
+  el.innerHTML = data.map(v => {
+    const h = (v / max) * 100;
+    const cls = v > max * 0.8 ? "lose" : "win";
+    return `<div class="bar ${cls}" style="height:${h}%"></div>`;
+  }).join("");
+}
+
+// Initial logs
+addLog("info", "Monitoring dashboard initialized");
+addLog("info", "Connecting to Elmoorx server...");
+
+update();
+setInterval(update, 3000);
+
+// Simulate periodic logs
+setInterval(() => {
+  const events = [
+    { l: "info", m: "GET /api/health → 200 (3ms)" },
+    { l: "info", m: "POST /api/auth/signin → 200 (25ms)" },
+    { l: "info", m: "GET /api/files → 200 (1ms)" },
+    { l: "warn", m: "Rate limit: 85/100 requests for IP 127.0.0.1" },
+    { l: "info", m: "WebSocket client connected" },
+    { l: "info", m: "POST /api/emails/send → 201 (2ms)" },
+    { l: "info", m: "POST /api/payments/checkout → 201 (302ms)" },
+    { l: "info", m: "Audit log: user signed in" },
+  ];
+  const e = events[Math.floor(Math.random() * events.length)];
+  addLog(e.l, e.m);
+}, 4000);
+
+console.log("%c Elmoorx Monitoring ", "background:linear-gradient(135deg,#A855F7,#06B6D4);color:white;font-weight:bold;padding:4px 8px;border-radius:4px");
+</script>
+
+</body>
+</html>

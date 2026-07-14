@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ElmoorxCRM — Production Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0A0A0F;
+  --bg-elev: #14141B;
+  --bg-card: #1A1A24;
+  --bg-code: #0F0F17;
+  --border: #2A2A38;
+  --border-strong: #3A3A4A;
+  --text: #E4E4E7;
+  --text-dim: #A1A1AA;
+  --text-faint: #71717A;
+  --accent: #A855F7;
+  --accent-2: #06B6D4;
+  --success: #10B981;
+  --warning: #F59E0B;
+  --danger: #EF4444;
+  --font-en: 'Space Grotesk', 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  background: var(--bg); color: var(--text);
+  font-family: 'Inter', sans-serif; font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+.app {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  min-height: 100vh;
+}
+
+/* SIDEBAR */
+.sidebar {
+  background: var(--bg-elev);
+  border-right: 1px solid var(--border);
+  padding: 24px 16px;
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+}
+.sidebar-brand {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--font-en); font-weight: 700; font-size: 18px;
+  margin-bottom: 32px; padding: 0 8px;
+}
+.sidebar-orb { width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, #A855F7, #06B6D4); position: relative; box-shadow: 0 0 20px rgba(168,85,247,0.35); }
+.sidebar-orb::after { content: ''; position: absolute; inset: 6px; border-radius: 4px; background: var(--bg-elev); }
+.nav-section { margin-bottom: 24px; }
+.nav-h { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.2em; color: var(--text-faint); text-transform: uppercase; margin-bottom: 8px; padding-left: 12px; }
+.nav-link {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px; color: var(--text-dim); font-size: 13px;
+  text-decoration: none; border-radius: 6px; cursor: pointer;
+  transition: all 0.1s; margin-bottom: 2px;
+}
+.nav-link:hover { color: var(--text); background: var(--bg-card); }
+.nav-link.active { color: var(--accent); background: rgba(168,85,247,0.1); }
+.nav-icon { width: 16px; text-align: center; font-size: 14px; }
+
+/* MAIN */
+.main { padding: 32px; }
+.page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+.page-title { font-family: var(--font-en); font-size: 28px; font-weight: 700; }
+.page-subtitle { color: var(--text-dim); font-size: 14px; margin-top: 4px; }
+.header-actions { display: flex; gap: 8px; }
+.btn {
+  padding: 8px 16px; border-radius: 6px; cursor: pointer;
+  font-size: 13px; font-family: 'Inter', sans-serif; font-weight: 500;
+  border: 1px solid var(--border); background: var(--bg-card); color: var(--text);
+}
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); border: none; color: white; font-weight: 600; }
+
+/* STATS GRID */
+.stats-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+  margin-bottom: 32px;
+}
+.stat-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px;
+}
+.stat-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.15em; color: var(--text-faint); text-transform: uppercase; margin-bottom: 8px; }
+.stat-value { font-family: var(--font-en); font-size: 32px; font-weight: 700; color: var(--text); }
+.stat-trend { display: flex; align-items: center; gap: 4px; font-size: 12px; margin-top: 8px; }
+.stat-trend.positive { color: var(--success); }
+.stat-trend.negative { color: var(--danger); }
+
+/* CONTENT GRID */
+.content-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 32px; }
+.card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px;
+}
+.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.card-title { font-family: var(--font-en); font-size: 16px; font-weight: 600; }
+
+/* TABLE */
+.table { width: 100%; border-collapse: collapse; }
+.table th { text-align: left; padding: 10px 8px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; color: var(--text-faint); text-transform: uppercase; border-bottom: 1px solid var(--border); }
+.table td { padding: 12px 8px; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text); }
+.table tr:hover td { background: var(--bg-elev); }
+.avatar-sm { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-2)); display: inline-flex; align-items: center; justify-content: center; color: white; font-size: 11px; font-weight: 600; margin-right: 8px; }
+.badge { padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+.badge.active { background: rgba(16,185,129,0.15); color: var(--success); }
+.badge.pending { background: rgba(245,158,11,0.15); color: var(--warning); }
+.badge.inactive { background: rgba(113,113,122,0.15); color: var(--text-faint); }
+
+/* CHART */
+.chart-container { height: 240px; display: flex; align-items: flex-end; gap: 4px; padding: 16px 0; }
+.bar { flex: 1; background: linear-gradient(180deg, var(--accent), var(--accent-2)); border-radius: 4px 4px 0 0; min-height: 4px; transition: height 0.3s; position: relative; }
+.bar:hover { opacity: 0.8; }
+.bar-label { position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); font-size: 10px; color: var(--text-faint); font-family: var(--font-mono); }
+.bar-value { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 10px; color: var(--text-dim); font-family: var(--font-mono); }
+
+/* ACTIVITY */
+.activity-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.activity-item:last-child { border-bottom: none; }
+.activity-icon { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+.activity-icon.deal { background: rgba(168,85,247,0.15); color: var(--accent); }
+.activity-icon.contact { background: rgba(6,182,212,0.15); color: var(--accent-2); }
+.activity-icon.task { background: rgba(16,185,129,0.15); color: var(--success); }
+.activity-content { flex: 1; }
+.activity-title { font-size: 13px; color: var(--text); }
+.activity-time { font-size: 11px; color: var(--text-faint); margin-top: 2px; }
+
+/* SEARCH */
+.search-bar { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 8px 14px; display: flex; align-items: center; gap: 8px; width: 280px; }
+.search-input { background: none; border: none; color: var(--text); outline: none; flex: 1; font-size: 13px; }
+
+/* PAGES */
+.page { display: none; }
+.page.active { display: block; }
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .app { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .content-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-orb"></div>
+      ElmoorxCRM
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-h">Main</div>
+      <div class="nav-link active" data-page="dashboard"><span class="nav-icon">▦</span> Dashboard</div>
+      <div class="nav-link" data-page="contacts"><span class="nav-icon">👥</span> Contacts</div>
+      <div class="nav-link" data-page="deals"><span class="nav-icon">💼</span> Deals</div>
+      <div class="nav-link" data-page="tasks"><span class="nav-icon">✓</span> Tasks</div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-h">Reports</div>
+      <div class="nav-link" data-page="analytics"><span class="nav-icon">📊</span> Analytics</div>
+      <div class="nav-link" data-page="revenue"><span class="nav-icon">💰</span> Revenue</div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-h">Settings</div>
+      <div class="nav-link" data-page="settings"><span class="nav-icon">⚙</span> Settings</div>
+      <div class="nav-link" data-page="team"><span class="nav-icon">🏢</span> Team</div>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Dashboard</div>
+          <div class="page-subtitle">Welcome back, Amir — here's what's happening today.</div>
+        </div>
+        <div class="header-actions">
+          <div class="search-bar">
+            <span>🔍</span>
+            <input class="search-input" placeholder="Search..." />
+          </div>
+          <button class="btn primary">+ New Deal</button>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total Revenue</div>
+          <div class="stat-value">$48,250</div>
+          <div class="stat-trend positive">↑ 12% vs last month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Active Deals</div>
+          <div class="stat-value">23</div>
+          <div class="stat-trend positive">↑ 3 new this week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Contacts</div>
+          <div class="stat-value">1,247</div>
+          <div class="stat-trend positive">↑ 8% growth</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Win Rate</div>
+          <div class="stat-value">68%</div>
+          <div class="stat-trend negative">↓ 2% vs target</div>
+        </div>
+      </div>
+
+      <div class="content-grid">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Revenue — Last 12 Months</div>
+            <button class="btn">Export</button>
+          </div>
+          <div class="chart-container" id="revenue-chart"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Recent Activity</div>
+          </div>
+          <div id="activity-list">
+            <div class="activity-item">
+              <div class="activity-icon deal">💼</div>
+              <div class="activity-content">
+                <div class="activity-title"><strong>Acme Corp</strong> deal moved to Negotiation</div>
+                <div class="activity-time">2 minutes ago</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon contact">👥</div>
+              <div class="activity-content">
+                <div class="activity-title">New contact <strong>Sara Mohamed</strong> added</div>
+                <div class="activity-time">1 hour ago</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon task">✓</div>
+              <div class="activity-content">
+                <div class="activity-title">Task <strong>Follow up with TechCo</strong> completed</div>
+                <div class="activity-time">3 hours ago</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon deal">💼</div>
+              <div class="activity-content">
+                <div class="activity-title"><strong>Global Inc</strong> deal closed — $12,500</div>
+                <div class="activity-time">Yesterday</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon contact">👥</div>
+              <div class="activity-content">
+                <div class="activity-title">Email campaign sent to 245 contacts</div>
+                <div class="activity-time">2 days ago</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Recent Deals</div>
+          <button class="btn">View All</button>
+        </div>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Company</th>
+              <th>Contact</th>
+              <th>Value</th>
+              <th>Stage</th>
+              <th>Owner</th>
+              <th>Updated</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="avatar-sm">A</span> Acme Corp</td>
+              <td>John Smith</td>
+              <td>$15,000</td>
+              <td><span class="badge active">Negotiation</span></td>
+              <td>Amir H.</td>
+              <td>2 min ago</td>
+            </tr>
+            <tr>
+              <td><span class="avatar-sm">G</span> Global Inc</td>
+              <td>Sara Lee</td>
+              <td>$12,500</td>
+              <td><span class="badge active">Closed Won</span></td>
+              <td>Amir H.</td>
+              <td>1 day ago</td>
+            </tr>
+            <tr>
+              <td><span class="avatar-sm">T</span> TechCo</td>
+              <td>Mike Chen</td>
+              <td>$8,750</td>
+              <td><span class="badge pending">Proposal</span></td>
+              <td>Leila K.</td>
+              <td>2 days ago</td>
+            </tr>
+            <tr>
+              <td><span class="avatar-sm">D</span> DataFlow</td>
+              <td>Emma Wilson</td>
+              <td>$22,000</td>
+              <td><span class="badge pending">Qualified</span></td>
+              <td>Khalid M.</td>
+              <td>3 days ago</td>
+            </tr>
+            <tr>
+              <td><span class="avatar-sm">N</span> Nexus Ltd</td>
+              <td>Yusuf Ali</td>
+              <td>$5,400</td>
+              <td><span class="badge inactive">Lost</span></td>
+              <td>Amir H.</td>
+              <td>1 week ago</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CONTACTS -->
+    <div class="page" id="page-contacts">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Contacts</div>
+          <div class="page-subtitle">1,247 total contacts</div>
+        </div>
+        <div class="header-actions">
+          <button class="btn primary">+ Add Contact</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <table class="table">
+          <thead>
+            <tr><th>Name</th><th>Email</th><th>Company</th><th>Phone</th><th>Status</th><th>Last Contact</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="avatar-sm">JS</span> John Smith</td><td>john@acme.com</td><td>Acme Corp</td><td>+1 555-0100</td><td><span class="badge active">Active</span></td><td>2 hours ago</td></tr>
+            <tr><td><span class="avatar-sm">SL</span> Sara Lee</td><td>sara@global.com</td><td>Global Inc</td><td>+1 555-0101</td><td><span class="badge active">Active</span></td><td>1 day ago</td></tr>
+            <tr><td><span class="avatar-sm">MC</span> Mike Chen</td><td>mike@techco.com</td><td>TechCo</td><td>+1 555-0102</td><td><span class="badge pending">Pending</span></td><td>3 days ago</td></tr>
+            <tr><td><span class="avatar-sm">EW</span> Emma Wilson</td><td>emma@dataflow.com</td><td>DataFlow</td><td>+1 555-0103</td><td><span class="badge active">Active</span></td><td>1 week ago</td></tr>
+            <tr><td><span class="avatar-sm">YA</span> Yusuf Ali</td><td>yusuf@nexus.com</td><td>Nexus Ltd</td><td>+1 555-0104</td><td><span class="badge inactive">Inactive</span></td><td>2 weeks ago</td></tr>
+            <tr><td><span class="avatar-sm">SM</span> Sara Mohamed</td><td>sara.m@startup.io</td><td>StartupIO</td><td>+1 555-0105</td><td><span class="badge active">Active</span></td><td>Just now</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- DEALS -->
+    <div class="page" id="page-deals">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Deals</div>
+          <div class="page-subtitle">23 active deals · $48,250 pipeline</div>
+        </div>
+        <div class="header-actions">
+          <button class="btn primary">+ New Deal</button>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">Qualified</div><div class="stat-value">8</div></div>
+        <div class="stat-card"><div class="stat-label">Proposal</div><div class="stat-value">5</div></div>
+        <div class="stat-card"><div class="stat-label">Negotiation</div><div class="stat-value">7</div></div>
+        <div class="stat-card"><div class="stat-label">Closed Won</div><div class="stat-value">3</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">All Deals</div></div>
+        <table class="table">
+          <thead><tr><th>Deal</th><th>Company</th><th>Value</th><th>Stage</th><th>Probability</th><th>Close Date</th></tr></thead>
+          <tbody>
+            <tr><td>Enterprise License</td><td>Acme Corp</td><td>$15,000</td><td><span class="badge active">Negotiation</span></td><td>75%</td><td>Aug 15</td></tr>
+            <tr><td>Annual Contract</td><td>Global Inc</td><td>$12,500</td><td><span class="badge active">Closed Won</span></td><td>100%</td><td>Jul 10</td></tr>
+            <tr><td>Pilot Program</td><td>TechCo</td><td>$8,750</td><td><span class="badge pending">Proposal</span></td><td>50%</td><td>Aug 30</td></tr>
+            <tr><td>Platform Upgrade</td><td>DataFlow</td><td>$22,000</td><td><span class="badge pending">Qualified</span></td><td>30%</td><td>Sep 15</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TASKS -->
+    <div class="page" id="page-tasks">
+      <div class="page-header">
+        <div><div class="page-title">Tasks</div><div class="page-subtitle">12 pending tasks</div></div>
+        <div class="header-actions"><button class="btn primary">+ New Task</button></div>
+      </div>
+      <div class="card">
+        <div id="task-list"></div>
+      </div>
+    </div>
+
+    <!-- ANALYTICS -->
+    <div class="page" id="page-analytics">
+      <div class="page-header">
+        <div><div class="page-title">Analytics</div><div class="page-subtitle">Performance metrics</div></div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">Conversion Rate</div><div class="stat-value">3.2%</div><div class="stat-trend positive">↑ 0.5%</div></div>
+        <div class="stat-card"><div class="stat-label">Avg Deal Size</div><div class="stat-value">$8,450</div><div class="stat-trend positive">↑ 8%</div></div>
+        <div class="stat-card"><div class="stat-label">Sales Cycle</div><div class="stat-value">28d</div><div class="stat-trend negative">↓ 3d longer</div></div>
+        <div class="stat-card"><div class="stat-label">Customer LTV</div><div class="stat-value">$24K</div><div class="stat-trend positive">↑ 15%</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Monthly Performance</div></div>
+        <div class="chart-container" id="analytics-chart"></div>
+      </div>
+    </div>
+
+    <!-- Other pages -->
+    <div class="page" id="page-revenue"><div class="page-header"><div class="page-title">Revenue</div></div><div class="card"><p>Revenue reports...</p></div></div>
+    <div class="page" id="page-settings"><div class="page-header"><div class="page-title">Settings</div></div><div class="card"><p>Settings page...</p></div></div>
+    <div class="page" id="page-team"><div class="page-header"><div class="page-title">Team</div></div><div class="card"><p>Team management...</p></div></div>
+
+  </main>
+</div>
+
+<script>
+// ============ NAVIGATION ============
+document.querySelectorAll('.nav-link').forEach(link => {
+  link.addEventListener('click', () => {
+    const page = link.dataset.page;
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    link.classList.add('active');
+    const target = document.getElementById('page-' + page);
+    if (target) target.classList.add('active');
+  });
+});
+
+// ============ REVENUE CHART ============
+const revenueData = [
+  { label: 'Jan', value: 22 }, { label: 'Feb', value: 28 }, { label: 'Mar', value: 35 },
+  { label: 'Apr', value: 30 }, { label: 'May', value: 42 }, { label: 'Jun', value: 48 },
+  { label: 'Jul', value: 55 }, { label: 'Aug', value: 50 }, { label: 'Sep', value: 62 },
+  { label: 'Oct', value: 68 }, { label: 'Nov', value: 72 }, { label: 'Dec', value: 80 },
+];
+
+function renderChart(containerId, data, unit = 'K') {
+  const container = document.getElementById(containerId);
+  const max = Math.max(...data.map(d => d.value));
+  container.innerHTML = data.map(d => `
+    <div class="bar" style="height: ${(d.value / max) * 200}px;" title="${d.label}: $${d.value}${unit}">
+      <div class="bar-value">$${d.value}</div>
+      <div class="bar-label">${d.label}</div>
+    </div>
+  `).join('');
+}
+
+renderChart('revenue-chart', revenueData);
+renderChart('analytics-chart', revenueData.slice(6));
+
+// ============ TASKS ============
+const tasks = [
+  { text: 'Follow up with Acme Corp', done: false, priority: 'high', due: 'Today' },
+  { text: 'Prepare proposal for TechCo', done: false, priority: 'high', due: 'Tomorrow' },
+  { text: 'Send contract to Global Inc', done: true, priority: 'medium', due: 'Completed' },
+  { text: 'Schedule demo with DataFlow', done: false, priority: 'medium', due: 'Aug 5' },
+  { text: 'Update CRM contacts list', done: false, priority: 'low', due: 'Aug 7' },
+  { text: 'Quarterly review meeting', done: false, priority: 'high', due: 'Aug 10' },
+  { text: 'Email campaign to leads', done: true, priority: 'medium', due: 'Completed' },
+];
+
+function renderTasks() {
+  const list = document.getElementById('task-list');
+  list.innerHTML = tasks.map((task, i) => `
+    <div class="activity-item">
+      <input type="checkbox" ${task.done ? 'checked' : ''} data-index="${i}" style="margin-top:4px;" />
+      <div class="activity-content">
+        <div class="activity-title" style="${task.done ? 'text-decoration:line-through;color:var(--text-faint);' : ''}">${task.text}</div>
+        <div class="activity-time">
+          <span style="color: ${task.priority === 'high' ? 'var(--danger)' : task.priority === 'medium' ? 'var(--warning)' : 'var(--text-faint)'};">
+            ${task.priority.toUpperCase()}
+          </span>
+          · Due: ${task.due}
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  list.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+    cb.addEventListener('change', (e) => {
+      const i = parseInt(e.target.dataset.index);
+      tasks[i].done = e.target.checked;
+      renderTasks();
+    });
+  });
+}
+
+renderTasks();
+
+console.log('%c ElmoorxCRM ', 'background:linear-gradient(135deg,#A855F7,#06B6D4);color:white;font-weight:bold;padding:4px 8px;border-radius:4px');
+console.log('Production demo — built with Elmoorx Framework v2.0');
+</script>
+
+</body>
+</html>

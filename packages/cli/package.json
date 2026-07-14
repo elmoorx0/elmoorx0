@@ -1,0 +1,45 @@
+{
+  "name": "@elmoorx/cli",
+  "version": "3.0.0-alpha.2",
+  "description": "CLI tool: init, dev, build, deploy, generate, doctor",
+  "type": "module",
+  "bin": {
+    "elmoorx": "./dist/index.js"
+  },
+  "main": "./src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "@elmoorx/runtime": "*",
+    "@elmoorx/compiler": "*",
+    "@elmoorx/ai-copilot": "*",
+    "esbuild": "^0.21.0"
+  },
+  "license": "MIT",
+  "author": "Elmoorx Framework",
+  "homepage": "https://elmoorx.dev/packages/cli",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/elmoorx0/elmoorx0",
+    "directory": "packages/cli"
+  },
+  "bugs": {
+    "url": "https://github.com/elmoorx0/elmoorx0/issues"
+  },
+  "keywords": [
+    "elmoorx",
+    "framework",
+    "cli"
+  ],
+  "sideEffects": false,
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}

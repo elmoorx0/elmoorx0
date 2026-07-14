@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Elmoorx Framework Blog</title>
+  <link href="https://elmoorx.dev/blog"/>
+  <link href="https://elmoorx.dev/atom.xml" rel="self" type="application/atom+xml"/>
+  <link href="https://elmoorx.dev/blog" rel="alternate" type="text/html"/>
+  <id>https://elmoorx.dev/blog</id>
+  <updated>2026-07-12T12:00:00Z</updated>
+  <subtitle>Tutorials, announcements, and deep dives into Elmoorx Framework</subtitle>
+  <author>
+    <name>Elmoorx Foundation</name>
+    <email>team@elmoorx.dev</email>
+    <uri>https://elmoorx.dev</uri>
+  </author>
+  <rights>© 2026 Elmoorx Foundation. MIT License.</rights>
+  <generator>Elmoorx Framework v2.0</generator>
+
+  <entry>
+    <title>Elmoorx Framework 2.0 — The Most Complete Frontend Framework Ever Built</title>
+    <link href="https://elmoorx.dev/blog/elmoorx-2-0-released"/>
+    <id>https://elmoorx.dev/blog/elmoorx-2-0-released</id>
+    <published>2026-07-12T09:00:00Z</published>
+    <updated>2026-07-12T09:00:00Z</updated>
+    <summary>Today we're shipping Elmoorx 2.0 — 73 packages, 61 UI components, 24 API endpoints, 862 tests.</summary>
+    <content type="html"><![CDATA[<p>Elmoorx 2.0 is here with 73 packages, 24 API endpoints, and 10 revolutionary features.</p>]]></content>
+    <category term="Announcements"/>
+    <author><name>Elmoorx Foundation</name></author>
+  </entry>
+
+  <entry>
+    <title>Why Zero Hydration Is a Solved Problem</title>
+    <link href="https://elmoorx.dev/blog/why-zero-hydration-matters"/>
+    <id>https://elmoorx.dev/blog/why-zero-hydration-matters</id>
+    <published>2026-07-08T09:00:00Z</published>
+    <updated>2026-07-08T09:00:00Z</updated>
+    <summary>Hydration is expensive, slow, and unnecessary. Here's how Elmoorx eliminates it.</summary>
+    <category term="Architecture"/>
+    <author><name>Elmoorx Foundation</name></author>
+  </entry>
+
+  <entry>
+    <title>Edge Runtime Comparison: Elmoorx vs Next.js vs SvelteKit</title>
+    <link href="https://elmoorx.dev/blog/edge-runtime-comparison-2026"/>
+    <id>https://elmoorx.dev/blog/edge-runtime-comparison-2026</id>
+    <published>2026-07-05T09:00:00Z</published>
+    <updated>2026-07-05T09:00:00Z</updated>
+    <summary>Real benchmarks on Cloudflare, Vercel, and Deno.</summary>
+    <category term="Benchmarks"/>
+    <author><name>Elmoorx Foundation</name></author>
+  </entry>
+
+  <entry>
+    <title>Building a Complete SaaS App with Elmoorx in 1 Hour</title>
+    <link href="https://elmoorx.dev/blog/building-saas-with-elmoorx"/>
+    <id>https://elmoorx.dev/blog/building-saas-with-elmoorx</id>
+    <published>2026-07-03T09:00:00Z</published>
+    <updated>2026-07-03T09:00:00Z</updated>
+    <summary>Auth, payments, email, files, WebSocket — all built-in.</summary>
+    <category term="Tutorials"/>
+    <author><name>Elmoorx Foundation</name></author>
+  </entry>
+
+  <entry>
+    <title>How to Migrate from React to Elmoorx</title>
+    <link href="https://elmoorx.dev/blog/migration-from-react-to-elmoorx"/>
+    <id>https://elmoorx.dev/blog/migration-from-react-to-elmoorx</id>
+    <published>2026-06-28T09:00:00Z</published>
+    <updated>2026-06-28T09:00:00Z</updated>
+    <summary>Automatic migration tool for React, Vue, Svelte, Angular.</summary>
+    <category term="Guides"/>
+    <author><name>Elmoorx Foundation</name></author>
+  </entry>
+
+</feed>

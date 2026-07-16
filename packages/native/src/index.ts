@@ -339,20 +339,20 @@ export interface NativeBridge {
   requestPermission: (permission: "camera" | "photos" | "location" | "notifications") => Promise<"granted" | "denied">;
 }
 
-// @ts-expect-error — TS2322: Type '{} | { navigate: () => void; goBack: () => void; setParams: () => 
-const nativeBridge: NativeBridge = (globalThis as unknown as Record<string, unknown>).__ELMOORX_NATIVE_BRIDGE__ || {
-  navigate: () => {},
-  goBack: () => {},
-  setParams: () => {},
-  push: () => {},
-  pop: () => {},
-  vibrate: () => {},
-  share: async () => {},
-  openURL: async () => false,
-  getStorage: async () => null,
-  setStorage: async () => {},
-  requestPermission: async () => "denied",
-};
+const nativeBridge: NativeBridge =
+  (globalThis as unknown as { __ELMOORX_NATIVE_BRIDGE__?: NativeBridge }).__ELMOORX_NATIVE_BRIDGE__ || {
+    navigate: () => {},
+    goBack: () => {},
+    setParams: () => {},
+    push: () => {},
+    pop: () => {},
+    vibrate: () => {},
+    share: async () => {},
+    openURL: async () => false,
+    getStorage: async () => null,
+    setStorage: async () => {},
+    requestPermission: async () => "denied",
+  };
 
 
 // ============ ANIMATION ============
@@ -441,9 +441,9 @@ export interface NativePressEvent {
  */
 export const AppRegistry = {
   registerComponent: (appName: string, component: () => NativeNode): void => {
-    if (typeof (globalThis as unknown as Record<string, unknown>).__ELMOORX_NATIVE_BRIDGE__ !== "undefined") {
-// @ts-expect-error — TS2571: Object is of type 'unknown'.
-      (globalThis as unknown as Record<string, unknown>).__ELMOORX_NATIVE_BRIDGE__.registerRoot(appName, component);
+    const bridge = (globalThis as unknown as { __ELMOORX_NATIVE_BRIDGE__?: { registerRoot?(appName: string, component: () => NativeNode): void } }).__ELMOORX_NATIVE_BRIDGE__;
+    if (bridge?.registerRoot) {
+      bridge.registerRoot(appName, component);
     }
   },
 };

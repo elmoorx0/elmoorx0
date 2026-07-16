@@ -25,6 +25,16 @@ interface DevtoolsState {
   open: boolean;
 }
 
+/**
+ * True when running in a production build. Reads NODE_ENV defensively so
+ * the devtools module is safe to import in browsers without a `process`
+ * polyfill.
+ */
+function isProduction(): boolean {
+  if (typeof process === "undefined") return false;
+  return process.env?.NODE_ENV === "production";
+}
+
 const devtools = $state<DevtoolsState>({
   signals: new Map(),
   effects: new Map(),
@@ -58,7 +68,7 @@ if (typeof originalState === "function") {
  * Register an island with the devtools.
  */
 export function registerIsland(id: string, element?: Element): void {
-  if (process.env.NODE_ENV === "production") return;
+  if (isProduction()) return;
   devtools().islands.set(id, { id, element });
 }
 
@@ -66,7 +76,7 @@ export function registerIsland(id: string, element?: Element): void {
  * Take a snapshot of a store's current state.
  */
 export function snapshotStore(name: string, value: unknown): void {
-  if (process.env.NODE_ENV === "production") return;
+  if (isProduction()) return;
   devtools().storeSnapshots.set(name, value);
 }
 
@@ -75,7 +85,7 @@ export function snapshotStore(name: string, value: unknown): void {
  * Call this once at app startup (dev only).
  */
 export function injectDevtools(): void {
-  if (process.env.NODE_ENV === "production") return;
+  if (isProduction()) return;
   if (typeof document === "undefined") return;
 
   // Wait for DOM ready
@@ -120,6 +130,18 @@ function renderPanel(panel: HTMLElement): void {
   const effCount = state.effects.size;
   const islandCount = state.islands.size;
 
+  // Escape any user-adjacent string before injecting it into innerHTML.
+  // Even though signal IDs are framework-generated (sig_N) and island
+  // IDs are file-path-derived, defense in depth: a future change could
+  // surface a developer-controlled string here.
+  const esc = (s: string): string =>
+    s.replace(/[&<>"']/g, (c) =>
+      c === "&" ? "&amp;" :
+      c === "<" ? "&lt;"  :
+      c === ">" ? "&gt;"  :
+      c === '"' ? "&quot;" :
+      "&#39;");
+
   panel.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;border-bottom:1px solid #2A2A38;padding-bottom:8px">
       <strong style="color:#A855F7">⚡ Elmoorx DevTools</strong>
@@ -143,7 +165,7 @@ function renderPanel(panel: HTMLElement): void {
       <div style="color:#A855F7;margin-bottom:4px">Signals:</div>
       ${[...state.signals.entries()].slice(0, 5).map(([id, info]) => `
         <div style="background:#14141B;padding:4px 6px;border-radius:3px;margin-bottom:2px;color:#A1A1AA">
-          ${id}: <span style="color:#06B6D4">${JSON.stringify(info.value).slice(0, 40)}</span>
+          ${esc(id)}: <span style="color:#06B6D4">${esc(JSON.stringify(info.value).slice(0, 40))}</span>
           <span style="color:#71717A">(${info.deps} deps)</span>
         </div>
       `).join("")}
@@ -152,7 +174,7 @@ function renderPanel(panel: HTMLElement): void {
       <div style="color:#A855F7;margin-bottom:4px">Islands:</div>
       ${[...state.islands.entries()].slice(0, 5).map(([id, _info]) => `
         <div style="background:#14141B;padding:4px 6px;border-radius:3px;margin-bottom:2px;color:#A1A1AA">
-          ${id}
+          ${esc(id)}
         </div>
       `).join("")}
     </div>

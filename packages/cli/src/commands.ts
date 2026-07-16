@@ -74,31 +74,45 @@ export async function doctor(rootDir: string): Promise<DoctorCheck[]> {
       // Check 4: TypeScript config
       const tsconfigPath = join(rootDir, "tsconfig.json");
       if (existsSync(tsconfigPath)) {
-        const tsconfig = JSON.parse(await readFile(tsconfigPath, "utf-8"));
-        const jsxSetting = tsconfig.compilerOptions?.jsx;
-        if (jsxSetting === "react-jsx") {
-          const jsxImport = tsconfig.compilerOptions?.jsxImportSource;
-          if (jsxImport === "@elmoorx/runtime") {
-            checks.push({
-              name: "TypeScript JSX",
-              status: "pass",
-              message: "Configured for Elmoorx",
-            });
+        let tsconfig: { compilerOptions?: { jsx?: string; jsxImportSource?: string } } = {};
+        let tsconfigParsed = true;
+        try {
+          tsconfig = JSON.parse(await readFile(tsconfigPath, "utf-8"));
+        } catch {
+          tsconfigParsed = false;
+          checks.push({
+            name: "TypeScript",
+            status: "warn",
+            message: "tsconfig.json is malformed JSON — could not parse",
+            fix: "Fix the JSON syntax in tsconfig.json",
+          });
+        }
+        if (tsconfigParsed) {
+          const jsxSetting = tsconfig.compilerOptions?.jsx;
+          if (jsxSetting === "react-jsx") {
+            const jsxImport = tsconfig.compilerOptions?.jsxImportSource;
+            if (jsxImport === "@elmoorx/runtime") {
+              checks.push({
+                name: "TypeScript JSX",
+                status: "pass",
+                message: "Configured for Elmoorx",
+              });
+            } else {
+              checks.push({
+                name: "TypeScript JSX",
+                status: "warn",
+                message: `jsxImportSource is "${jsxImport}" — should be "@elmoorx/runtime"`,
+                fix: 'Set "jsxImportSource": "@elmoorx/runtime" in tsconfig.json',
+              });
+            }
           } else {
             checks.push({
               name: "TypeScript JSX",
               status: "warn",
-              message: `jsxImportSource is "${jsxImport}" — should be "@elmoorx/runtime"`,
-              fix: 'Set "jsxImportSource": "@elmoorx/runtime" in tsconfig.json',
+              message: `jsx is "${jsxSetting}" — should be "react-jsx"`,
+              fix: 'Set "jsx": "react-jsx" in tsconfig.json',
             });
           }
-        } else {
-          checks.push({
-            name: "TypeScript JSX",
-            status: "warn",
-            message: `jsx is "${jsxSetting}" — should be "react-jsx"`,
-            fix: 'Set "jsx": "react-jsx" in tsconfig.json',
-          });
         }
       } else {
         checks.push({
@@ -224,7 +238,18 @@ export interface ProjectInfo {
 }
 
 export async function info(rootDir: string): Promise<ProjectInfo> {
-  const pkg = JSON.parse(await readFile(join(rootDir, "package.json"), "utf-8"));
+  let pkg: {
+    dependencies?: Record<string, string>;
+    devDependencies?: Record<string, string>;
+    name?: string;
+    version?: string;
+    description?: string;
+  };
+  try {
+    pkg = JSON.parse(await readFile(join(rootDir, "package.json"), "utf-8"));
+  } catch {
+    throw new Error(`Could not read or parse ${join(rootDir, "package.json")}`);
+  }
   const allDeps = { ...pkg.dependencies, ...pkg.devDependencies };
   const elmoorxPackages = Object.keys(allDeps).filter(d => d.startsWith("@elmoorx/"));
 
@@ -379,7 +404,12 @@ export async function clean(rootDir: string): Promise<{ removed: string[]; freed
 export async function checkUpdates(rootDir: string): Promise<{
   packages: { name: string; current: string; latest: string; updateAvailable: boolean }[];
 }> {
-  const pkg = JSON.parse(await readFile(join(rootDir, "package.json"), "utf-8"));
+  let pkg: { dependencies?: Record<string, string>; devDependencies?: Record<string, string> };
+  try {
+    pkg = JSON.parse(await readFile(join(rootDir, "package.json"), "utf-8"));
+  } catch {
+    return { packages: [] };
+  }
   const deps = { ...pkg.dependencies, ...pkg.devDependencies };
   const elmoorxDeps = Object.keys(deps).filter(d => d.startsWith("@elmoorx/"));
 

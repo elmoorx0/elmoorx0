@@ -15,7 +15,7 @@
  * All middleware-style, zero dependencies.
  */
 
-import { createHash, randomBytes } from 'crypto';
+import { createHash, randomBytes } from 'node:crypto';
 
 // ─── Framework-agnostic HTTP types ──────────────────────────────────────────
 export interface HttpRequest {

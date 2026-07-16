@@ -16,8 +16,7 @@ import { parse, traverse, transformFromAstSync, elmoorxJsxPlugin } from "./babel
 // Static import for the TS-stripping plugin — avoids `require.resolve`
 // which doesn't work in ESM.
 import tsPluginModule from "@babel/plugin-transform-typescript";
-// @ts-expect-error — TS2571: Object is of type 'unknown'.
-const tsPlugin = (tsPluginModule as unknown).default ?? tsPluginModule;
+const tsPlugin = (tsPluginModule as { default?: typeof tsPluginModule }).default ?? tsPluginModule;
 import { gzipSync as nodeGzipSync } from "node:zlib";
 
 export interface IslandInfo {
@@ -89,11 +88,16 @@ export function compile(source: string, options: CompileOptions): CompileResult 
   // most real-world usage.
   traverse(ast, {
     CallExpression(path: unknown) {
-// @ts-expect-error — TS2571: Object is of type 'unknown'.
-      const callee = (path as Record<string, unknown>).node.callee;
+      const p = path as Record<string, unknown>;
+      const callee = (p.node as Record<string, unknown>).callee as { type: string; name?: string };
       if (callee.type === "Identifier" && callee.name === "island") {
-// @ts-expect-error — TS2571: Object is of type 'unknown'.
-        const arg = (path as Record<string, unknown>).node.arguments[0];
+        const arg = ((p.node as Record<string, unknown>).arguments as unknown[])[0] as {
+          type: string;
+          name?: string;
+          property?: { name?: string };
+          id?: { name?: string };
+          loc?: { start?: { line?: number } };
+        };
         if (!arg) return;
         const isComponentArg =
           arg.type === "ArrowFunctionExpression" ||
@@ -107,16 +111,17 @@ export function compile(source: string, options: CompileOptions): CompileResult 
         if (arg.type === "Identifier" || arg.type === "MemberExpression") {
           componentName =
             arg.type === "Identifier"
-              ? arg.name
+              ? (arg.name || "anon")
               : (arg.property?.name || "anon");
         } else if (arg.type === "FunctionExpression" && arg.id) {
-          componentName = arg.id.name;
+          componentName = arg.id.name || "anon";
         } else if (arg.type === "ArrowFunctionExpression") {
           // Try to infer from the enclosing VariableDeclarator
-          const parent = (path as Record<string, unknown>).parentPath;
-// @ts-expect-error — TS2339: Property 'isVariableDeclarator' does not exist on type '{}'.
-          if (parent?.isVariableDeclarator?.() && parent.node.id?.name) {
-// @ts-expect-error — TS2339: Property 'node' does not exist on type '{}'.
+          const parent = (p.parentPath as Record<string, unknown> & {
+            isVariableDeclarator?: () => boolean;
+            node?: { id?: { name?: string } };
+          } | undefined);
+          if (parent?.isVariableDeclarator?.() && parent.node?.id?.name) {
             componentName = parent.node.id.name;
           }
         }

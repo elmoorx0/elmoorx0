@@ -211,7 +211,7 @@ import { Button, Card, Badge } from "@elmoorx/ui";
 
 const cart = $store({ items: [], total: 0 });
 
-const ProductCard = island((props: { product: any }) => {
+const ProductCard = island((props: { product: { id: string; name: string; image: string; description: string; price: number; inStock: boolean } }) => {
   const addToCart = () => {
     cart.items.push({ ...props.product, qty: 1 });
     cart.total = cart.items.reduce((s, i) => s + i.price * i.qty, 0);
@@ -232,7 +232,7 @@ const ProductCard = island((props: { product: any }) => {
   );
 });
 
-export default function Store({ products }) {
+export default function Store({ products }: { products: Array<{ id: string; name: string; image: string; description: string; price: number; inStock: boolean }> }) {
   return h("main", null,
     h("h1", null, "My Store"),
     h("div", { class: "products-grid" },

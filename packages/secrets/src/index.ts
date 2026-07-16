@@ -29,7 +29,7 @@ const PBKDF2_ITERATIONS = 210_000;
 const KEY_LENGTH = 32;
 
 function getMasterKey(): Buffer {
-  const envKey = process.env.ELMOORX_SECRETS_KEY;
+  const envKey = typeof process !== "undefined" ? process.env?.ELMOORX_SECRETS_KEY : undefined;
   if (!envKey) {
     // Generate an ephemeral key and warn. This means encrypted secrets
     // can't be decrypted after process restart — callers MUST set
@@ -59,8 +59,7 @@ interface EncryptedValue {
 }
 
 function isEncryptedValue(v: unknown): v is EncryptedValue {
-// @ts-expect-error — TS2571: Object is of type 'unknown'.
-  return typeof v === "object" && v !== null && (v as unknown).__encrypted === true;
+  return typeof v === "object" && v !== null && (v as Record<string, unknown>).__encrypted === true;
 }
 
 function encryptValue(plaintext: string, masterKey: Buffer): EncryptedValue {

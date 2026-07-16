@@ -14,7 +14,7 @@
  * - Auto-reconnect with backoff
  */
 
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 

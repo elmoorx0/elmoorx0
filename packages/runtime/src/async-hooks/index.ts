@@ -125,7 +125,7 @@ export function useFetch<T = unknown>(
   }
 
   // Refresh on focus
-  if (opts.refreshOnFocus) {
+  if (opts.refreshOnFocus && typeof window !== "undefined") {
     onMount(() => {
       const handler = () => fetchData();
       window.addEventListener("focus", handler);
@@ -251,7 +251,7 @@ export function useSWR<T = unknown>(
     });
   }
 
-  if (config.refreshOnFocus) {
+  if (config.refreshOnFocus && typeof window !== "undefined") {
     onMount(() => {
       const handler = () => revalidate();
       window.addEventListener("focus", handler);
@@ -259,7 +259,7 @@ export function useSWR<T = unknown>(
     });
   }
 
-  if (config.refreshOnReconnect !== false) {
+  if (config.refreshOnReconnect !== false && typeof window !== "undefined") {
     onMount(() => {
       const handler = () => revalidate();
       window.addEventListener("online", handler);

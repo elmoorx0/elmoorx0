@@ -11,11 +11,11 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@babel/core": "^7.24.0",
-    "@babel/parser": "^7.24.0",
-    "@babel/traverse": "^7.24.0",
-    "@babel/types": "^7.24.0",
-    "@babel/plugin-transform-typescript": "^7.24.0"
+    "@babel/core": "^7.28.0",
+    "@babel/parser": "^7.28.0",
+    "@babel/plugin-transform-typescript": "^7.28.0",
+    "@babel/traverse": "^7.28.0",
+    "@babel/types": "^7.28.0"
   },
   "peerDependencies": {
     "@elmoorx/runtime": "*"

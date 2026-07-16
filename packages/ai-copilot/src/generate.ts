@@ -64,8 +64,10 @@ export async function generate(opts: GenerateOptions): Promise<void> {
  * Extract the subject noun from a description.
  *   "login form" → "LoginForm"
  *   "todo list with filters" → "TodoList"
+ *
+ * Exported for unit testing.
  */
-function extractSubject(desc: string): string {
+export function extractSubject(desc: string): string {
   const words = desc.toLowerCase().trim().split(/\s+/);
   // Stop at prepositions/conjunctions
   const stop = new Set(["with", "and", "for", "that", "which", "to", "in", "on"]);
@@ -77,7 +79,12 @@ function extractSubject(desc: string): string {
   return subject.join(" ") || "component";
 }
 
-function toPascalCase(s: string): string {
+/**
+ * Convert a space- or dash-separated string to PascalCase.
+ *
+ * Exported for unit testing.
+ */
+export function toPascalCase(s: string): string {
   return s
     .split(/\s+/)
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
@@ -87,8 +94,10 @@ function toPascalCase(s: string): string {
 /**
  * Template-based generator — recognizes common patterns.
  * In production, this would be a fallback when no LLM is available.
+ *
+ * Exported for unit testing.
  */
-function generateFromTemplate(description: string, name: string): string {
+export function generateFromTemplate(description: string, name: string): string {
   const desc = description.toLowerCase();
 
   // Match against known patterns
@@ -709,7 +718,7 @@ const ${name} = () => {
   const query = $state("");
   const results = $state<string[]>([]);
   const loading = $state(false);
-  let debounceTimer: any = null;
+  let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
   $effect(() => {
     const q = query();
@@ -843,20 +852,35 @@ Component name: ${name}
 
 Output ONLY the TypeScript file content, no markdown fences, no explanations.`;
 
-  const res = await fetch("https://api.openai.com/v1/chat/completions", {
+  // Endpoint + model are configurable via env so callers can point at
+  // OpenAI-compatible gateways (Azure OpenAI, Ollama, vLLM, etc.).
+  const endpoint =
+    (typeof process !== "undefined" && process.env?.ELMOORX_LLM_ENDPOINT) ||
+    "https://api.openai.com/v1/chat/completions";
+  const model =
+    (typeof process !== "undefined" && process.env?.ELMOORX_LLM_MODEL) ||
+    "gpt-4";
+
+  const res = await fetch(endpoint, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: "gpt-4",
+      model,
       messages: [{ role: "user", content: prompt }],
       temperature: 0.2,
     }),
   });
 
   if (!res.ok) throw new Error(`LLM API error: ${res.status}`);
-  const data = await res.json();
-  return data.choices[0].message.content;
+  const data = (await res.json()) as {
+    choices?: Array<{ message?: { content?: string } }>;
+  };
+  const content = data.choices?.[0]?.message?.content;
+  if (typeof content !== "string") {
+    throw new Error("LLM API returned no usable content");
+  }
+  return content;
 }

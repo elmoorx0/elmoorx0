@@ -69,8 +69,9 @@ function addTag(tag: HeadTag): void {
  * <Head> — container for head tags.
  */
 export function Head(_props: { children: ElmoorxNode[] }): ElmoorxNode {
-  // In a real impl, the compiler would extract these and pass to the renderer
-  return null as unknown as ElmoorxNode;
+  // In a real impl, the compiler would extract these and pass to the renderer.
+  // Returns null (a valid ElmoorxNode) — the head tags are emitted via side-effect.
+  return null;
 }
 
 /**
@@ -84,7 +85,7 @@ export function Title(props: { children: string }): ElmoorxNode {
   } else {
     addTag({ tag: "title", attrs: {}, content: props.children });
   }
-  return null as unknown as ElmoorxNode;
+  return null;
 }
 
 /**
@@ -92,7 +93,7 @@ export function Title(props: { children: string }): ElmoorxNode {
  */
 export function Meta(props: Record<string, string>): ElmoorxNode {
   addTag({ tag: "meta", attrs: props });
-  return null as unknown as ElmoorxNode;
+  return null;
 }
 
 /**
@@ -100,7 +101,7 @@ export function Meta(props: Record<string, string>): ElmoorxNode {
  */
 export function Link(props: Record<string, string>): ElmoorxNode {
   addTag({ tag: "link", attrs: props });
-  return null as unknown as ElmoorxNode;
+  return null;
 }
 
 /**
@@ -112,7 +113,7 @@ export function Script(props: { src?: string; children?: string }): ElmoorxNode 
     attrs: props.src ? { src: props.src } : {},
     content: props.children,
   });
-  return null as unknown as ElmoorxNode;
+  return null;
 }
 
 /**

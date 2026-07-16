@@ -41,7 +41,7 @@ const LEVEL_COLORS: Record<LogLevel, string> = {
 
 const RESET = "\x1b[0m";
 
-class Logger {
+export class Logger {
   private minLevel: LogLevel = "info";
   private transports: LogTransport[] = [];
   private context: Record<string, unknown> = {};

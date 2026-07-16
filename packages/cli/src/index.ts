@@ -62,15 +62,19 @@ async function main() {
       break;
     }
     case "deploy": {
-      console.warn("  ✓ Building...         (0.8s)");
-      console.warn("  ✓ Optimizing...       (0.2s)");
-      console.warn("  ✓ Uploading to edge... (1.4s)");
-      console.warn("\n  Live URL: https://my-app.elmoorx.dev");
-      console.warn("  Regions: 285 edge locations");
-      console.warn("  Bundle:  4.2 kb gzipped");
-      console.warn("  Score:   Lighthouse 100/100\n");
-      break;
+      // NOTE: Real deployment requires platform-specific adapters
+      // (Cloudflare Workers / Vercel / Deno Deploy). The framework ships
+      // those as separate packages; this CLI command is a placeholder
+      // that signals "not implemented here" rather than faking success.
+      console.error("  ⚠ `elmoorx deploy` is a stub in this CLI.");
+      console.error("    To deploy, use the platform-specific adapter:");
+      console.error("      • Cloudflare: `npx wrangler deploy`");
+      console.error("      • Vercel:     `npx vercel --prod`");
+      console.error("      • Deno:       `deno deploy`");
+      console.error("    See packages/adapters for the matching build helpers.");
+      process.exit(1);
     }
+    // eslint-disable-next-line no-fallthrough -- process.exit is `never`, fallthrough is unreachable
     case "doctor": {
       const checks = await doctor(process.cwd());
       console.warn(formatDoctorOutput(checks));
@@ -131,7 +135,11 @@ function printHelp() {
     elmoorx dev                        Start the dev server (default: port 3000)
     elmoorx build                      Build for production
     elmoorx generate "<description>"   Generate a component (AI Copilot)
-    elmoorx deploy                     Deploy to edge (Cloudflare/Vercel/Deno)
+    elmoorx doctor                     Health-check the current project
+    elmoorx info                       Show project info (deps, sizes, env)
+    elmoorx analyze / bundle           Bundle size analysis
+    elmoorx clean                      Remove build caches / temp files
+    elmoorx upgrade                    Check for framework updates
     elmoorx --version                  Print version
     elmoorx --help                     Show this help
 

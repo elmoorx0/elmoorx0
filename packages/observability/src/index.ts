@@ -14,7 +14,7 @@
  * Zero dependencies. Designed for weak servers.
  */
 
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 
 // ─── Logging ────────────────────────────────────────────────────────────────
 

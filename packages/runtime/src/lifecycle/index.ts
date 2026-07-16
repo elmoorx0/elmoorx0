@@ -11,7 +11,7 @@
 type CleanupFn = () => void;
 type ErrorHandler = (err: unknown) => void;
 
-interface LifecycleBucket {
+export interface LifecycleBucket {
   mount: CleanupFn[];
   cleanup: CleanupFn[];
   error: ErrorHandler[];
@@ -176,13 +176,13 @@ export function onError(fn: ErrorHandler): void {
  * Wrap a function so errors propagate to the nearest error boundary.
  */
 export function withErrorBoundary<T extends (...args: unknown[]) => unknown>(fn: T): T {
-// @ts-expect-error — TS7030: Not all code paths return a value.
   return ((...args: unknown[]) => {
     try {
       return fn(...args);
     } catch (err) {
       if (currentBucket) {
         handleError(currentBucket, err);
+        return undefined as unknown;
       } else {
         throw err;
       }

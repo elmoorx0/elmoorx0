@@ -9,7 +9,28 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
-    }
+    },
+    "./reactive": {
+      "types": "./dist/reactive.d.ts",
+      "default": "./dist/reactive.js"
+    },
+    "./loader": {
+      "types": "./dist/loader.d.ts",
+      "default": "./dist/loader.js"
+    },
+    "./format": {
+      "types": "./dist/format.d.ts",
+      "default": "./dist/format.js"
+    },
+    "./plural": {
+      "types": "./dist/plural.d.ts",
+      "default": "./dist/plural.js"
+    },
+    "./core": {
+      "types": "./dist/core.d.ts",
+      "default": "./dist/core.js"
+    },
+    "./package.json": "./package.json"
   },
   "dependencies": {
     "@elmoorx/runtime": "*"
@@ -37,6 +58,7 @@
   },
   "scripts": {
     "build": "tsc",
+    "test": "npx tsx --test tests/*.test.mjs",
     "prepublishOnly": "npm run build"
   }
 }

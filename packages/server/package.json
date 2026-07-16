@@ -3,13 +3,29 @@
   "version": "3.0.0-alpha.2",
   "description": "Full-stack HTTP server with middleware, static files, API routes, WebSocket",
   "type": "module",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./api": {
+      "types": "./dist/api.d.ts",
+      "default": "./dist/api.js"
+    },
+    "./middleware": {
+      "types": "./dist/middleware.d.ts",
+      "default": "./dist/middleware.js"
+    },
+    "./ssg": {
+      "types": "./dist/ssg.d.ts",
+      "default": "./dist/ssg.js"
+    }
   },
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "@elmoorx/runtime": "*"

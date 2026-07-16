@@ -243,9 +243,9 @@ class PerfAIAnalyzer {
   }
 
   private measureMemory(): number {
-    if ((performance as unknown as Record<string, unknown>).memory) {
-// @ts-expect-error — TS2571: Object is of type 'unknown'.
-      return Math.round((performance as unknown as Record<string, unknown>).memory.usedJSHeapSize / 1048576);
+    const perfWithMemory = performance as Performance & { memory?: { usedJSHeapSize?: number } };
+    if (perfWithMemory.memory && typeof perfWithMemory.memory.usedJSHeapSize === "number") {
+      return Math.round(perfWithMemory.memory.usedJSHeapSize / 1048576);
     }
     return 40; // estimate
   }
@@ -255,8 +255,8 @@ class PerfAIAnalyzer {
   }
 
   private measureSignals(): number {
-// @ts-expect-error — TS2322: Type '{}' is not assignable to type 'number'.
-    return ((window as unknown as Record<string, unknown>).__elmoorx_signal_count) || 12;
+    const win = window as unknown as { __elmoorx_signal_count?: number };
+    return typeof win.__elmoorx_signal_count === "number" ? win.__elmoorx_signal_count : 12;
   }
 
   // ============ SCORING ============

@@ -43,8 +43,29 @@ export async function startARSession(
     throw new Error("WebXR is not available in this environment");
   }
 
-// @ts-expect-error — TS2571: Object is of type 'unknown'.
-  const session = await (navigator as unknown as Record<string, unknown>).xr.requestSession(
+  // WebXR types are not part of the standard lib; cast to a minimal
+  // XR-compatible surface so we keep type safety without adding a dep.
+  const xrNavigator = navigator as Navigator & {
+    xr?: {
+      requestSession(
+        mode: string,
+        opts: {
+          requiredFeatures: string[];
+          optionalFeatures: string[];
+          domOverlay?: { root: HTMLElement };
+        },
+      ): Promise<{
+        requestReferenceSpace(mode: string): Promise<unknown>;
+        requestAnimationFrame(cb: (time: number, frame: unknown) => void): number;
+        cancelAnimationFrame?(handle: number): void;
+        end(): Promise<void>;
+      }>;
+    };
+  };
+  if (!xrNavigator.xr) {
+    throw new Error("WebXR is not available in this environment");
+  }
+  const session = await xrNavigator.xr.requestSession(
     "immersive-ar",
     {
       requiredFeatures: opts.features ?? [],
@@ -62,8 +83,10 @@ export async function startARSession(
       rafHandle = session.requestAnimationFrame(loop);
       return;
     }
-// @ts-expect-error — TS2339: Property 'getViewerPose' does not exist on type '{}'.
-    const pose = frame.getViewerPose(refSpace);
+    const xrFrame = frame as {
+      getViewerPose?(refSpace: unknown): { transform?: { matrix?: number[] } } | undefined;
+    };
+    const pose = xrFrame.getViewerPose?.(refSpace);
     const arFrame: ARFrame = {
       timestamp: _time,
       cameraPose: pose?.transform?.matrix
@@ -78,7 +101,7 @@ export async function startARSession(
   return {
     canvas: opts.canvas,
     async end() {
-      if (rafHandle) session.cancelAnimationFrame(rafHandle);
+      if (rafHandle) session.cancelAnimationFrame?.(rafHandle);
       await session.end();
     },
     onFrame(cb) {

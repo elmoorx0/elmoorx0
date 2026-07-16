@@ -11,6 +11,9 @@
  *   // CLI: elmoorx migrate --from=react ./src
  */
 
+import { readFile, writeFile, readdir, stat } from "node:fs/promises";
+import { join, extname } from "node:path";
+
 // ============ REACT → ELMOORX ============
 
 export interface TransformOptions {
@@ -347,10 +350,10 @@ export async function migrateDirectory(
   const warnings: string[] = [];
   let filesProcessed = 0;
   let filesSucceeded = 0;
-  const filesFailed = 0;
-  const manualReviewRequired = 0;
+  let filesFailed = 0;
+  let manualReviewRequired = 0;
 
-  const _transformFn = {
+  const transformFn = {
     react: reactToElmoorx,
     next: nextToElmoorx,
     vue: vueToElmoorx,
@@ -358,10 +361,82 @@ export async function migrateDirectory(
     angular: angularToElmoorx,
   }[opts.from];
 
-  // In a real impl, this would walk the directory, transform each file,
-  // and write results. For now, return a sample report.
-  filesProcessed = 0;
-  filesSucceeded = 0;
+  // Map each source framework to the file extensions it lives in.
+  // .tsx/.jsx for React/Next, .vue for Vue, .svelte for Svelte, .ts for
+  // Angular (which uses TypeScript decorators).
+  const extByFramework: Record<typeof opts.from, string[]> = {
+    react: [".tsx", ".jsx", ".ts", ".js"],
+    next: [".tsx", ".jsx", ".ts", ".js"],
+    vue: [".vue"],
+    svelte: [".svelte"],
+    angular: [".ts"],
+  };
+  const wantedExts = new Set(extByFramework[opts.from]);
+
+  // Directories that should never be scanned regardless of opts.exclude.
+  const defaultExclude = new Set([
+    "node_modules", "dist", "build", ".git", ".next",
+    "coverage", ".cache", ".turbo", ".output",
+  ]);
+  const userExclude = new Set(opts.exclude ?? []);
+  const isExcluded = (name: string): boolean =>
+    defaultExclude.has(name) || userExclude.has(name);
+
+  // Recursively walk the directory and collect matching file paths.
+  const scanQueue: string[] = [dir];
+  const matches: string[] = [];
+  while (scanQueue.length > 0) {
+    const current = scanQueue.shift();
+    if (current === undefined) break;
+    let entries: string[];
+    try {
+      entries = await readdir(current);
+    } catch (err) {
+      warnings.push(`Could not read directory ${current}: ${(err as Error).message}`);
+      continue;
+    }
+    for (const entry of entries) {
+      if (isExcluded(entry)) continue;
+      const fullPath = join(current, entry);
+      let info;
+      try {
+        info = await stat(fullPath);
+      } catch (err) {
+        warnings.push(`Could not stat ${fullPath}: ${(err as Error).message}`);
+        continue;
+      }
+      if (info.isDirectory()) {
+        scanQueue.push(fullPath);
+      } else if (info.isFile() && wantedExts.has(extname(entry).toLowerCase())) {
+        matches.push(fullPath);
+      }
+    }
+  }
+
+  for (const filePath of matches) {
+    filesProcessed++;
+    try {
+      const original = await readFile(filePath, "utf-8");
+      const transformed = transformFn(original, { filename: filePath });
+
+      // Count transformations by diffing — for the alpha, we just
+      // count files that changed at all.
+      if (transformed !== original) {
+        transformations.set("file", (transformations.get("file") ?? 0) + 1);
+      }
+
+      if (!opts.dryRun && transformed !== original) {
+        await writeFile(filePath, transformed, "utf-8");
+      }
+      filesSucceeded++;
+    } catch (err) {
+      filesFailed++;
+      warnings.push(`Failed to transform ${filePath}: ${(err as Error).message}`);
+      // Heuristic: if the file has obvious framework-specific syntax
+      // that the codemod can't handle, flag it for manual review.
+      manualReviewRequired++;
+    }
+  }
 
   return {
     sourceFramework: opts.from,

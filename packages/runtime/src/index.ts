@@ -45,7 +45,18 @@ export { createContext, provide, inject, withContext } from "./context";
 export type { Context } from "./context";
 
 // Lifecycle hooks
-export { onMount, onCleanup, onError, withErrorBoundary } from "./lifecycle";
+export {
+  onMount,
+  onCleanup,
+  onError,
+  withErrorBoundary,
+  pushLifecycle,
+  popLifecycle,
+  runMount,
+  runCleanup,
+  handleError,
+  type LifecycleBucket,
+} from "./lifecycle";
 
 // Error boundaries
 export { ErrorBoundary, safeRender } from "./error";

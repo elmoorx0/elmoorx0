@@ -29,37 +29,52 @@ import { i18n, type Locale, type TranslateOptions } from './index.js';
 
 // ─── Reactive state ─────────────────────────────────────────────────────────
 
-let _reactiveLocale: unknown = null;
+/**
+ * A minimal reactive signal contract the i18n module can drive.
+ * Both Elmoorx `$state` and the built-in fallback implement it.
+ */
+export interface ReactiveLocaleSignal {
+  value: Locale;
+  set(value: Locale): void;
+}
+
+let _reactiveLocale: ReactiveLocaleSignal | null = null;
 let _initialized = false;
 
 /**
  * Initialize reactive system.
  * Call once at app startup.
+ *
+ * @param signalFactory Optional factory that returns an object satisfying
+ *   `ReactiveLocaleSignal`. When omitted, a plain fallback signal is used.
  */
-export function initReactive(signalFactory?: <T>(value: T) => unknown): void {
+export function initReactive(
+  signalFactory?: (value: Locale) => ReactiveLocaleSignal,
+): void {
   if (_initialized) return;
   _initialized = true;
 
   if (signalFactory) {
     _reactiveLocale = signalFactory(i18n.locale);
   } else {
-    // Simple reactive implementation
+    // Simple reactive implementation — closure-backed signal.
+    let currentValue: Locale = i18n.locale;
     _reactiveLocale = {
-      _value: i18n.locale,
-// @ts-expect-error — TS2304: Cannot find name '_value'.
-      get value() { return _value; },
-// @ts-expect-error — TS2304: Cannot find name '_value'.
-      set value(v: string) { _value = v; },
-// @ts-expect-error — TS2304: Cannot find name '_value'.
-      set(v: string) { _value = v; },
+      get value() {
+        return currentValue;
+      },
+      set value(v: Locale) {
+        currentValue = v;
+      },
+      set(v: Locale) {
+        currentValue = v;
+      },
     };
   }
 
   i18n.onChange((locale) => {
     if (_reactiveLocale) {
-// @ts-expect-error — TS2339: Property 'value' does not exist on type '{}'.
       _reactiveLocale.value = locale;
-// @ts-expect-error — TS2339: Property 'set' does not exist on type '{}'.
       _reactiveLocale.set?.(locale);
     }
   });

@@ -31,10 +31,14 @@ export interface SuspenseProps {
  * Suspense component — handles async children with a fallback.
  */
 export function Suspense(props: SuspenseProps): ElmoorxNode {
-  // Synchronous case
-// @ts-expect-error — TS2339: Property 'then' does not exist on type '{}'.
-  if (!(props.children as unknown)?.then) {
-    return props.children as ElmoorxNode;
+  // Synchronous case — detect non-thenable children via a duck-typed check.
+  const children = props.children as ElmoorxNode | Promise<ElmoorxNode>;
+  if (
+    children === null ||
+    typeof children !== "object" ||
+    !("then" in (children as unknown as Record<string, unknown>))
+  ) {
+    return children as ElmoorxNode;
   }
 
   // Async case — return a placeholder that updates when resolved
@@ -117,8 +121,12 @@ async function* renderNode(node: ElmoorxNode): AsyncGenerator<string> {
   }
 
   // Check if it's a promise (async component)
-// @ts-expect-error — TS2571: Object is of type 'unknown'.
-  if ((node as unknown).then) {
+  if (
+    typeof node === "object" &&
+    node !== null &&
+    "then" in node &&
+    typeof (node as { then?: unknown }).then === "function"
+  ) {
     const resolved = await (node as unknown as Promise<ElmoorxNode>);
     yield* renderNode(resolved);
     return;
@@ -131,20 +139,25 @@ async function* renderNode(node: ElmoorxNode): AsyncGenerator<string> {
     return;
   }
 
-  const el = node as unknown;
-  if (!(el as Record<string, unknown>).tag) return;
+  const el = node as unknown as Record<string, unknown>;
+  if (typeof el.tag !== "string") return;
 
   // Fragment — emit children only.
-  if ((el as Record<string, unknown>).tag === "fragment") {
-// @ts-expect-error — TS2488: Type '{}' must have a '[Symbol.iterator]()' method that returns an itera
-    for (const child of (el as Record<string, unknown>).children || []) {
-      yield* renderNode(child);
+  if (el.tag === "fragment") {
+    const children = el.children;
+    const childArray: unknown[] = Array.isArray(children)
+      ? children
+      : children == null
+        ? []
+        : [children];
+    for (const child of childArray) {
+      yield* renderNode(child as ElmoorxNode);
     }
     return;
   }
 
-  yield `<${(el as Record<string, unknown>).tag}`;
-  for (const [key, value] of Object.entries((el as Record<string, unknown>).props || {})) {
+  yield `<${el.tag}`;
+  for (const [key, value] of Object.entries((el.props as Record<string, unknown>) || {})) {
     if (key === "children" || value == null || value === false) continue;
     // Event handlers are NOT serialized — they're wired up on the client.
     if (key.startsWith("on") && typeof value === "function") continue;
@@ -161,17 +174,21 @@ async function* renderNode(node: ElmoorxNode): AsyncGenerator<string> {
   yield ">";
 
   // Void elements — no closing tag, no children
-// @ts-expect-error — TS2345: Argument of type 'unknown' is not assignable to parameter of type 'strin
-  if (["br", "hr", "img", "input", "meta", "link"].includes((el as Record<string, unknown>).tag)) {
+  if (["br", "hr", "img", "input", "meta", "link"].includes(el.tag as string)) {
     return;
   }
 
-// @ts-expect-error — TS2488: Type '{}' must have a '[Symbol.iterator]()' method that returns an itera
-  for (const child of (el as Record<string, unknown>).children || []) {
-    yield* renderNode(child);
+  const children = el.children;
+  const childArray: unknown[] = Array.isArray(children)
+    ? children
+    : children == null
+      ? []
+      : [children];
+  for (const child of childArray) {
+    yield* renderNode(child as ElmoorxNode);
   }
 
-  yield `</${(el as Record<string, unknown>).tag}>`;
+  yield `</${el.tag}>`;
 }
 
 function escapeHtml(s: string): string {

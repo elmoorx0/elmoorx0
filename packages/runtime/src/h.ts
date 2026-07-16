@@ -23,8 +23,9 @@ export const Fragment = "fragment";
 // ComponentTag is intentionally permissive — function components accept
 // any props object. Tighter typing would break callers like
 // `(props: { stats: Stats }) => ElmoorxNode` that narrow the props.
-// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-type ComponentTag = string | Function;
+// We type it as a generic callable rather than the discouraged `Function`.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ComponentTag = string | ((...args: any[]) => ElmoorxNode | Promise<ElmoorxNode>);
 
 export function h(
   tag: ComponentTag,

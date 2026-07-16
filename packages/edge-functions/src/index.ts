@@ -148,16 +148,15 @@ export function edgeFunction(config: EdgeFunctionConfig): MethodDecorator {
 // ============ GEO HELPERS ============
 
 export function getGeoFromRequest(req: Request): EdgeContext["geo"] {
-  // In production, these come from the edge runtime
-// @ts-expect-error — TS2571: Object is of type 'unknown'.
-  const cf = (req as unknown).cf || {};
+  // In production, these come from the edge runtime (e.g. Cloudflare `req.cf`)
+  const cf = (req as Request & { cf?: Record<string, unknown> }).cf || {};
   return {
-    country: cf.country || "Unknown",
-    city: cf.city || "Unknown",
-    region: cf.region || "Unknown",
-    latitude: cf.latitude || 0,
-    longitude: cf.longitude || 0,
-    timezone: cf.timezone || "UTC",
+    country: (cf.country as string) || "Unknown",
+    city: (cf.city as string) || "Unknown",
+    region: (cf.region as string) || "Unknown",
+    latitude: (cf.latitude as number) || 0,
+    longitude: (cf.longitude as number) || 0,
+    timezone: (cf.timezone as string) || "UTC",
   };
 }
 

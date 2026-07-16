@@ -6,13 +6,18 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "elmoorx-codemod": "./src/cli.ts"
+    "elmoorx-codemod": "./dist/cli.js"
   },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
-    }
+    },
+    "./cli": {
+      "types": "./dist/cli.d.ts",
+      "default": "./dist/cli.js"
+    },
+    "./package.json": "./package.json"
   },
   "scripts": {
     "build": "tsc",

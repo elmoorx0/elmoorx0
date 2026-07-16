@@ -22,7 +22,15 @@
  *   - 80%+ coverage automatically
  */
 
-import { h, renderToString, type ElmoorxNode } from "@elmoorx/runtime";
+import { h, renderToString, type ElmoorxNode, type ElmoorxElement } from "@elmoorx/runtime";
+
+/**
+ * Type guard — narrow an ElmoorxNode to an ElmoorxElement with a `tag`.
+ * Avoids `as unknown as { tag: string }` casts at call sites.
+ */
+function isElmoorxElement(node: ElmoorxNode): node is ElmoorxElement {
+  return typeof node === "object" && node !== null && "tag" in node;
+}
 
 // ============ TEST GENERATION ============
 
@@ -122,14 +130,14 @@ function generateUnitTests(
   // Test: renders correct tag
   try {
     const node = component(props);
-    if (typeof node === "object" && node !== null && "tag" in node) {
+    if (isElmoorxElement(node)) {
       tests.push({
         name: `${name} > renders correct root element`,
         description: "Component should render the correct root HTML element",
         category: "unit",
         code: `test("${name} renders correct root element", () => {
   const { container } = render(h(${name}, ${JSON.stringify(props)}));
-  expect(container.firstChild.tagName.toLowerCase()).toBe("${(node as unknown as { tag: string }).tag}");
+  expect(container.firstChild.tagName.toLowerCase()).toBe("${node.tag}");
 });`,
       });
     }
@@ -405,6 +413,15 @@ export interface TestResult {
   duration: number;
 }
 
+/**
+ * Run AI-generated tests against a component.
+ *
+ * ⚠️ SECURITY: This function executes generated test code via `new Function`.
+ * Only call it with code you trust (e.g. code you generated yourself via
+ * `generateTests()`). Never pass user-supplied strings to this runner.
+ * In production CI, run it inside a sandboxed worker or VM with no access
+ * to secrets, filesystem, or network.
+ */
 export async function runGeneratedTests(
   component: (props: unknown) => ElmoorxNode,
   options: GenerateTestsOptions

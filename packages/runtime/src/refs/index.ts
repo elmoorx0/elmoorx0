@@ -75,16 +75,14 @@ export function forwardRef<T, P = Record<string, unknown>>(
   render: (props: P, ref: Ref<T>) => ElmoorxNode
 ): (props: P & { ref?: Ref<T> }) => ElmoorxNode {
   const Forwarded = (props: P & { ref?: Ref<T> }): ElmoorxNode => {
-// @ts-expect-error — TS2339: Property 'ref' does not exist on type 'unknown'.
-    const { ref, ...rest } = props as unknown;
+    const { ref, ...rest } = props;
     // Use useRef() as fallback so the ref has a real __set method
     // (previously fell back to a plain object with no __set, which
     // would crash useImperativeHandle with TypeError).
     const targetRef: Ref<T> = ref || useRef<T>();
     return render(rest as P, targetRef);
   };
-// @ts-expect-error — TS2571: Object is of type 'unknown'.
-  (Forwarded as unknown).__forwarded = true;
+  (Forwarded as unknown as { __forwarded: boolean }).__forwarded = true;
   return Forwarded;
 }
 

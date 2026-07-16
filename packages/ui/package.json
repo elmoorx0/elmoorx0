@@ -3,13 +3,34 @@
   "version": "3.0.0-alpha.2",
   "description": "648-component UI library (forms, layout, nav, data, feedback, media, pro)",
   "type": "module",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./extended": {
+      "types": "./dist/extended.d.ts",
+      "default": "./dist/extended.js"
+    },
+    "./advanced": {
+      "types": "./dist/advanced.d.ts",
+      "default": "./dist/advanced.js"
+    },
+    "./pro": {
+      "types": "./dist/pro.d.ts",
+      "default": "./dist/pro.js"
+    },
+    "./catalog": {
+      "types": "./dist/catalog/index.d.ts",
+      "default": "./dist/catalog/index.js"
+    },
+    "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "@elmoorx/runtime": "*"

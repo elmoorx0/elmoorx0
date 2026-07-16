@@ -388,3 +388,35 @@ skipIfNoRuntime("runtime: SECURITY_HEADERS includes CSP", () => {
   assert.ok("X-Frame-Options" in SECURITY_HEADERS);
   assert.ok("Strict-Transport-Security" in SECURITY_HEADERS);
 });
+
+skipIfNoRuntime("runtime: withErrorBoundary returns result on success", () => {
+  const { withErrorBoundary } = runtime;
+  const fn = (x) => x + 1;
+  const wrapped = withErrorBoundary(fn);
+  assert.equal(wrapped(5), 6, "wrapped fn should return the original result");
+});
+
+skipIfNoRuntime("runtime: withErrorBoundary returns undefined when handler recovers", () => {
+  const { withErrorBoundary, pushLifecycle, popLifecycle, onError } = runtime;
+  // Set up an active lifecycle bucket with an onError handler that
+  // swallows errors. Without this, withErrorBoundary rethrows.
+  pushLifecycle();
+  let captured = null;
+  onError((e) => { captured = e; });
+
+  const throws = () => { throw new Error("boom"); };
+  const wrapped = withErrorBoundary(throws);
+  const result = wrapped();
+  assert.equal(result, undefined, "should return undefined when handler recovers");
+  assert.ok(captured instanceof Error, "handler should have received the error");
+  assert.equal(captured.message, "boom");
+
+  popLifecycle();
+});
+
+skipIfNoRuntime("runtime: withErrorBoundary rethrows when no handler is registered", () => {
+  const { withErrorBoundary } = runtime;
+  const throws = () => { throw new Error("rethrow me"); };
+  const wrapped = withErrorBoundary(throws);
+  assert.throws(() => wrapped(), /rethrow me/, "should rethrow when no boundary is active");
+});

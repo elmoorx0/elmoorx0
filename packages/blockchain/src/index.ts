@@ -28,6 +28,25 @@
 
 import { h, $state, type ElmoorxNode } from "@elmoorx/runtime";
 
+// ============ EIP-1193 Provider Type ============
+// Minimal subset of EIP-1193 (https://eips.ethereum.org/EIPS/eip-1193)
+// that this package consumes. Keeping it local avoids depending on
+// `@types/ethereum-provider` and lets us ship a zero-dep package.
+
+export interface EthereumRequestArguments {
+  readonly method: string;
+  readonly params?: readonly unknown[] | object;
+}
+
+export interface EthereumProvider {
+  request<T = unknown>(args: EthereumRequestArguments): Promise<T>;
+  on?(event: string, listener: (...args: unknown[]) => void): void;
+  removeListener?(event: string, listener: (...args: unknown[]) => void): void;
+  isMetaMask?: boolean;
+  isCoinbaseWallet?: boolean;
+  isWalletConnect?: boolean;
+}
+
 // ============ WALLET ============
 
 export type WalletProvider = "metamask" | "walletconnect" | "coinbase" | "injected";
@@ -49,13 +68,12 @@ class WalletManager {
     error: null,
   });
 
-// @ts-expect-error — TS2304: Cannot find name 'EthereumProvider'.
   private ethereum: EthereumProvider | null = null;
 
   constructor() {
     if (typeof window !== "undefined") {
-// @ts-expect-error — TS2304: Cannot find name 'EthereumProvider'.
-      this.ethereum = (window as unknown as { ethereum: EthereumProvider }).ethereum;
+      this.ethereum =
+        (window as unknown as { ethereum?: EthereumProvider }).ethereum ?? null;
       if (this.ethereum) {
         // Listen for account changes
         this.ethereum?.on?.("accountsChanged", (...args: unknown[]) => {
@@ -83,8 +101,12 @@ class WalletManager {
         return;
       }
 
-      const accounts = await this.ethereum.request({ method: "eth_requestAccounts" });
-      const chainId = await this.ethereum.request({ method: "eth_chainId" });
+      const accounts = await this.ethereum.request<string[]>({
+        method: "eth_requestAccounts",
+      });
+      const chainId = await this.ethereum.request<string>({
+        method: "eth_chainId",
+      });
 
       this.state.set({
         address: accounts[0],
@@ -173,7 +195,7 @@ export interface ContractABI {
   outputs?: { name: string; type: string }[];
 }
 
-class SmartContract {
+export class SmartContract {
   constructor(
     private abi: ContractABI[],
     private address: string,
@@ -190,9 +212,10 @@ class SmartContract {
       throw new Error("Wallet not connected");
     }
 
-    const ethereum = (window as unknown as Record<string, unknown>).ethereum;
-// @ts-expect-error — TS18046: 'ethereum' is of type 'unknown'.
-    const result = await ethereum.request({
+    const ethereum =
+      (window as unknown as { ethereum?: EthereumProvider }).ethereum ?? null;
+    if (!ethereum) throw new Error("No Ethereum provider available");
+    const result = await ethereum.request<string>({
       method: "eth_call",
       params: [
         { to: this.address, data: callData },
@@ -211,9 +234,10 @@ class SmartContract {
     const from = wallet.getState()().address;
     if (!from) throw new Error("Wallet not connected");
 
-    const ethereum = (window as unknown as Record<string, unknown>).ethereum;
-// @ts-expect-error — TS18046: 'ethereum' is of type 'unknown'.
-    const txHash = await ethereum.request({
+    const ethereum =
+      (window as unknown as { ethereum?: EthereumProvider }).ethereum ?? null;
+    if (!ethereum) throw new Error("No Ethereum provider available");
+    const txHash = await ethereum.request<string>({
       method: "eth_sendTransaction",
       params: [{
         from,

@@ -172,8 +172,7 @@ function arrayProxy(
   };
 
   const wrap = (method: "push" | "pop" | "shift" | "unshift" | "splice" | "sort" | "reverse") => {
-// @ts-expect-error — TS2571: Object is of type 'unknown'.
-    const original = (arr as unknown)[method].bind(arr);
+    const original = (arr as unknown as Record<typeof method, (...args: unknown[]) => unknown>)[method].bind(arr);
     return (...args: unknown[]) => {
       const result = original(...args);
       notify();

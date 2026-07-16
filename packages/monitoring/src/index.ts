@@ -12,8 +12,8 @@
  * - Health checks
  */
 
-import { createServer, IncomingMessage, ServerResponse } from 'http';
-import { EventEmitter } from 'events';
+import { createServer, IncomingMessage, ServerResponse } from 'node:http';
+import { EventEmitter } from 'node:events';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 

@@ -10,7 +10,8 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@elmoorx/runtime": "*"
+    "@elmoorx/runtime": "*",
+    "@elmoorx/virtual": "*"
   },
   "license": "MIT",
   "author": "Elmoorx Framework",

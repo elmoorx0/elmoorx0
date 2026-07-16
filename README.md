@@ -4,7 +4,7 @@
 
 [![npm version](https://img.shields.io/npm/v/@elmoorx/runtime.svg)](https://www.npmjs.com/package/@elmoorx/runtime)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tests](https://img.shields.io/badge/tests-415%20passing-brightgreen)](.)
+[![Tests](https://img.shields.io/badge/tests-586%20passing-brightgreen)](.)
 [![Components](https://img.shields.io/badge/UI%20components-648-purple)](.)
 
 A next-generation full-stack framework engineered for **performance, security, and developer experience**. Elmoorx combines zero-hydration islands, a built-in reactive store, automatic security, and an edge-ready runtime in **~1.2kb** of gzipped JavaScript.
@@ -15,7 +15,7 @@ A next-generation full-stack framework engineered for **performance, security, a
 ├──────────────────────────────────────────────────────────────────────────┤
 │  Packages:    78 npm packages  (@elmoorx/*)                              │
 │  UI:          648 components   (12 categories)                           │
-│  Tests:       415 passing      (node:test + tsx)                        │
+│  Tests:       586 passing      (node:test + tsx)                        │
 │  Templates:   100 ready-to-use  (Landing, Auth, Dashboard, E-commerce)   │
 │  Runtime:     ~1.2kb gzipped   (signals + islands + store)               │
 │  AR/VR:       15 components    (WebXR, hand tracking, spatial audio)     │
@@ -126,7 +126,7 @@ npm test
 ## 🧪 Testing
 
 ```bash
-# Full test suite (415 tests)
+# Full test suite (560+ tests across 30 test files)
 npm test
 
 # Smoke tests only

@@ -34,8 +34,8 @@
  *  20. SignaturePad — Sign messages
  */
 
-import { EventEmitter } from 'events';
-import { createHash, randomBytes } from 'crypto';
+import { EventEmitter } from 'node:events';
+import { createHash, randomBytes } from 'node:crypto';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 

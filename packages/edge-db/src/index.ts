@@ -86,16 +86,16 @@ export async function connect(config: EdgeDBConfig): Promise<void> {
 
   // Detect environment and connect
   if (config.d1Binding) {
-// @ts-expect-error — TS2571: Object is of type 'unknown'.
-    dbConnection = (globalThis as unknown)[config.d1Binding];
+    dbConnection = (globalThis as unknown as Record<string, unknown>)[config.d1Binding];
   } else if (config.libsqlUrl) {
     const { createClient } = await import("@libsql/client");
     dbConnection = createClient({ url: config.libsqlUrl });
   } else if (config.denoSqlitePath) {
     // node:sqlite exports DatabaseSync (not Database) in Node 22+
     const sqlite = await import("node:sqlite");
-// @ts-expect-error — TS2571: Object is of type 'unknown'.
-    const Database = (sqlite as unknown).DatabaseSync ?? (sqlite as unknown).Database;
+    const sqliteModule = sqlite as unknown as { DatabaseSync?: new (path: string) => unknown; Database?: new (path: string) => unknown };
+    const Database = sqliteModule.DatabaseSync ?? sqliteModule.Database;
+    if (!Database) throw new Error("node:sqlite did not expose DatabaseSync or Database");
     dbConnection = new Database(config.denoSqlitePath);
   } else if (config.nodeSqlitePath) {
     const Database = (await import("better-sqlite3")).default;
@@ -364,16 +364,15 @@ function notifyListeners(sql: string): void {
 // ============ INTERNAL EXECUTION ============
 
 async function executeQuery<T>(sql: string, params: unknown[]): Promise<T[]> {
-  if ((dbConnection as Record<string, unknown>).prepare) {
+  const conn = dbConnection as Record<string, unknown>;
+  if (typeof conn.prepare === "function") {
     // Cloudflare D1 or better-sqlite3
-// @ts-expect-error — TS2571: Object is of type 'unknown'.
-    const stmt = (dbConnection as Record<string, unknown>).prepare(sql);
+    const stmt = conn.prepare(sql) as { bind(...args: unknown[]): { all(): Promise<{ results?: T[] } | T[]> } };
     const result = await stmt.bind(...params).all();
-    return result.results || result;
-  } else if ((dbConnection as Record<string, unknown>).execute) {
+    return (Array.isArray(result) ? result : (result as { results?: T[] }).results) || [];
+  } else if (typeof conn.execute === "function") {
     // libSQL
-// @ts-expect-error — TS2571: Object is of type 'unknown'.
-    const result = await (dbConnection as Record<string, unknown>).execute({ sql, args: params });
+    const result = await (conn.execute as (args: { sql: string; args: unknown[] }) => Promise<{ rows: T[] }>)({ sql, args: params });
     return result.rows;
   }
   return [];
@@ -384,17 +383,18 @@ async function executeMutation<T>(sql: string, params: unknown[]): Promise<{
   affectedRows: number;
   rows?: T[];
 }> {
-  if ((dbConnection as Record<string, unknown>).prepare) {
-// @ts-expect-error — TS2571: Object is of type 'unknown'.
-    const stmt = (dbConnection as Record<string, unknown>).prepare(sql);
+  const conn = dbConnection as Record<string, unknown>;
+  if (typeof conn.prepare === "function") {
+    const stmt = conn.prepare(sql) as { bind(...args: unknown[]): { run(): Promise<{ meta?: { last_row_id?: number | string; changes?: number } }> } };
     const result = await stmt.bind(...params).run();
     return {
       insertedId: result.meta?.last_row_id,
       affectedRows: result.meta?.changes || 0,
     };
-  } else if ((dbConnection as Record<string, unknown>).execute) {
-// @ts-expect-error — TS2571: Object is of type 'unknown'.
-    const result = await (dbConnection as Record<string, unknown>).execute({ sql, args: params });
+  } else if (typeof conn.execute === "function") {
+    const result = await (conn.execute as (args: { sql: string; args: unknown[] }) => Promise<{ lastInsertRowid?: number | string; rowsAffected: number }>)(
+      { sql, args: params },
+    );
     return {
       insertedId: result.lastInsertRowid,
       affectedRows: result.rowsAffected,

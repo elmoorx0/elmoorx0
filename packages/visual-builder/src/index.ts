@@ -346,11 +346,10 @@ export function VisualBuilder(): ElmoorxNode {
         style: "padding:8px 16px;background:#14141B;border-bottom:1px solid #2A2A38;display:flex;justify-content:space-between;align-items:center;",
       },
         h("div", { style: "display:flex;gap:4px;" },
-          ...["mobile", "tablet", "desktop"].map(d =>
+          ...(["mobile", "tablet", "desktop"] as const).map(d =>
             h("button", {
               key: d,
-// @ts-expect-error — TS2322: Type 'unknown' is not assignable to type '"mobile" | "tablet" | "desktop
-              onClick: () => (builderState.device as "mobile" | "tablet" | "desktop") = d as unknown,
+              onClick: () => { builderState.device = d; },
               style: `padding:4px 12px;border:1px solid ${builderState.device === d ? "#A855F7" : "#2A2A38"};background:${builderState.device === d ? "#A855F7" : "transparent"};color:${builderState.device === d ? "white" : "#A1A1AA"};border-radius:4px;cursor:pointer;font-size:11px;text-transform:capitalize;`,
             }, d)
           ),

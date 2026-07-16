@@ -285,11 +285,10 @@ export function MarketplaceBrowser(): ElmoorxNode {
 
     // Filters
     h("div", { style: "display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;" },
-      ...["all", "ui", "form", "data", "layout", "animation", "utility"].map(cat =>
+      ...(["all", "ui", "form", "data", "layout", "animation", "utility"] as const).map(cat =>
         h("button", {
           key: cat,
-// @ts-expect-error — TS2345: Argument of type 'unknown' is not assignable to parameter of type '"form
-          onClick: () => { category.set((cat as "data" | "form" | "ui" | "layout" | "animation" | "utility" | "all" | ((prev: "data" | "form" | "ui" | "layout" | "animation" | "utility" | "all") => "data" | "form" | "ui" | "layout" | "animation" | "utility" | "all")) as unknown); updateResults(); },
+          onClick: () => { category.set(cat); updateResults(); },
           style: `padding:6px 14px;border:1px solid ${category() === cat ? "#A855F7" : "#2A2A38"};background:${category() === cat ? "#A855F7" : "transparent"};color:${category() === cat ? "white" : "#A1A1AA"};border-radius:20px;cursor:pointer;font-size:12px;text-transform:capitalize;`,
         }, cat)
       ),

@@ -60,7 +60,6 @@ jobs:
 
       - name: Run ESLint
         run: npm run lint
-        continue-on-error: true # alpha stage — don't block PRs on warnings
 
   # ─── Job 3: Unit tests ────────────────────────────────────────────────
   test:
@@ -110,7 +109,6 @@ jobs:
 
       - name: Build all workspaces
         run: npm run build
-        continue-on-error: true # alpha stage — many packages don't have a build yet
 
       - name: Verify build artifacts
         run: |
@@ -139,6 +137,12 @@ jobs:
           TARGET = "3.0.0-alpha.2"
           mismatches = []
 
+          # Acceptable workspace dep specs:
+          #   "*"            — npm workspace wildcard (resolves to local version)
+          #   "workspace:^"  — pnpm/yarn workspace protocol
+          #   "workspace:*"  — pnpm/yarn workspace protocol (any)
+          OK_SPECS = {"*", "workspace:^", "workspace:*"}
+
           for pkg_json in (ROOT / "packages").rglob("package.json"):
               pkg = json.loads(pkg_json.read_text())
               v = pkg.get("version")
@@ -147,7 +151,7 @@ jobs:
               # Also check @elmoorx/* deps
               for field in ("dependencies", "devDependencies", "peerDependencies"):
                   for name, spec in pkg.get(field, {}).items():
-                      if name.startswith("@elmoorx/") and spec != "workspace:^":
+                      if name.startswith("@elmoorx/") and spec not in OK_SPECS:
                           mismatches.append(f"{pkg_json}: {name}={spec}")
 
           if mismatches:
@@ -155,7 +159,7 @@ jobs:
               for m in mismatches[:20]:
                   print(f"  {m}")
               sys.exit(1)
-          print(f"✓ All packages at {TARGET}, all @elmoorx/* deps use workspace:^")
+          print(f"✓ All packages at {TARGET}, all @elmoorx/* deps use a workspace spec")
           EOF
 
   # ─── Job 6: Security audit ───────────────────────────────────────────

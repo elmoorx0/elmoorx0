@@ -26,9 +26,17 @@ const handler = createServerHandler({});
 
 const server = createServer(async (req, res) => {
   const url = new URL(req.url || '/', \`http://\${req.headers.host}\`);
+  const reqHeaders = new Headers();
+  for (const [key, value] of Object.entries(req.headers)) {
+    if (typeof value === 'string') {
+      reqHeaders.set(key, value);
+    } else if (Array.isArray(value)) {
+      for (const v of value) reqHeaders.set(key, v);
+    }
+  }
   const request = new Request(url, {
     method: req.method,
-    headers: req.headers as any,
+    headers: reqHeaders,
     body: req.method !== 'GET' && req.method !== 'HEAD' ? req : undefined,
   });
 

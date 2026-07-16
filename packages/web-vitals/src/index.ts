@@ -124,10 +124,12 @@ function observeCLS(report: (m: WebVitalMetric) => void): void {
   let clsValue = 0;
   const observer = new PerformanceObserver((list) => {
     for (const entry of list.getEntries()) {
-      const layoutShift = entry as unknown;
-      if (!(layoutShift as Record<string, unknown>).hadRecentInput) {
-// @ts-expect-error — TS2571: Object is of type 'unknown'.
-        clsValue += (layoutShift as Record<string, unknown>).value;
+      const layoutShift = entry as PerformanceEntry & {
+        hadRecentInput?: boolean;
+        value?: number;
+      };
+      if (!layoutShift.hadRecentInput && typeof layoutShift.value === "number") {
+        clsValue += layoutShift.value;
       }
     }
     report({
@@ -148,9 +150,10 @@ function observeFID(report: (m: WebVitalMetric) => void): void {
   if (!("PerformanceObserver" in window)) return;
   const observer = new PerformanceObserver((list) => {
     for (const entry of list.getEntries()) {
-      const fid = entry as unknown;
-      const fidRecord = fid as Record<string, unknown>;
-      const value = (fidRecord.processingStart as number) - (fidRecord.startTime as number);
+      const fidRecord = entry as PerformanceEntry & {
+        processingStart: number;
+      };
+      const value = fidRecord.processingStart - fidRecord.startTime;
       report({
         name: "FID",
         value,
@@ -170,9 +173,8 @@ function observeINP(report: (m: WebVitalMetric) => void): void {
   if (!("PerformanceObserver" in window)) return;
   const observer = new PerformanceObserver((list) => {
     for (const entry of list.getEntries()) {
-// @ts-expect-error — TS2352: Conversion of type 'PerformanceEntry' to type 'Record<string, unknown>' 
-      const inp = entry as Record<string, unknown>;
-      const value = inp.duration as number;
+      const inp = entry as PerformanceEntry;
+      const value = inp.duration;
       report({
         name: "INP",
         value,
@@ -192,8 +194,7 @@ function observeFCP(report: (m: WebVitalMetric) => void): void {
   if (!("PerformanceObserver" in window)) return;
   const observer = new PerformanceObserver((list) => {
     for (const entry of list.getEntries()) {
-// @ts-expect-error — TS2571: Object is of type 'unknown'.
-      if ((entry as unknown).name === "first-contentful-paint") {
+      if (entry.name === "first-contentful-paint") {
         const value = entry.startTime;
         report({
           name: "FCP",

@@ -359,8 +359,14 @@ class FlagManager {
     if (config.startDate && now < config.startDate) return false;
     if (config.endDate && now > config.endDate) return false;
 
-    // Check targeting
-    if (config.targeting && !experiments["matchesTargeting"](config.targeting)) {
+    // Check targeting — uses the `experiments` singleton's attributes
+    // (FlagManager itself does not own user attributes).
+    const expManager = experiments as unknown as {
+      matchesTargeting(rules: TargetingRule[]): boolean;
+      hash(str: string): number;
+      userId: string;
+    };
+    if (config.targeting && !expManager.matchesTargeting(config.targeting)) {
       return false;
     }
 
@@ -370,8 +376,7 @@ class FlagManager {
     if (rollout <= 0) return false;
 
     // Deterministic based on user ID
-// @ts-expect-error — TS2571: Object is of type 'unknown'.
-    const hash = experiments["hash"]((experiments as unknown).userId + id);
+    const hash = expManager.hash(expManager.userId + id);
     return (hash % 100) < rollout;
   }
 

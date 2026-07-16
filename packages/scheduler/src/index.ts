@@ -46,7 +46,7 @@ interface InternalTask {
 
 class Scheduler {
   private tasks = new Map<string, InternalTask>();
-  private timer: NodeJS.Timeout | null = null;
+  private timer: ReturnType<typeof setTimeout> | null = null;
   private lockBackend: LockBackend = new NoopLockBackend();
 
   setLockBackend(backend: LockBackend): void {

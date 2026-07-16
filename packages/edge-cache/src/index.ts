@@ -12,9 +12,9 @@
  * Designed for 128MB RAM servers.
  */
 
-import { createHash } from 'crypto';
-import { readFileSync, writeFileSync, existsSync, mkdirSync, unlinkSync, readdirSync } from 'fs';
-import { join } from 'path';
+import { createHash } from 'node:crypto';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, unlinkSync, readdirSync } from 'node:fs';
+import { join } from 'node:path';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -230,7 +230,10 @@ export class EdgeCache<T = unknown> {
 
 let _cache: EdgeCache | null = null;
 export function getEdgeCache(): EdgeCache {
-  if (!_cache) _cache = new EdgeCache({ maxL1Size: 5000, l2Dir: process.env.CACHE_DIR || undefined });
+  if (!_cache) {
+    const l2Dir = typeof process !== "undefined" ? process.env?.CACHE_DIR : undefined;
+    _cache = new EdgeCache({ maxL1Size: 5000, l2Dir: l2Dir || undefined });
+  }
   return _cache;
 }
 

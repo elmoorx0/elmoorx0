@@ -158,16 +158,16 @@ export function KeepAlive(props: KeepAliveProps): ElmoorxNode {
  */
 function getNodeKey(node: ElmoorxNode): string {
   if (node === null || typeof node !== "object") return String(node);
-  const el = node as unknown;
-  const componentName = typeof (el as Record<string, unknown>).tag === "function"
-// @ts-expect-error — TS2571: Object is of type 'unknown'.
-    ? ((el as Record<string, unknown>).tag.name || "anonymous")
-    : ((el as Record<string, unknown>).tag || "unknown");
+  const el = node as unknown as Record<string, unknown>;
+  const tag = el.tag;
+  const componentName =
+    typeof tag === "function"
+      ? (tag as { name?: string }).name || "anonymous"
+      : (tag as string) || "unknown";
   // Hash props shallowly
   let propHash = 0;
-  if ((el as Record<string, unknown>).props && typeof (el as Record<string, unknown>).props === "object") {
-// @ts-expect-error — TS2769: No overload matches this call.
-    for (const [k, v] of Object.entries((el as Record<string, unknown>).props)) {
+  if (el.props && typeof el.props === "object") {
+    for (const [k, v] of Object.entries(el.props as Record<string, unknown>)) {
       if (k === "children") continue;
       const s = `${k}=${typeof v === "object" ? "[obj]" : String(v)}`;
       for (let i = 0; i < s.length; i++) {

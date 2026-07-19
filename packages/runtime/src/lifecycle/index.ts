@@ -21,6 +21,19 @@ let currentBucket: LifecycleBucket | null = null;
 const stack: (LifecycleBucket | null)[] = [];
 
 /**
+ * When true, dev-only warnings (e.g. "onCleanup called outside a
+ * component setup") are suppressed. Useful in tests where the
+ * warning is the expected behavior being asserted.
+ *
+ *   setSilent(true);   // suppress dev warnings
+ *   setSilent(false);  // restore (default)
+ */
+let silent = false;
+export function setSilent(value: boolean): void {
+  silent = value;
+}
+
+/**
  * Internal — called by the renderer when entering a component.
  */
 export function pushLifecycle(): LifecycleBucket {
@@ -148,7 +161,12 @@ export function onMount(fn: CleanupFn): void {
  */
 export function onCleanup(fn: CleanupFn): void {
   if (!currentBucket) {
-    if (typeof process !== "undefined" && process.env?.NODE_ENV !== "production") {
+    if (
+      !silent &&
+      typeof process !== "undefined" &&
+      process.env?.NODE_ENV !== "production" &&
+      process.env?.NODE_ENV !== "test"
+    ) {
       console.warn(
         "[elmoorx/lifecycle] onCleanup called outside a component setup — the cleanup will be dropped. " +
         "To clean up an effect, return a cleanup function from the $effect body instead."

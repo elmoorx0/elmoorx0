@@ -92,6 +92,63 @@ describe("forms: useForm", () => {
     assert.ok(form);
   });
 
+  skip("useForm() required field shows error after validate()", async () => {
+    // Regression test: previously validateField() tried to assign to
+    // `field.error`, which is a getter-only property → threw TypeError
+    // in strict mode. Now it uses field.setError().
+    const form = forms.useForm({
+      email: { required: true, requiredMessage: "Email is required" },
+    });
+    assert.equal(form.fields.email.error, null);
+    const ok = await form.validate();
+    assert.equal(ok, false);
+    assert.equal(form.fields.email.error, "Email is required");
+  });
+
+  skip("useForm() custom validate() sets error", async () => {
+    const form = forms.useForm({
+      email: {
+        initialValue: "",
+        validate: (v) => (String(v).includes("@") ? true : "Invalid email"),
+      },
+    });
+    // setTouched triggers async validateField; await form.validate() to settle.
+    form.fields.email.setTouched();
+    await form.validate();
+    assert.equal(form.fields.email.error, "Invalid email");
+    form.fields.email.setValue("user@example.com");
+    await form.validate();
+    assert.equal(form.fields.email.error, null);
+  });
+
+  skip("useForm() reset() clears errors", async () => {
+    const form = forms.useForm({
+      email: { required: true },
+    });
+    await form.validate();
+    assert.notEqual(form.fields.email.error, null);
+    form.reset();
+    assert.equal(form.fields.email.error, null);
+  });
+
+  skip("useForm() submit() aborts when invalid", async () => {
+    const form = forms.useForm({
+      email: { required: true },
+    });
+    let called = false;
+    await form.submit(async () => { called = true; });
+    assert.equal(called, false);
+  });
+
+  skip("useForm() submit() calls handler when valid", async () => {
+    const form = forms.useForm({
+      email: { initialValue: "user@example.com", required: true },
+    });
+    let received;
+    await form.submit(async (values) => { received = values.email; });
+    assert.equal(received, "user@example.com");
+  });
+
   skip("validators object is exported", () => {
     assert.ok(forms.validators);
     assert.equal(typeof forms.validators.required, "function");

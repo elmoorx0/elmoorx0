@@ -35,6 +35,7 @@ export interface Field<T = unknown> {
   dirty: boolean;
   setValue: (v: T) => void;
   setTouched: () => void;
+  setError: (e: string | null) => void;
   reset: () => void;
 }
 
@@ -82,6 +83,7 @@ export function useForm<T extends Record<string, FieldConfig>>(
         touched.set(true);
         validateField(name);
       },
+      setError: (e) => error.set(e),
       reset: () => {
         value.set(fieldConfig.initialValue ?? "");
         error.set(null);
@@ -98,7 +100,7 @@ export function useForm<T extends Record<string, FieldConfig>>(
 
     // Required check
     if (fieldConfig.required && (!value || value === "")) {
-      (field as Field).error = fieldConfig.requiredMessage || "This field is required";
+      field.setError(fieldConfig.requiredMessage || "This field is required");
       return false;
     }
 
@@ -106,14 +108,14 @@ export function useForm<T extends Record<string, FieldConfig>>(
     if (fieldConfig.validate) {
       const result = await fieldConfig.validate(value, getAllValues());
       if (result === true) {
-        (field as Field).error = null;
+        field.setError(null);
         return true;
       }
-      (field as Field).error = result;
+      field.setError(result);
       return false;
     }
 
-    (field as Field).error = null;
+    field.setError(null);
     return true;
   }
 

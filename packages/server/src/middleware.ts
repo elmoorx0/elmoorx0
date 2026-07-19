@@ -13,6 +13,7 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { timingSafeEqual as cryptoTimingSafeEqual } from "node:crypto";
 import { isIP } from "node:net";
+import { gzipSync, deflateSync, brotliCompressSync, constants as zlibConstants } from "node:zlib";
 import type { ElmoorxNode } from "@elmoorx/runtime";
 
 export interface RequestContext {
@@ -52,6 +53,14 @@ export class MiddlewareStack {
   add(mw: Middleware): this {
     this.middlewares.push(mw);
     return this;
+  }
+
+  /**
+   * Number of middlewares in the stack. Read-only — to mutate the
+   * stack, use add().
+   */
+  get size(): number {
+    return this.middlewares.length;
   }
 
   async run(ctx: RequestContext, finalHandler: () => Promise<void>): Promise<void> {
@@ -205,21 +214,205 @@ function timingSafeEqual(a: string, b: string): boolean {
 }
 
 /**
- * Built-in: Compression (gzip)
+ * Built-in: Compression (gzip / deflate / brotli)
  *
- * CAVEAT (alpha): This middleware is a no-op. Real gzip compression
- * requires buffering the response body, gzipping it, and setting
- * Content-Encoding: gzip — which conflicts with the streaming
- * response model. For production, enable compression at the reverse
- * proxy layer (nginx `gzip on;`, Caddy `encode gzip`, Cloudflare
- * auto-compress). This middleware is retained for API compatibility
- * but documented as a no-op so consumers aren't misled.
+ * Buffers the response body, compresses it according to the client's
+ * Accept-Encoding header, and sets Content-Encoding + Vary headers.
+ * If the response is already encoded, the body is too small, or the
+ * client doesn't accept a supported encoding, the response passes
+ * through unchanged.
+ *
+ * For very large streaming responses (e.g. server-rendered video),
+ * prefer enabling compression at the reverse proxy layer (nginx,
+ * Caddy, Cloudflare). This middleware is best suited for typical
+ * JSON/HTML API responses under a few MB.
+ *
+ * Supported encodings (in priority order):
+ *   - br        (Brotli, Node ≥11.7.0)
+ *   - gzip      (universal)
+ *   - deflate   (universal, less efficient than gzip)
+ *
+ * Threshold: responses smaller than `opts.threshold` bytes (default
+ * 1024) are not compressed — the overhead exceeds the savings.
  */
-export const compressionMiddleware = (): Middleware => async (ctx, next) => {
-  await next();
-  // No-op — see CAVEAT above. Compression should be done at the
-  // reverse proxy layer (nginx/caddy/cloudflare).
+export const compressionMiddleware = (
+  opts: {
+    /** Minimum response size in bytes to compress. Default: 1024 */
+    threshold?: number;
+    /** Compression level (1-9). Default: 6 (good balance) */
+    level?: number;
+    /** Explicit list of supported encodings. Default: br, gzip, deflate */
+    encodings?: ("br" | "gzip" | "deflate")[];
+  } = {}
+): Middleware => {
+  const threshold = opts.threshold ?? 1024;
+  const level = opts.level ?? 6;
+  const supported = opts.encodings ?? ["br", "gzip", "deflate"];
+
+  return async (ctx, next) => {
+    // Intercept res.writeHead + res.end so we can rewrite the body.
+    // We monkey-patch the response methods for the lifetime of this
+    // request, then restore them after `next()` finishes.
+    const originalWriteHead = ctx.res.writeHead.bind(ctx.res);
+    const originalEnd = ctx.res.end.bind(ctx.res);
+    const originalSetHeader = ctx.res.setHeader.bind(ctx.res);
+
+    // bufferedBody and capturedHeaders are mutated (not reassigned) inside
+    // the monkey-patched writeHead/end below, so const is appropriate.
+    // capturedStatus IS reassigned via the monkey-patch, so it stays let.
+    const bufferedBody: Buffer | null = null;
+    const capturedHeaders: Record<string, string | string[]> = {};
+    let capturedStatus = 200;
+
+    // Choose encoding based on Accept-Encoding
+    const acceptEncoding = String(ctx.headers["accept-encoding"] || "").toLowerCase();
+    let chosenEncoding: "br" | "gzip" | "deflate" | null = null;
+    for (const enc of supported) {
+      if (acceptEncoding.includes(enc)) {
+        chosenEncoding = enc;
+        break;
+      }
+    }
+
+    // Stash headers as they're set so we can decide whether to compress
+    // after we know the body size.
+    ctx.res.setHeader = function (name: string, value: string | string[]): typeof ctx.res {
+      capturedHeaders[name.toLowerCase()] = value;
+      return ctx.res;
+    } as typeof ctx.res.setHeader;
+
+    ctx.res.writeHead = function (
+      statusCode: number,
+      headersOrStatusMessage?: Record<string, string | string[]> | string | number,
+      maybeHeaders?: Record<string, string | string[]>
+    ): typeof ctx.res {
+      capturedStatus = statusCode;
+      // Normalize the two overloads of writeHead
+      if (typeof headersOrStatusMessage === "object" && headersOrStatusMessage !== null) {
+        for (const [k, v] of Object.entries(headersOrStatusMessage)) {
+          capturedHeaders[k.toLowerCase()] = v;
+        }
+      }
+      if (maybeHeaders && typeof maybeHeaders === "object") {
+        for (const [k, v] of Object.entries(maybeHeaders)) {
+          capturedHeaders[k.toLowerCase()] = v;
+        }
+      }
+      return ctx.res;
+    } as typeof ctx.res.writeHead;
+
+    ctx.res.end = function (
+      chunk?: unknown | string | Buffer | null,
+      encodingOrStatus?: string | number | null
+    ): typeof ctx.res {
+      // Build the body buffer
+      let body: Buffer | null = null;
+      if (typeof chunk === "string") {
+        const enc = typeof encodingOrStatus === "string" ? (encodingOrStatus as BufferEncoding) : "utf-8";
+        body = Buffer.from(chunk, enc);
+      } else if (Buffer.isBuffer(chunk)) {
+        body = chunk;
+      } else if (chunk == null) {
+        body = bufferedBody;
+      }
+
+      // Restore originals before deciding what to write — we want to
+      // call the real methods now.
+      ctx.res.setHeader = originalSetHeader;
+      ctx.res.writeHead = originalWriteHead;
+      ctx.res.end = originalEnd;
+
+      // Decide whether to compress:
+      //   - Already encoded?
+      //   - Body too small?
+      //   - No supported encoding?
+      const alreadyEncoded = "content-encoding" in capturedHeaders;
+      const shouldCompress =
+        body !== null &&
+        body.length >= threshold &&
+        chosenEncoding !== null &&
+        !alreadyEncoded;
+
+      // Set all captured headers (lowercased → original case via setHeader)
+      for (const [k, v] of Object.entries(capturedHeaders)) {
+        // Skip Content-Length — we'll set it after compression
+        if (k === "content-length") continue;
+        // setHeader normalizes case internally
+        ctx.res.setHeader(k, v as string | string[]);
+      }
+
+      if (!shouldCompress || body === null) {
+        if (body !== null) {
+          ctx.res.setHeader("Content-Length", String(body.length));
+        }
+        ctx.res.writeHead(capturedStatus);
+        if (body !== null) {
+          (ctx.res.end as typeof ctx.res.end)(body);
+        } else {
+          (ctx.res.end as typeof ctx.res.end)();
+        }
+        return ctx.res;
+      }
+
+      // Compress the body — chosenEncoding is guaranteed non-null here
+      // because shouldCompress requires chosenEncoding !== null.
+      const enc = chosenEncoding as "br" | "gzip" | "deflate";
+      const compressed = compressBody(body, enc, level);
+
+      ctx.res.setHeader("Content-Encoding", enc);
+      ctx.res.setHeader("Content-Length", String(compressed.length));
+      // Vary: Accept-Encoding so caches don't serve compressed to clients
+      // that don't accept it
+      const existingVary = typeof capturedHeaders["vary"] === "string"
+        ? capturedHeaders["vary"]
+        : "";
+      const varyParts = existingVary
+        .split(",")
+        .map((s: string) => s.trim().toLowerCase())
+        .filter(Boolean);
+      if (!varyParts.includes("accept-encoding")) {
+        varyParts.push("accept-encoding");
+      }
+      ctx.res.setHeader("Vary", varyParts.join(", "));
+
+      ctx.res.writeHead(capturedStatus);
+      (ctx.res.end as typeof ctx.res.end)(compressed);
+      return ctx.res;
+    } as typeof ctx.res.end;
+
+    try {
+      await next();
+    } finally {
+      // Restore originals in case next() threw before res.end was called
+      ctx.res.setHeader = originalSetHeader;
+      ctx.res.writeHead = originalWriteHead;
+      ctx.res.end = originalEnd;
+    }
+  };
 };
+
+/**
+ * Compress a Buffer using the given encoding. Returns the compressed
+ * bytes. Throws if the encoding is unsupported (shouldn't happen —
+ * callers filter by Accept-Encoding first).
+ */
+function compressBody(body: Buffer, encoding: "br" | "gzip" | "deflate", level: number): Buffer {
+  if (encoding === "br") {
+    // Brotli uses `params` map with BROTLI_PARAM_QUALITY constant (0-11).
+    // Quality level is conceptually similar to gzip's `level` (1-9), so
+    // we map 1-9 → 1-9 directly (both ranges are valid for brotli).
+    return brotliCompressSync(body, {
+      params: { [zlibConstants.BROTLI_PARAM_QUALITY]: level },
+    });
+  }
+  if (encoding === "gzip") {
+    return gzipSync(body, { level });
+  }
+  if (encoding === "deflate") {
+    return deflateSync(body, { level });
+  }
+  throw new Error(`Unsupported encoding: ${encoding}`);
+}
 
 /**
  * Built-in: Rate limiting (in-memory, per-IP)

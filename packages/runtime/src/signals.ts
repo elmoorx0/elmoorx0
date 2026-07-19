@@ -90,21 +90,11 @@ export function $state<T>(initial: T): Signal<T> {
  *   - When the computed is read inside another effect, the reader
  *     subscribes to `signal` (just like any other signal), so changes
  *     propagate transitively.
- *   - The lazy `dirty` flag is kept for the rare case where the
- *     computed is read outside any effect (e.g. top-level evaluation).
+ *   - The internal $effect is registered lazily on first read so
+ *     unused computeds cost nothing.
  */
 export function $computed<T>(fn: () => T): Computed<T> {
   const signal = $state<T>(undefined as T);
-  let dirty = true;
-  let cached: T | undefined;
-
-  const _compute = () => {
-    if (dirty) {
-      cached = fn();
-      dirty = false;
-    }
-    return cached as T;
-  };
 
   // Register an effect that re-runs `fn()` whenever deps change and
   // pushes the new value into `signal`. This effect is created lazily
@@ -116,8 +106,6 @@ export function $computed<T>(fn: () => T): Computed<T> {
       effectRegistered = true;
       $effect(() => {
         const next = fn();
-        cached = next;
-        dirty = false;
         // Push into the signal so downstream effects subscribed to
         // this computed get notified.
         signal.set(next);

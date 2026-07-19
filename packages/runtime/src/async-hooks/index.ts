@@ -39,8 +39,24 @@ interface CacheEntry {
 const cache = new Map<string, CacheEntry>();
 // Subscriber registry — when a cache entry is updated (e.g. via
 // optimistic()), all subscribers for that URL are notified so they
-// can re-read. Previously this was declared but never used.
+// can re-read. Previously this was declared but never populated.
 const subscribers = new Map<string, Set<() => void>>();
+
+function subscribe(url: string, fn: () => void): () => void {
+  let set = subscribers.get(url);
+  if (!set) {
+    set = new Set();
+    subscribers.set(url, set);
+  }
+  set.add(fn);
+  // Return an unsubscribe function
+  return () => {
+    const s = subscribers.get(url);
+    if (!s) return;
+    s.delete(fn);
+    if (s.size === 0) subscribers.delete(url);
+  };
+}
 
 function notifySubscribers(url: string): void {
   const subs = subscribers.get(url);
@@ -48,6 +64,54 @@ function notifySubscribers(url: string): void {
     for (const fn of subs) {
       try { fn(); } catch { /* swallow subscriber errors */ }
     }
+  }
+}
+
+/**
+ * Read cached data for a URL without triggering a fetch.
+ * Returns undefined if not cached or stale.
+ *
+ *   const cached = peekCache('/api/user');
+ */
+export function peekCache(url: string, ttlMs = 5000): unknown {
+  const entry = cache.get(url);
+  if (!entry?.data) return undefined;
+  if (ttlMs > 0 && Date.now() - entry.timestamp > ttlMs) return undefined;
+  return entry.data;
+}
+
+/**
+ * Subscribe to cache changes for a specific URL. The callback is
+ * invoked whenever `notifySubscribers(url)` fires (e.g. via
+ * `useFetch().optimistic()` or another instance re-fetching).
+ *
+ * Returns an unsubscribe function.
+ *
+ *   const off = onCacheChange('/api/user', () => {
+ *     console.log('user cache updated');
+ *   });
+ *   // later
+ *   off();
+ */
+export function onCacheChange(url: string, fn: () => void): () => void {
+  return subscribe(url, fn);
+}
+
+/**
+ * Invalidate cached data for a URL (or all URLs if no argument).
+ * Causes the next `useFetch` / `useSWR` call to re-fetch.
+ *
+ *   invalidateCache('/api/user');   // one URL
+ *   invalidateCache();              // everything
+ */
+export function invalidateCache(url?: string): void {
+  if (url) {
+    cache.delete(url);
+    notifySubscribers(url);
+  } else {
+    const urls = [...cache.keys()];
+    cache.clear();
+    for (const u of urls) notifySubscribers(u);
   }
 }
 
@@ -115,6 +179,22 @@ export function useFetch<T = unknown>(
       fetchData();
     });
   }
+
+  // Cross-instance cache subscription — when another useFetch/useSWR
+  // updates the cache for the same URL (e.g. via optimistic() or
+  // invalidateCache), re-read the cached value so this instance
+  // reflects it immediately.
+  onMount(() => {
+    const u = getUrl();
+    if (!u) return;
+    const off = subscribe(u, () => {
+      const entry = cache.get(u);
+      if (entry?.data !== undefined) {
+        data.set(entry.data as T);
+      }
+    });
+    onCleanup(off);
+  });
 
   // Refresh interval
   if (opts.refreshInterval) {

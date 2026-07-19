@@ -67,9 +67,15 @@ export function pushContextScope(): Map<Context<unknown>, unknown> {
 
 /**
  * Internal: pop a context scope. Called when leaving a component.
+ *
+ * Safety: never pops the bottom (global default) layer. If somehow
+ * more pops than pushes happen, we keep at least the default layer so
+ * inject() never crashes with an empty stack.
  */
 export function popContextScope(): void {
-  contextStack.pop();
+  if (contextStack.length > 1) {
+    contextStack.pop();
+  }
 }
 
 /**

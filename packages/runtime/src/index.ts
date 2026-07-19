@@ -55,6 +55,7 @@ export {
   runMount,
   runCleanup,
   handleError,
+  setSilent,
   type LifecycleBucket,
 } from "./lifecycle";
 
@@ -99,5 +100,5 @@ export {
 } from "./memo";
 
 // Async data hooks
-export { useFetch, useSWR, useMutation } from "./async-hooks";
+export { useFetch, useSWR, useMutation, peekCache, onCacheChange, invalidateCache } from "./async-hooks";
 export type { FetchResult, SWRResult, SWRConfig, MutationResult } from "./async-hooks";

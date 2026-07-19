@@ -62,7 +62,7 @@ export async function startServer(options: ServerOptions) {
   console.warn(`\n  Elmoorx server running`);
   console.warn(`  → http://${hostname}:${port}`);
   console.warn(`  → Security: A+ (auto)`);
-  console.warn(`  → Middleware: ${middleware["middlewares"]?.length || 6} active\n`);
+  console.warn(`  → Middleware: ${middleware.size} active\n`);
 
   return server;
 }

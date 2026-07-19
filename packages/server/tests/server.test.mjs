@@ -282,15 +282,206 @@ describe("server: loggingMiddleware", () => {
     const ctx = mockCtx("GET", "/path", {});
     let nextCalled = false;
     const logger = mw.loggingMiddleware();
-    // Suppress console.log during test
-    const origLog = console.log;
-    console.log = () => {};
+    // Suppress console.warn during test (loggingMiddleware uses console.warn)
+    const origWarn = console.warn;
+    console.warn = () => {};
     try {
       await logger(ctx, async () => { nextCalled = true; });
     } finally {
-      console.log = origLog;
+      console.warn = origWarn;
     }
     assert.equal(nextCalled, true);
+  });
+});
+
+// ─── Compression middleware ───────────────────────────────────────────
+
+import { createServer as createRealServer, request as httpRequest } from "node:http";
+import { gunzipSync, inflateSync, brotliDecompressSync } from "node:zlib";
+
+/**
+ * Start a real HTTP server with the given middleware stack and
+ * final handler. Returns { url, close }.
+ */
+async function startTestServer(middlewares, handler) {
+  const stack = new mw.MiddlewareStack();
+  for (const m of middlewares) stack.add(m);
+  const server = createRealServer(async (req, res) => {
+    const url = new URL(req.url || "/", `http://${req.headers.host}`);
+    const ctx = {
+      req, res, url,
+      method: req.method || "GET",
+      headers: req.headers,
+      state: new Map(),
+      params: {},
+      query: Object.fromEntries(url.searchParams.entries()),
+      body: undefined,
+    };
+    try {
+      await stack.run(ctx, async () => { await handler(ctx); });
+    } catch (err) {
+      res.writeHead(500);
+      res.end(String(err?.message || err));
+    }
+  });
+  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
+  const port = server.address().port;
+  return { url: `http://127.0.0.1:${port}`, close: () => new Promise((r) => server.close(r)) };
+}
+
+/**
+ * Make a raw HTTP request (so we can control the exact Accept-Encoding
+ * header and inspect the raw compressed bytes — Node's fetch() auto-
+ * decompresses and auto-adds Accept-Encoding, which would mask the
+ * middleware's behavior).
+ */
+function rawGet(url, headers = {}) {
+  return new Promise((resolve, reject) => {
+    const u = new URL(url);
+    const req = httpRequest({
+      hostname: u.hostname,
+      port: u.port,
+      path: u.pathname + u.search,
+      method: "GET",
+      headers,
+    }, (res) => {
+      const chunks = [];
+      res.on("data", (c) => chunks.push(c));
+      res.on("end", () => {
+        resolve({
+          status: res.statusCode,
+          headers: res.headers,
+          body: Buffer.concat(chunks),
+        });
+      });
+    });
+    req.on("error", reject);
+    req.end();
+  });
+}
+
+describe("server: compressionMiddleware", () => {
+  skipIfNoMw("compresses large JSON with gzip when Accept-Encoding includes gzip", async () => {
+    const payload = JSON.stringify({ data: "x".repeat(2048) });
+    const { url, close } = await startTestServer(
+      [mw.compressionMiddleware({ threshold: 100 })],
+      async (ctx) => {
+        ctx.res.setHeader("Content-Type", "application/json");
+        ctx.res.writeHead(200);
+        ctx.res.end(payload);
+      }
+    );
+    try {
+      const res = await rawGet(url, { "Accept-Encoding": "gzip" });
+      assert.equal(res.status, 200);
+      assert.equal(res.headers["content-encoding"], "gzip");
+      assert.equal(res.headers["vary"], "accept-encoding");
+      const decompressed = gunzipSync(res.body).toString("utf-8");
+      assert.equal(decompressed, payload);
+      // Compressed should be smaller than original
+      assert.ok(res.body.length < Buffer.byteLength(payload));
+    } finally {
+      await close();
+    }
+  });
+
+  skipIfNoMw("compresses with brotli when Accept-Encoding includes br", async () => {
+    const payload = JSON.stringify({ data: "y".repeat(2048) });
+    const { url, close } = await startTestServer(
+      [mw.compressionMiddleware({ threshold: 100 })],
+      async (ctx) => {
+        ctx.res.setHeader("Content-Type", "application/json");
+        ctx.res.writeHead(200);
+        ctx.res.end(payload);
+      }
+    );
+    try {
+      const res = await rawGet(url, { "Accept-Encoding": "br,gzip" });
+      assert.equal(res.status, 200);
+      assert.equal(res.headers["content-encoding"], "br");
+      const decompressed = brotliDecompressSync(res.body).toString("utf-8");
+      assert.equal(decompressed, payload);
+    } finally {
+      await close();
+    }
+  });
+
+  skipIfNoMw("compresses with deflate when only deflate accepted", async () => {
+    const payload = JSON.stringify({ data: "z".repeat(2048) });
+    const { url, close } = await startTestServer(
+      [mw.compressionMiddleware({ threshold: 100 })],
+      async (ctx) => {
+        ctx.res.writeHead(200);
+        ctx.res.end(payload);
+      }
+    );
+    try {
+      const res = await rawGet(url, { "Accept-Encoding": "deflate" });
+      assert.equal(res.status, 200);
+      assert.equal(res.headers["content-encoding"], "deflate");
+      const decompressed = inflateSync(res.body).toString("utf-8");
+      assert.equal(decompressed, payload);
+    } finally {
+      await close();
+    }
+  });
+
+  skipIfNoMw("does NOT compress bodies below threshold", async () => {
+    const payload = "small";
+    const { url, close } = await startTestServer(
+      [mw.compressionMiddleware({ threshold: 1024 })],
+      async (ctx) => {
+        ctx.res.writeHead(200);
+        ctx.res.end(payload);
+      }
+    );
+    try {
+      const res = await rawGet(url, { "Accept-Encoding": "gzip" });
+      assert.equal(res.headers["content-encoding"], undefined);
+      assert.equal(res.body.toString("utf-8"), payload);
+    } finally {
+      await close();
+    }
+  });
+
+  skipIfNoMw("passes through when Accept-Encoding is absent", async () => {
+    const payload = "x".repeat(2048);
+    const { url, close } = await startTestServer(
+      [mw.compressionMiddleware({ threshold: 100 })],
+      async (ctx) => {
+        ctx.res.writeHead(200);
+        ctx.res.end(payload);
+      }
+    );
+    try {
+      const res = await rawGet(url, {});
+      assert.equal(res.headers["content-encoding"], undefined);
+      assert.equal(res.body.toString("utf-8"), payload);
+    } finally {
+      await close();
+    }
+  });
+
+  skipIfNoMw("preserves status code and other headers", async () => {
+    const payload = JSON.stringify({ error: "x".repeat(2048) });
+    const { url, close } = await startTestServer(
+      [mw.compressionMiddleware({ threshold: 100 })],
+      async (ctx) => {
+        ctx.res.setHeader("Content-Type", "application/json");
+        ctx.res.setHeader("X-Custom", "hello");
+        ctx.res.writeHead(404);
+        ctx.res.end(payload);
+      }
+    );
+    try {
+      const res = await rawGet(url, { "Accept-Encoding": "gzip" });
+      assert.equal(res.status, 404);
+      assert.equal(res.headers["content-encoding"], "gzip");
+      assert.equal(res.headers["x-custom"], "hello");
+      assert.equal(res.headers["content-type"], "application/json");
+    } finally {
+      await close();
+    }
   });
 });
 

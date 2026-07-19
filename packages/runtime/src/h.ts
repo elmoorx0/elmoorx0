@@ -61,14 +61,10 @@ export function h(
       return result;
     } catch (err) {
       // If the component threw, give the lifecycle a chance to handle it
-      // (via onError). If no handler catches, re-throw.
-      try {
-        handleError(err);
-        // Handler recovered — return null so the slot stays empty.
-        return null;
-      } catch (reThrow) {
-        throw reThrow;
-      }
+      // (via onError). If no handler catches, handleError re-throws.
+      handleError(err);
+      // Handler recovered — return null so the slot stays empty.
+      return null;
     } finally {
       // Pop the scope but DON'T run cleanup yet — cleanup runs when
       // the component is unmounted (currently approximated by the

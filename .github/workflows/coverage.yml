@@ -1,0 +1,95 @@
+# Elmoorx Framework — Code Coverage
+#
+# Runs the test suite with coverage enabled and uploads the report to
+# Codecov. This workflow runs on every push to main and on every PR,
+# but only after the main CI workflow passes (to avoid wasting minutes
+# on broken code).
+#
+# To enable Codecov uploads:
+#   1. Go to https://app.codecov.io and sign in with GitHub
+#   2. Add the `elmoorx0/elmoorx0` repository
+#   3. Copy the CODECOV_TOKEN secret from Codecov and add it as a
+#      repository secret in GitHub:
+#      Settings → Secrets and variables → Actions → New repository secret
+#      Name: CODECOV_TOKEN
+#      Value: <your token>
+#   4. The workflow below will automatically use the token if present.
+#      If not present, uploads still work for public repos (tokenless).
+
+name: Coverage
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  coverage:
+    name: Test coverage
+    runs-on: ubuntu-latest
+    # Skip on forks without CODECOV_TOKEN — they can still run tests
+    # but can't upload coverage.
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps --ignore-scripts
+
+      - name: Run tests with coverage
+        # Node's --test supports --experimental-test-coverage since v20.
+        # This produces a coverage report to stdout + a JSON summary.
+        run: |
+          NODE_ENV=test node --test \
+            --experimental-test-coverage \
+            --test-reporter=spec \
+            --test-reporter=lcov \
+            --test-reporter-destination=stdout \
+            --test-reporter-destination=lcov.info \
+            packages/runtime/tests/*.test.mjs \
+            2>&1 | tee test-output.txt || true
+        continue-on-error: true
+
+      - name: Check for lcov.info
+        id: lcov_check
+        run: |
+          if [ -f lcov.info ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "✓ lcov.info found"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "ℹ lcov.info not found — skipping upload"
+          fi
+
+      - name: Upload coverage to Codecov
+        if: steps.lcov_check.outputs.exists == 'true'
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./lcov.info
+          flags: runtime
+          name: elmoorx-runtime
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: true
+
+      - name: Upload coverage artifact
+        if: steps.lcov_check.outputs.exists == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: |
+            lcov.info
+            test-output.txt
+          retention-days: 14

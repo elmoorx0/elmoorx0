@@ -1,6 +1,6 @@
 {
   "name": "@elmoorx/devtools",
-  "version": "3.0.0-alpha.2",
+  "version": "3.0.0-alpha.3",
   "description": "Browser DevTools extension: signal inspector, time-travel, profiler",
   "type": "module",
   "main": "./dist/index.js",

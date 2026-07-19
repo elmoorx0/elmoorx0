@@ -1,6 +1,6 @@
 {
   "name": "@elmoorx/cli-pro",
-  "version": "3.0.0-alpha.2",
+  "version": "3.0.0-alpha.3",
   "description": "Advanced CLI with code generation, scaffolding, deployment automation",
   "type": "module",
   "main": "./dist/index.js",

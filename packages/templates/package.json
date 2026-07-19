@@ -1,6 +1,6 @@
 {
   "name": "@elmoorx/templates",
-  "version": "3.0.0-alpha.2",
+  "version": "3.0.0-alpha.3",
   "description": "Elmoorx templates package",
   "type": "module",
   "main": "./dist/index.js",

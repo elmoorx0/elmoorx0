@@ -1,6 +1,6 @@
 {
   "name": "@elmoorx/ui",
-  "version": "3.0.0-alpha.2",
+  "version": "3.0.0-alpha.3",
   "description": "648-component UI library (forms, layout, nav, data, feedback, media, pro)",
   "type": "module",
   "main": "./dist/index.js",

@@ -1,6 +1,6 @@
 {
   "name": "@elmoorx/health",
-  "version": "3.0.0-alpha.2",
+  "version": "3.0.0-alpha.3",
   "description": "Elmoorx health package",
   "type": "module",
   "main": "./dist/index.js",

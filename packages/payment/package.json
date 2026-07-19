@@ -1,6 +1,6 @@
 {
   "name": "@elmoorx/payment",
-  "version": "3.0.0-alpha.2",
+  "version": "3.0.0-alpha.3",
   "description": "Elmoorx payment package",
   "type": "module",
   "main": "./dist/index.js",

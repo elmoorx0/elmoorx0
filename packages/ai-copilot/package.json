@@ -1,6 +1,6 @@
 {
   "name": "@elmoorx/ai-copilot",
-  "version": "3.0.0-alpha.2",
+  "version": "3.0.0-alpha.3",
   "description": "AI copilot: inline code suggestions, refactoring, doc generation",
   "type": "module",
   "main": "./dist/index.js",

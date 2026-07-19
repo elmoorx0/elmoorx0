@@ -1,6 +1,6 @@
 {
   "name": "@elmoorx/server",
-  "version": "3.0.0-alpha.2",
+  "version": "3.0.0-alpha.3",
   "description": "Full-stack HTTP server with middleware, static files, API routes, WebSocket",
   "type": "module",
   "main": "./dist/index.js",

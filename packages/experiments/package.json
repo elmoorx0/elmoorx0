@@ -1,6 +1,6 @@
 {
   "name": "@elmoorx/experiments",
-  "version": "3.0.0-alpha.2",
+  "version": "3.0.0-alpha.3",
   "description": "A/B experiments: variant assignment, metrics, statistical significance",
   "type": "module",
   "main": "./dist/index.js",

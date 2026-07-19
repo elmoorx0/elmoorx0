@@ -1,6 +1,6 @@
 {
   "name": "@elmoorx/email",
-  "version": "3.0.0-alpha.2",
+  "version": "3.0.0-alpha.3",
   "description": "Email service: SMTP, templates, queue, attachments, tracking",
   "type": "module",
   "main": "./dist/index.js",

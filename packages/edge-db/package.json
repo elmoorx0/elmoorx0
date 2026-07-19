@@ -1,6 +1,6 @@
 {
   "name": "@elmoorx/edge-db",
-  "version": "3.0.0-alpha.2",
+  "version": "3.0.0-alpha.3",
   "description": "Edge database: global replication, eventual consistency, low latency reads",
   "type": "module",
   "main": "./dist/index.js",

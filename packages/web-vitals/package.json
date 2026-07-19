@@ -1,6 +1,6 @@
 {
   "name": "@elmoorx/web-vitals",
-  "version": "3.0.0-alpha.2",
+  "version": "3.0.0-alpha.3",
   "description": "Elmoorx web-vitals package",
   "type": "module",
   "main": "./dist/index.js",

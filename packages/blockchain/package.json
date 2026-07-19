@@ -1,6 +1,6 @@
 {
   "name": "@elmoorx/blockchain",
-  "version": "3.0.0-alpha.2",
+  "version": "3.0.0-alpha.3",
   "description": "Blockchain: Web3 wallet connect, smart contracts, NFT mint, verify",
   "type": "module",
   "main": "./dist/index.js",

@@ -1,6 +1,6 @@
 {
   "name": "@elmoorx/edge-functions",
-  "version": "3.0.0-alpha.2",
+  "version": "3.0.0-alpha.3",
   "description": "Edge functions: run serverless at 300+ POPs, sub-50ms cold starts",
   "type": "module",
   "main": "./dist/index.js",

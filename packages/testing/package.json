@@ -1,6 +1,6 @@
 {
   "name": "@elmoorx/testing",
-  "version": "3.0.0-alpha.2",
+  "version": "3.0.0-alpha.3",
   "description": "Test utilities: component testing, snapshot, signal assertions, mocking",
   "type": "module",
   "main": "./dist/index.js",

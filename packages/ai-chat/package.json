@@ -1,6 +1,6 @@
 {
   "name": "@elmoorx/ai-chat",
-  "version": "3.0.0-alpha.2",
+  "version": "3.0.0-alpha.3",
   "description": "AI chat: streaming UI, message history, citations, multimodal",
   "type": "module",
   "main": "./dist/index.js",

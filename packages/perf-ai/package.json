@@ -1,6 +1,6 @@
 {
   "name": "@elmoorx/perf-ai",
-  "version": "3.0.0-alpha.2",
+  "version": "3.0.0-alpha.3",
   "description": "Elmoorx perf-ai package",
   "type": "module",
   "main": "./dist/index.js",

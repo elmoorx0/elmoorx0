@@ -1,6 +1,6 @@
 {
   "name": "@elmoorx/compiler",
-  "version": "3.0.0-alpha.2",
+  "version": "3.0.0-alpha.3",
   "description": "JSX-to-Elmoorx compiler with esbuild integration, SSR, HMR",
   "type": "module",
   "main": "./dist/index.js",

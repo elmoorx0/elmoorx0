@@ -80,6 +80,13 @@ jobs:
       - name: Run unit tests
         run: npm run test
 
+      - name: Test summary
+        if: always()
+        run: |
+          echo "## Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Run \`npm test\` locally for full output." >> $GITHUB_STEP_SUMMARY
+
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
@@ -134,7 +141,7 @@ jobs:
           from pathlib import Path
 
           ROOT = Path(".")
-          TARGET = "3.0.0-alpha.2"
+          TARGET = "3.0.0-alpha.3"
           mismatches = []
 
           # Acceptable workspace dep specs:

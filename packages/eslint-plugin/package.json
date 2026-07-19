@@ -1,6 +1,6 @@
 {
   "name": "@elmoorx/eslint-plugin",
-  "version": "3.0.0-alpha.2",
+  "version": "3.0.0-alpha.3",
   "description": "Elmoorx eslint-plugin package",
   "type": "module",
   "main": "./dist/index.js",

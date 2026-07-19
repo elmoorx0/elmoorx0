@@ -1,6 +1,6 @@
 {
   "name": "@elmoorx/store-pro",
-  "version": "3.0.0-alpha.2",
+  "version": "3.0.0-alpha.3",
   "description": "Elmoorx store-pro package",
   "type": "module",
   "main": "./dist/index.js",

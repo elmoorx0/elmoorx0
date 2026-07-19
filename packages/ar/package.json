@@ -1,6 +1,6 @@
 {
   "name": "@elmoorx/ar",
-  "version": "3.0.0-alpha.2",
+  "version": "3.0.0-alpha.3",
   "description": "Augmented reality: WebXR, marker tracking, 3D models, AR sessions",
   "type": "module",
   "main": "./dist/index.js",

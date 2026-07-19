@@ -1,6 +1,6 @@
 {
   "name": "@elmoorx/storage",
-  "version": "3.0.0-alpha.2",
+  "version": "3.0.0-alpha.3",
   "description": "Storage abstraction: S3, GCS, Azure, local; multipart uploads, presigned URLs",
   "type": "module",
   "main": "./dist/index.js",

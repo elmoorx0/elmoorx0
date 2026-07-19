@@ -1,6 +1,6 @@
 {
   "name": "@elmoorx/realtime",
-  "version": "3.0.0-alpha.2",
+  "version": "3.0.0-alpha.3",
   "description": "Elmoorx realtime package",
   "type": "module",
   "main": "./dist/index.js",

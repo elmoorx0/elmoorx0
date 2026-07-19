@@ -1,6 +1,6 @@
 {
   "name": "@elmoorx/router",
-  "version": "3.0.0-alpha.2",
+  "version": "3.0.0-alpha.3",
   "description": "File-system router with dynamic routes, layouts, loaders, code-splitting",
   "type": "module",
   "main": "./dist/index.js",

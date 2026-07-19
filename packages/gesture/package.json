@@ -1,6 +1,6 @@
 {
   "name": "@elmoorx/gesture",
-  "version": "3.0.0-alpha.2",
+  "version": "3.0.0-alpha.3",
   "description": "Gestures: swipe, pinch, rotate, pan, multi-touch, haptics",
   "type": "module",
   "main": "./dist/index.js",

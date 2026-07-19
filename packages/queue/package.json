@@ -1,6 +1,6 @@
 {
   "name": "@elmoorx/queue",
-  "version": "3.0.0-alpha.2",
+  "version": "3.0.0-alpha.3",
   "description": "Job queue: Redis-backed, priorities, delays, cron, retries, dead-letter",
   "type": "module",
   "main": "./dist/index.js",

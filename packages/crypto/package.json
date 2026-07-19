@@ -1,6 +1,6 @@
 {
   "name": "@elmoorx/crypto",
-  "version": "3.0.0-alpha.2",
+  "version": "3.0.0-alpha.3",
   "description": "Cryptography: hashing, encryption, signing, JWT, secure random",
   "type": "module",
   "main": "./dist/index.js",

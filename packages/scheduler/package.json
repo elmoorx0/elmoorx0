@@ -1,6 +1,6 @@
 {
   "name": "@elmoorx/scheduler",
-  "version": "3.0.0-alpha.2",
+  "version": "3.0.0-alpha.3",
   "description": "Task scheduler: cron, intervals, one-time, distributed locks",
   "type": "module",
   "main": "./dist/index.js",

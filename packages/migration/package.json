@@ -1,7 +1,7 @@
 {
   "name": "@elmoorx/migration",
-  "version": "3.0.0-alpha.2",
-  "description": "Migration tools: React/Vue/Svelte → Elmoorx codemods, audit, transforms",
+  "version": "3.0.0-alpha.3",
+  "description": "Migration tools: React/Vue/Svelte \u2192 Elmoorx codemods, audit, transforms",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

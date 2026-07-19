@@ -1,6 +1,6 @@
 {
   "name": "@elmoorx/search",
-  "version": "3.0.0-alpha.2",
+  "version": "3.0.0-alpha.3",
   "description": "Full-text search: indexing, ranking, facets, highlighting, fuzzy",
   "type": "module",
   "main": "./dist/index.js",

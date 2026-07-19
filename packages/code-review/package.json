@@ -1,6 +1,6 @@
 {
   "name": "@elmoorx/code-review",
-  "version": "3.0.0-alpha.2",
+  "version": "3.0.0-alpha.3",
   "description": "AI code review: PR analysis, security scan, performance suggestions",
   "type": "module",
   "main": "./dist/index.js",

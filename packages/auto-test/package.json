@@ -1,6 +1,6 @@
 {
   "name": "@elmoorx/auto-test",
-  "version": "3.0.0-alpha.2",
+  "version": "3.0.0-alpha.3",
   "description": "AI-powered test generation: unit, integration, E2E from code analysis",
   "type": "module",
   "main": "./dist/index.js",

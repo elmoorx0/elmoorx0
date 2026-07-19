@@ -36,11 +36,11 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
-      - run: npm install --legacy-peer-deps
+      - run: npm install --legacy-peer-deps --ignore-scripts
       - name: ESLint
-        run: npx eslint packages/*/src
+        run: npm run lint
       - name: Type check
-        run: npx tsc --noEmit
+        run: npm run typecheck
 
   # ============ BUILD ============
   build:

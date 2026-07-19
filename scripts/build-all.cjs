@@ -30,12 +30,16 @@ const PACKAGES_DIR = join(ROOT, "packages");
 
 // ─── Dependency order ──────────────────────────────────────────────────────
 
-// Build order: runtime has no deps, then everything else.
-// For simplicity, we build runtime first, then all others alphabetically.
-// A more sophisticated approach would topologically sort based on
-// package.json dependencies, but for this monorepo the simple approach
-// works because all inter-package deps go through @elmoorx/runtime.
-const BUILD_ORDER_FIRST = ["runtime"];
+// Build order is computed via topological sort based on @elmoorx/*
+// dependencies declared in each package's package.json. Packages with
+// no @elmoorx/* deps build first; packages that depend on them build
+// later. Within the same "level", packages are sorted alphabetically
+// for deterministic builds.
+//
+// Previously this used a fixed [runtime, ...rest alphabetical] order,
+// which broke the cli package (it depends on @elmoorx/compiler and
+// @elmoorx/ai-copilot, but those built AFTER cli alphabetically, so
+// cli's imports resolved to nothing on a fresh CI checkout).
 
 function getAllPackageDirs() {
   return readdirSync(PACKAGES_DIR, { withFileTypes: true })
@@ -45,12 +49,85 @@ function getAllPackageDirs() {
     .sort();
 }
 
+/**
+ * Read a package's @elmoorx/* dependencies from its package.json.
+ * Returns an array of package names (without the @elmoorx/ prefix).
+ */
+function getPackageDeps(pkgName) {
+  const pkgJsonPath = join(PACKAGES_DIR, pkgName, "package.json");
+  if (!existsSync(pkgJsonPath)) return [];
+  const pkg = JSON.parse(readFileSync(pkgJsonPath, "utf-8"));
+  const deps = new Set();
+  for (const field of ["dependencies", "devDependencies", "peerDependencies"]) {
+    const fieldDeps = pkg[field] || {};
+    for (const depName of Object.keys(fieldDeps)) {
+      if (depName.startsWith("@elmoorx/")) {
+        deps.add(depName.slice("@elmoorx/".length));
+      }
+    }
+  }
+  return [...deps];
+}
+
+/**
+ * Topologically sort packages so that dependencies build before dependents.
+ * Uses Kahn's algorithm with alphabetical tie-breaking for determinism.
+ */
+function topologicalSort(pkgNames) {
+  // Build adjacency: deps[pkg] = set of @elmoorx/* deps it needs
+  const deps = new Map();
+  const allSet = new Set(pkgNames);
+  for (const p of pkgNames) {
+    const d = getPackageDeps(p).filter(dep => allSet.has(dep));
+    deps.set(p, new Set(d));
+  }
+
+  // inDegree[pkg] = number of unbuilt deps
+  const inDegree = new Map();
+  for (const p of pkgNames) {
+    inDegree.set(p, deps.get(p).size);
+  }
+
+  // Queue of packages with no unbuilt deps (sorted alphabetically)
+  const queue = pkgNames.filter(p => inDegree.get(p) === 0).sort();
+  const result = [];
+  const built = new Set();
+
+  while (queue.length > 0) {
+    const p = queue.shift();
+    result.push(p);
+    built.add(p);
+    // For each package that depends on p, decrement its inDegree
+    for (const other of pkgNames) {
+      if (built.has(other)) continue;
+      if (deps.get(other).has(p)) {
+        const newDegree = inDegree.get(other) - 1;
+        inDegree.set(other, newDegree);
+        if (newDegree === 0) {
+          // Insert alphabetically
+          const insertIdx = queue.findIndex(q => q > other);
+          if (insertIdx === -1) queue.push(other);
+          else queue.splice(insertIdx, 0, other);
+        }
+      }
+    }
+  }
+
+  // Detect cycles (shouldn't happen in a healthy monorepo)
+  if (result.length !== pkgNames.length) {
+    const cycle = pkgNames.filter(p => !result.includes(p));
+    console.warn(`⚠️  Dependency cycle detected involving: ${cycle.join(", ")}`);
+    // Append cyclic packages at the end so they still build
+    result.push(...cycle.sort());
+  }
+
+  return result;
+}
+
 function getBuildOrder(targets) {
   if (targets && targets.length > 0) return targets;
   const all = getAllPackageDirs();
-  // runtime first, then the rest alphabetically
-  const rest = all.filter((name) => !BUILD_ORDER_FIRST.includes(name));
-  return [...BUILD_ORDER_FIRST, ...rest];
+  return topologicalSort(all);
 }
 
 // ─── Per-package tsconfig generation ───────────────────────────────────────

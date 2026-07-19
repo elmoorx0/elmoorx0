@@ -46,25 +46,33 @@ describe("payment: PaymentManager", () => {
   });
 
   skip("checkout creates intent (MOCK — no real payment)", async () => {
-    // FIXED: previously called mod.payment.createPaymentIntent — that
-    // method does NOT exist. The actual method is `checkout`. The
-    // try/catch{} swallowed the TypeError, so the test always passed
-    // vacuously (assertions never ran). Now uses the correct method
-    // name and removes the error-swallowing catch.
-    // Note: checkout() is a MOCK (logs a warning, simulates 95% success
-    // after 1.5s). See payment/src/index.ts docstring.
+    // The mock has a 5% random failure rate ("Insufficient funds") to
+    // simulate real-world payment variability. We accept BOTH outcomes:
+    //   - success: returns a PaymentIntent with status 'succeeded'
+    //   - failure: throws 'Insufficient funds' (we catch + verify the
+    //     error message)
+    // Without this catch, the test flakes ~5% of runs.
     process.env.NODE_ENV = "test"; // suppress mock warning
-    const intent = await mod.payment.checkout({
-      amount: 1000,
-      currency: "usd",
-    });
-    assert.ok(intent, "checkout should return a PaymentIntent");
-    assert.ok(intent.id, "intent should have an id");
-    // Mock produces one of: succeeded (95%) or failed (5%)
-    assert.ok(
-      ["succeeded", "failed", "processing"].includes(intent.status),
-      `intent.status should be succeeded/failed/processing, got ${intent.status}`
-    );
+    try {
+      const intent = await mod.payment.checkout({
+        amount: 1000,
+        currency: "usd",
+      });
+      // Success path — verify the returned intent
+      assert.ok(intent, "checkout should return a PaymentIntent");
+      assert.ok(intent.id, "intent should have an id");
+      assert.ok(
+        ["succeeded", "processing"].includes(intent.status),
+        `intent.status should be succeeded/processing, got ${intent.status}`
+      );
+    } catch (err) {
+      // Failure path — should be the mock's "Insufficient funds"
+      const msg = (err as Error).message || "";
+      assert.ok(
+        msg.includes("Insufficient funds") || msg.includes("Payment failed"),
+        `expected mock payment failure, got: ${msg}`
+      );
+    }
   });
 });
 

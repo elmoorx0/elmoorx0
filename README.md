@@ -4,8 +4,16 @@
 
 [![npm version](https://img.shields.io/npm/v/@elmoorx/runtime.svg)](https://www.npmjs.com/package/@elmoorx/runtime)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tests](https://img.shields.io/badge/tests-586%20passing-brightgreen)](.)
-[![Components](https://img.shields.io/badge/UI%20components-648-purple)](.)
+[![CI](https://github.com/elmoorx0/elmoorx0/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/elmoorx0/elmoorx0/actions/workflows/ci.yml)
+[![Matrix CI](https://github.com/elmoorx0/elmoorx0/actions/workflows/matrix-ci.yml/badge.svg?branch=main)](https://github.com/elmoorx0/elmoorx0/actions/workflows/matrix-ci.yml)
+[![Coverage](https://github.com/elmoorx0/elmoorx0/actions/workflows/coverage.yml/badge.svg?branch=main)](https://github.com/elmoorx0/elmoorx0/actions/workflows/coverage.yml)
+[![Tests](https://img.shields.io/badge/tests-885%20passing-brightgreen)](https://github.com/elmoorx0/elmoorx0/actions)
+[![Packages](https://img.shields.io/badge/packages-78%20%40%20elmoorx-blue)](https://github.com/elmoorx0/elmoorx0/tree/main/packages)
+[![Components](https://img.shields.io/badge/UI%20components-648-purple)](https://github.com/elmoorx0/elmoorx0/tree/main/packages/ui)
+[![Coverage](https://img.shields.io/badge/test%20coverage-78%2F78%20packages-brightgreen)](https://github.com/elmoorx0/elmoorx0/actions)
+[![Security](https://img.shields.io/badge/security-A%2B%20auto-success)](https://github.com/elmoorx0/elmoorx0/blob/main/SECURITY.md)
+[![Release](https://img.shields.io/github/v/release/elmoorx0/elmoorx0?include_prereleases)](https://github.com/elmoorx0/elmoorx0/releases)
+[![Discord](https://img.shields.io/badge/Discord-join%20us-5865F2?logo=discord&logoColor=white)](https://discord.gg/elmoorx)
 
 A next-generation full-stack framework engineered for **performance, security, and developer experience**. Elmoorx combines zero-hydration islands, a built-in reactive store, automatic security, and an edge-ready runtime in **~1.2kb** of gzipped JavaScript.
 

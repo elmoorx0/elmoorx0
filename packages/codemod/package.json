@@ -1,7 +1,7 @@
 {
   "name": "@elmoorx/codemod",
   "version": "3.0.0-alpha.3",
-  "description": "Codemods for migrating code to Elmoorx Framework (Wafra \u2192 Elmoorx rename, React/Vue/Svelte \u2192 Elmoorx)",
+  "description": "Codemods for migrating code to Elmoorx Framework (Wafra → Elmoorx rename, React/Vue/Svelte → Elmoorx)",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

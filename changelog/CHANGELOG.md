@@ -4,6 +4,38 @@ All notable changes to Elmoorx Framework are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### 🔧 CI/CD improvements
+- Added CodeQL workflow for semantic security scanning (200+ queries,
+  runs weekly on schedule + on every push/PR)
+- Added Release Drafter to auto-generate release notes from PR titles
+  (label-driven version bumping per SemVer)
+- Added Stale bot (60 days for issues, 30 days for PRs — exempt
+  labels: pinned, security, good first issue, help wanted, roadmap)
+- Added Welcome bot for first-time contributors (friendly greeting
+  with review process expectations)
+
+### 📚 Documentation
+- Added `CODE_OF_CONDUCT.md` (Contributor Covenant v2.0)
+- Added `docs/adr/` directory with 5 Architecture Decision Records:
+  - ADR-0001: Use signals instead of vdom
+  - ADR-0002: Zero-hydration islands
+  - ADR-0003: Auto-security (no escape hatch)
+  - ADR-0004: Monorepo with 78 packages
+  - ADR-0005: Topological build order
+- Updated `CONTRIBUTING.md` with detailed test conventions, running
+  commands, and package-creation checklist
+- Updated PR template with affected-packages checklist, security +
+  performance considerations sections, and release-notes field
+- Added `config.yml` for issue templates (disables blank issues,
+  provides contact links for docs, discussions, Discord, security
+  advisories, roadmap)
+
+### 💰 Community
+- Added `FUNDING.yml` showing the Sponsor button (GitHub Sponsors,
+  Patreon, Open Collective, Ko-fi, PayPal)
+
 ## [3.0.0-alpha.3] — 2026-07-19
 
 ### 🐛 Critical Bug Fixes

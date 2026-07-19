@@ -1,0 +1,133 @@
+# Release Drafter configuration
+# https://github.com/release-drafter/release-drafter#configuration
+#
+# This file controls how the next release's notes are drafted:
+#   - version-resolver: how to determine the next version number
+#   - categories: how to group PRs in the changelog
+#   - template: the overall structure of the release notes
+#   - filter-by-commitish: only include commits on the configured branch
+
+name-template: "v$RESOLVED_VERSION"
+tag-template: "v$RESOLVED_VERSION"
+
+# ─── Categories ────────────────────────────────────────────────────────
+# PRs are grouped by these labels in the changelog. The order here is
+# the order they appear in the release notes.
+categories:
+  - title: "🚀 Features"
+    labels:
+      - "feature"
+      - "enhancement"
+  - title: "🐛 Bug Fixes"
+    labels:
+      - "bug"
+      - "fix"
+  - title: "🔒 Security"
+    labels:
+      - "security"
+  - title: "⚡ Performance"
+    labels:
+      - "performance"
+  - title: "♻️ Refactor"
+    labels:
+      - "refactor"
+  - title: "📚 Documentation"
+    labels:
+      - "documentation"
+      - "docs"
+  - title: "🧪 Tests"
+    labels:
+      - "tests"
+      - "test"
+  - title: "🔧 CI/CD"
+    labels:
+      - "ci"
+      - "github-actions"
+  - title: "📦 Dependencies"
+    labels:
+      - "dependencies"
+      - "chore(deps)"
+  - title: "🧹 Maintenance"
+    labels:
+      - "chore"
+      - "maintenance"
+  - title: "⚠️ Breaking Changes"
+    labels:
+      - "breaking-change"
+      - "breaking"
+
+# ─── Exclude ──────────────────────────────────────────────────────────
+# Don't include PRs with these labels in the release notes.
+exclude-labels:
+  - "skip-changelog"
+  - "duplicate"
+  - "wontfix"
+  - "invalid"
+
+# ─── Version resolver ─────────────────────────────────────────────────
+version-resolver:
+  major:
+    labels:
+      - "breaking-change"
+      - "breaking"
+  minor:
+    labels:
+      - "feature"
+      - "enhancement"
+  patch:
+    labels:
+      - "bug"
+      - "fix"
+      - "security"
+      - "performance"
+      - "documentation"
+      - "tests"
+      - "ci"
+      - "chore"
+  default: patch
+
+# ─── Template ─────────────────────────────────────────────────────────
+# The structure of the release notes. Variables:
+#   $PREVIOUS_TAG — the previous release tag
+#   $CHANGES — the categorized list of PRs
+#   $CONTRIBUTORS — list of new contributors
+template: |
+  ## 📦 What's Changed
+
+  $CHANGES
+
+  ---
+
+  ## 🙏 Contributors
+
+  $CONTRIBUTORS
+
+  ## ⬆️ Upgrading
+
+  ```bash
+  npm install @elmoorx/runtime@$RESOLVED_VERSION @elmoorx/server@$RESOLVED_VERSION @elmoorx/ui@$RESOLVED_VERSION
+  ```
+
+  ### Breaking changes
+  None in this release.
+
+  ### Migration notes
+  - No migration required.
+
+  ## 📖 Links
+
+  - [Full CHANGELOG](https://github.com/elmoorx0/elmoorx0/blob/main/changelog/CHANGELOG.md)
+  - [Compare with previous]($REPO/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION)
+
+  ---
+
+  **Full Changelog**: $REPO/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION
+
+# ─── Other settings ───────────────────────────────────────────────────
+# Only draft releases for commits on main
+filter-by-commitish: true
+commitish: main
+# Replace the entire draft body on each update (instead of appending)
+change-template: "- $TITLE (#$NUMBER) by @$AUTHOR"
+change-title-escapes: '\<*_&`'  # escape these chars in PR titles
+contributor-prefix: " @"

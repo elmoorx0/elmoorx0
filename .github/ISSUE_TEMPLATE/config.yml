@@ -1,0 +1,23 @@
+# Issue template config
+# https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository
+
+# Don't show the "Open a blank issue" option — force users to pick a template
+blank_issues_enabled: false
+
+# Default contact links shown on the issue type picker
+contact_links:
+  - name: 📖 Documentation
+    url: https://github.com/elmoorx0/elmoorx0/tree/main/docs
+    about: Read the docs before opening an issue
+  - name: 💬 Ask a question
+    url: https://github.com/elmoorx0/elmoorx0/discussions
+    about: Ask questions and discuss with the community in Discussions
+  - name: 🟣 Discord
+    url: https://discord.gg/elmoorx
+    about: Get real-time help on our Discord server
+  - name: 🔒 Security vulnerability
+    url: https://github.com/elmoorx0/elmoorx0/security/advisories/new
+    about: Report a security vulnerability privately (do NOT open a public issue)
+  - name: 📋 Roadmap
+    url: https://github.com/elmoorx0/elmoorx0/milestones
+    about: See what's planned for future releases

@@ -1,0 +1,62 @@
+# Welcome — greets first-time contributors
+# https://github.com/actions/first-interaction
+#
+# Posts a friendly welcome message on a user's first issue or PR.
+# Helps new contributors feel like their contribution was seen, and
+# sets expectations for response time.
+
+name: Welcome first-time contributors
+
+on:
+  issues:
+    types: [opened]
+  pull_request:
+    types: [opened]
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  welcome:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/first-interaction@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-message: |
+            👋 Welcome to Elmoorx! Thanks for opening your first issue here.
+
+            A maintainer will respond within 48 hours. In the meantime:
+            - Check the [docs](https://github.com/elmoorx0/elmoorx0/tree/main/docs)
+            - Search [existing issues](https://github.com/elmoorx0/elmoorx0/issues) — your question may already be answered
+            - Join our [Discord](https://discord.gg/elmoorx) for real-time help
+
+            If this is a 🐛 bug, please make sure you've included:
+            - Elmoorx version (`npm ls @elmoorx/runtime`)
+            - Node.js version (`node --version`)
+            - A minimal reproduction (StackBlitz/CodeSandbox link or repo)
+
+            If this is a 💡 feature request, please describe your use case
+            and check the [roadmap](https://github.com/elmoorx0/elmoorx0/milestones).
+
+          pr-message: |
+            🎉 Thanks for your first contribution to Elmoorx!
+
+            A maintainer will review your PR within 48 hours. To speed up
+            the review:
+
+            - Make sure CI passes (the maintainers will see the same
+              red/green checks you see)
+            - Add tests for new features — we require 100% package test
+              coverage (78/78 packages currently have tests)
+            - Run `npm run typecheck && npm run lint && npm test` locally
+              before pushing
+            - Update the CHANGELOG.md under an "Unreleased" section
+            - If this is a breaking change, add the `breaking-change` label
+
+            We're a small team of volunteers — please be patient if
+            review takes longer than expected. Pinging @elmoorx0 after
+            7 days of no response is appropriate.
+
+            Welcome aboard! 🚀

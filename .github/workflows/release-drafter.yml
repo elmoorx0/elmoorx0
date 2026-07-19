@@ -1,0 +1,35 @@
+# Release Drafter — automatically drafts the next release's notes
+# https://github.com/release-drafter/release-drafter
+#
+# Every time a PR is merged to main, this workflow updates a DRAFT
+# release (with the next version number) accumulating all the PR
+# titles. When you're ready to release, just click "Publish release"
+# and the draft becomes the official release.
+#
+# Version bumps follow Semantic Versioning:
+#   - Major (x.0.0) — when PRs labeled `breaking-change` are merged
+#   - Minor (x.y.0) — when PRs labeled `feature` or `enhancement` are merged
+#   - Patch (x.y.z) — when PRs labeled `bug` or `documentation` are merged
+#
+# To use: just label your PRs. The drafter does the rest.
+
+name: Release Drafter
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write  # required to create/update the draft release
+  pull-requests: read  # required to read PR titles for changelog
+
+jobs:
+  update_release_draft:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: release-drafter/release-drafter@v6
+        with:
+          config-name: release-drafter.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

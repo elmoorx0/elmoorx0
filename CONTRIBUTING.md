@@ -45,8 +45,9 @@ npm install --legacy-peer-deps --ignore-scripts
 
 # Verify everything works
 npm run typecheck    # should pass with 0 errors
-npm test             # 43 smoke tests (node:test)
-npm run test:integration  # 415+ integration tests (tsx --test)
+npm run lint         # 0 errors, 0 warnings (eslint --max-warnings=0)
+npm test             # 885 tests passing across 78 packages
+npm run benchmark    # optional — run perf benchmarks
 ```
 
 ### Project Structure
@@ -212,10 +213,44 @@ describe("feature: name", () => {
 
 ### Test Categories
 
-1. **Contract tests** (`.test.mjs`) — verify API surface without TS loader
-2. **Integration tests** (`.test.ts`) — load real source via `tsx`
-3. **Security tests** — XSS vectors, CSRF, sanitization
-4. **Performance tests** — benchmark critical paths
+1. **Smoke tests** (`*-smoke.test.mjs`) — verify package loads + has expected exports. Quick & cheap.
+2. **Integration tests** (`*.test.mjs`) — verify behavior end-to-end via `tsx`.
+3. **TypeScript tests** (`*.test.ts`) — for tests that need TS types (e.g. validating the API surface).
+4. **Security tests** — XSS vectors, CSRF, sanitization (in `packages/runtime/tests/sanitizer.test.mjs`).
+5. **Benchmark regression** (`benchmark-regression.test.mjs`) — verifies performance doesn't regress. Thresholds are 10x below measured baseline to absorb CI slowness.
+
+### Running Tests
+
+```bash
+# All tests (885 passing)
+npm test
+
+# Smoke tests only (fast, ~5s)
+NODE_ENV=test npx tsx --test packages/*/tests/*-smoke.test.mjs
+
+# Tests for one package
+NODE_ENV=test npx tsx --test packages/auth/tests/auth.test.ts
+
+# Benchmark regression (catches perf regressions)
+NODE_ENV=test npx tsx --test packages/runtime/tests/benchmark-regression.test.mjs
+
+# Integration test (compiles JSX → SSR → HTTP server → fetch → gunzip → verify)
+NODE_ENV=test npx tsx --test packages/runtime/tests/integration.test.mjs
+```
+
+### Test Conventions
+
+- **`NODE_ENV=test`** — suppresses dev-only warnings (e.g. onCleanup outside a component)
+- **Skip on import failure** — use `try { mod = await import(...) } catch { skipReason = ... }` and `const skip = skipReason ? test.skip : test` so a broken package doesn't fail the whole suite
+- **Use raw HTTP requests** for server tests — Node's `fetch()` auto-decompresses and auto-adds `Accept-Encoding`, masking middleware behavior
+- **Don't use Math.random in tests** — it makes them flaky. If a mock has random behavior, accept both outcomes (see `packages/payment/tests/payment.test.ts`)
+- **Avoid single-sentence describes** — use `<package>: <feature>` format (e.g. `runtime: signals`, `server: middleware`)
+
+### Adding Tests for a New Package
+
+1. Create `packages/<name>/tests/<name>-smoke.test.mjs` (use the template from existing smoke tests)
+2. Add the file path to the `test` script in `package.json` (or run `node scripts/generate_test_command.cjs` to regenerate)
+3. Run `npm test` to verify
 
 ## Reporting Bugs
 
